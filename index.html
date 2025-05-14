@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ශ්‍රී ලංකා ඉතිහාසික සිතියම</title>
+    <style>
+        body {
+            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            height: 100%;
+        }
+
+        .place-list {
+            width: 300px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .place-list h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #8b4513;
+            padding-bottom: 10px;
+        }
+
+        .place-list ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .place-list li {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .place-list li:hover {
+            background-color: #f0f0f0;
+        }
+
+        .map-container {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+
+        .map-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .map-image {
+            height: 100%;
+            width: 100%;
+            object-fit: contain;
+            position: relative;
+        }
+
+        /* කුඩා කරන ලද ලකුණු කිරීමේ ලක්ෂ්‍යය */
+        .location-marker {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: red;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* වඩා දුරට විහිදෙන රවුම */
+        .location-ring {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid red;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            pointer-events: none;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.8);
+                opacity: 0;
+            }
+        }
+
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 3;
+            display: none;
+        }
+
+        .header {
+            background-color: #8b4513;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+        }
+        
+        .map-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 5;
+        }
+        
+        .map-selector select {
+            padding: 5px;
+            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 200px;
+        }
+        
+        .map-selector label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Reset button */
+        .reset-button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
+            z-index: 5;
+        }
+
+        .reset-button:hover {
+            background-color: #6b3209;
+        }
+
+        /* Active place highlight */
+        .place-list li.active {
+            background-color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        /* අකාරාදී බටන් සඳහා */
+        .alphabet-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        .alphabet-button {
+            background-color: #114704;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
+            font-size: 14px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .alphabet-button:hover {
+            background-color: #37960b;
+        }
+
+        .alphabet-button.active {
+            background-color: #2c6809;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Show all button */
+        .show-all-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: block;
+            width: 100%;
+        }
+
+        .show-all-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="place-list">
+            <h2>ස්ථාන නාමාවලිය</h2>
+            
+            <!-- අකාරාදී බටන් -->
+            <div class="alphabet-buttons" id="alphabetButtons">
+                <!-- JavaScript මගින් මෙහි බටන් ඇතුළත් කරනු ලැබේ -->
+            </div>
+            
+            <!-- සියලු ස්ථාන පෙන්වීමේ බටනය -->
+            <button id="showAllButton" class="show-all-button">සියලුම ස්ථාන</button>
+            
+            <ul id="placesList">
+                <!-- Place names will be added here dynamically -->
+            </ul>
+        </div>
+        
+        <div class="map-container">
+            <div class="map-selector">
+                <label for="mapType">සිතියම් වර්ගය තෝරන්න:</label>
+                <select id="mapType">
+                    <option value="sl_al">උසස් පෙළ ලංකා සිතියම</option>
+                    <option value="india_al">උසස් පෙළ ඉන්දියා සිතියම</option>
+                    <option value="europe_al">උසස් පෙළ යුරෝපා සිතියම</option>
+                    <option value="sl_ol">සාමාන්‍ය පෙළ ලංකා සිතියම</option>
+                    <option value="eurasia_ol">සාමාන්‍ය පෙළ යුරේසියා සිතියම</option>
+                </select>
+            </div>
+            
+            <div class="map-wrapper" id="mapWrapper">
+                <img src="https://www.eduhelp.lk/wp-content/uploads/2025/05/001_2020_ලංකා-ඉතිහාසය-සිතියම2-01.jpg" alt="සිතියම" class="map-image" id="mapImage">
+                <div id="locationMarker" class="location-marker" style="display: none;"></div>
+                <div id="locationRing" class="location-ring" style="display: none;"></div>
+                <div id="tooltip" class="tooltip"></div>
+            </div>
+            
+            <button id="resetButton" class="reset-button">නැවත සැකසීම</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mapWrapper = document.getElementById('mapWrapper');
+            const mapImage = document.getElementById('mapImage');
+            const placesList = document.getElementById('placesList');
+            const locationMarker = document.getElementById('locationMarker');
+            const locationRing = document.getElementById('locationRing');
+            const tooltip = document.getElementById('tooltip');
+            const mapTypeSelect = document.getElementById('mapType');
+            const resetButton = document.getElementById('resetButton');
+            const alphabetButtons = document.getElementById('alphabetButtons');
+            const showAllButton = document.getElementById('showAllButton');
+            
+            // State variables
+            let activePlace = null;
+            let isPanning = false;
+            let startX, startY;
+            let selectedX = null, selectedY = null;
+            let currentMapKey = 'sl_al';
+            let activeLetterFilter = null;
+            
+            // Define maps with their URLs and sample places
+            const maps = {
+                sl_al: {
+                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/001_2020_ලංකා-ඉතිහාසය-සිතියම2-01.jpg",
+                    places: [
+                        { name: "අනුරාධපුරය", x: 487, y: 260 },
+                        { name: "පොළොන්නරුව", x: 571, y: 324 },
+                        { name: "මහනුවර", x: 512, y: 407 },
+                        { name: "කොළඹ", x: 403, y: 444 },
+                        { name: "ගාල්ල", x: 447, y: 571 },
+                        { name: "ත්‍රිකුණාමලය", x: 600, y: 237 },
+                        { name: "මඩකලපුව", x: 659, y: 355 },
+                        { name: "කුරුණෑගල", x: 480, y: 377 },
+                        { name: "මාතලේ", x: 510, y: 379 },
+                        { name: "දඹුල්ල", x: 520, y: 334 },
+                        { name: "බදුල්ල", x: 559, y: 452 },
+                        { name: "හම්බන්තොට", x: 574, y: 565 },
+                        { name: "කළුතර", x: 413, y: 491 },
+                        { name: "මාතර", x: 492, y: 586 },
+                        { name: "දඹකොළපටුන", x: 443, y: 61 },
+                        { name: "යාපනය", x: 451, y: 83 },
+                        { name: "පුත්තලම", x: 406, y: 296 },
+                        { name: "සූකරතිත්ථ", x: 430, y: 80 },
+                        { name: "මඩකලපුව", x: 659, y: 355 },
+                        { name: "මීගමුව", x: 404, y: 408 },
+                        { name: "කන්දරෝඩය", x: 448, y: 70 },
+                        { name: "පේදුරුතුඩුව", x: 477, y: 60 },
+                        { name: "අලිමංකඩ", x: 497, y: 98 },
+                        { name: "පාචීනාරාම", x: 459, y: 63 },
+                        { name: "සිගිරිය", x: 533, y: 324 },
+                        { name: "කුරුවිට බටදොඹලෙන", x: 475, y: 472 },
+                        { name: "මුලතිව්", x: 554, y: 141 },
+                        { name: "කුරුන්දි", x: 537, y: 141 },
+                        { name: "මීපාතොට", x: 454, y: 149 }
+                    ]
+                },
+                india_al: {
+                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/ඉන්දියා-ඉතිහාසය-අභ්‍යාස-සිතියම්-02-scaled.jpg",
+                    places: [
+                        { name: "දිල්ලි", x: 250, y: 200 },
+                        { name: "මුම්බායි", x: 180, y: 350 }
+                    ]
+                },
+                europe_al: {
+                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/යුරෝපා-ඉතිහාසය2.png",
+                    places: [
+                        { name: "ලන්ඩන්", x: 200, y: 250 },
+                        { name: "පැරිස්", x: 230, y: 280 }
+                    ]
+                },
+                sl_ol: {
+                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web-සා-පෙළ-ලංකා-01.jpg",
+                    places: [
+                        { name: "කොළඹ", x: 180, y: 400 },
+                        { name: "අනුරාධපුරය", x: 250, y: 200 }
+                    ]
+                },
+                eurasia_ol: {
+                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web-Eurasia-map-01.jpg",
+                    places: [
+                        { name: "මොස්කව්", x: 400, y: 150 },
+                        { name: "බීජිං", x: 600, y: 220 }
+                    ]
+                }
+            };
+            
+            // අකාරාදී බටන් සාදන්න
+            const alphabet = [
+                "අ/ආ", "ඇ/ඈ", "ඉ/ඊ", "උ/ඌ", "එ/ඒ", "ඔ/ඕ/ඖ", 
+                "ක/ඛ", "ග/ඝ", "ච/ඡ", "ඥ/ඤ/ඣ", "ට/ඨ", "ඩ/ඪ", 
+                "ත/ථ", "ද/ධ", "න", "ප/ඵ", "බ/භ", "ම", 
+                "ය", "ර", "ල/ළ", "ව", "ශ", "ෂ", "ස", "හ", "ෆ"
+            ];
+            
+            // අකාරාදී බටන් සෑදීම
+            function createAlphabetButtons() {
+                alphabetButtons.innerHTML = '';
+                
+                alphabet.forEach(letter => {
+                    const button = document.createElement('button');
+                    button.textContent = letter;
+                    button.className = 'alphabet-button';
+                    button.setAttribute('data-letters', letter);
+                    
+                    // Split letters by '/'
+                    const letterParts = letter.split('/');
+                    
+                    button.addEventListener('click', function() {
+                        // Remove active class from all buttons
+                        document.querySelectorAll('.alphabet-button').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        
+                        // Set this button as active
+                        this.classList.add('active');
+                        
+                        // Set the active filter
+                        activeLetterFilter = letterParts;
+                        
+                        // Filter places based on selected letter
+                        filterPlacesByLetter(letterParts);
+                    });
+                    
+                    alphabetButtons.appendChild(button);
+                });
+            }
+            
+            // Filter places by starting letter
+            function filterPlacesByLetter(letters) {
+                const currentMapData = maps[currentMapKey];
+                placesList.innerHTML = '';
+                
+                currentMapData.places.forEach(place => {
+                    let shouldShow = false;
+                    
+                    // Check if place name starts with any of the letters
+                    for (const letter of letters) {
+                        if (place.name.startsWith(letter)) {
+                            shouldShow = true;
+                            break;
+                        }
+                    }
+                    
+                    if (shouldShow) {
+                        addPlaceToList(place);
+                    }
+                });
+            }
+            
+            // Add a place to the list
+            function addPlaceToList(place) {
+                const li = document.createElement('li');
+                li.textContent = place.name;
+                li.setAttribute('data-x', place.x);
+                li.setAttribute('data-y', place.y);
+                placesList.appendChild(li);
+            }
+            
+            // Function to load a map and its places
+            function loadMap(mapKey) {
+                currentMapKey = mapKey;
+                const mapData = maps[mapKey];
+                mapImage.src = mapData.url;
+                
+                // Clear current place list
+                placesList.innerHTML = '';
+                
+                // Add all places for this map
+                if (activeLetterFilter) {
+                    // If there's an active filter, apply it
+                    filterPlacesByLetter(activeLetterFilter);
+                } else {
+                    // Otherwise show all places
+                    mapData.places.forEach(place => {
+                        addPlaceToList(place);
+                    });
+                }
+                
+                // Hide any existing markers
+                locationMarker.style.display = 'none';
+                locationRing.style.display = 'none';
+                
+                // Reset position and clear active place
+                resetMap();
+            }
+            
+            // Show all places
+            function showAllPlaces() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.alphabet-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Clear the filter
+                activeLetterFilter = null;
+                
+                // Load all places
+                const mapData = maps[currentMapKey];
+                placesList.innerHTML = '';
+                
+                mapData.places.forEach(place => {
+                    addPlaceToList(place);
+                });
+            }
+            
+            // Function to reset map
+            function resetMap() {
+                selectedX = null;
+                selectedY = null;
+                
+                // Hide markers
+                locationMarker.style.display = 'none';
+                locationRing.style.display = 'none';
+                
+                // Clear active place
+                if (activePlace) {
+                    activePlace.classList.remove('active');
+                    activePlace = null;
+                }
+            }
+            
+            // Function to show location marker at specified coordinates
+            function showLocationMarker(x, y) {
+                // Store the selected coordinates
+                selectedX = x;
+                selectedY = y;
+                
+                // Set marker position
+                locationMarker.style.left = `${x}px`;
+                locationMarker.style.top = `${y}px`;
+                locationRing.style.left = `${x}px`;
+                locationRing.style.top = `${y}px`;
+                
+                // Show markers
+                locationMarker.style.display = 'block';
+                locationRing.style.display = 'block';
+            }
+            
+            // Create alphabet buttons
+            createAlphabetButtons();
+            
+            // Load the default map (sl_al)
+            loadMap('sl_al');
+            
+            // Handle map selection change
+            mapTypeSelect.addEventListener('change', function() {
+                loadMap(this.value);
+            });
+            
+            // Handle click on place name
+            placesList.addEventListener('click', function(e) {
+                if (e.target.tagName === 'LI') {
+                    const x = parseInt(e.target.getAttribute('data-x'));
+                    const y = parseInt(e.target.getAttribute('data-y'));
+                    
+                    // Clear previous active place
+                    if (activePlace) {
+                        activePlace.classList.remove('active');
+                    }
+                    
+                    // Set new active place
+                    e.target.classList.add('active');
+                    activePlace = e.target;
+                    
+                    // Show marker
+                    showLocationMarker(x, y);
+                }
+            });
+            
+            // Handle reset button click
+            resetButton.addEventListener('click', resetMap);
+            
+            // Handle show all button click
+            showAllButton.addEventListener('click', showAllPlaces);
+            
+            // Show tooltip for coordinate display
+            mapWrapper.addEventListener('mousemove', function(e) {
+                if (e.target === mapImage) {
+                    const rect = mapWrapper.getBoundingClientRect();
+                    const x = Math.round(e.clientX - rect.left);
+                    const y = Math.round(e.clientY - rect.top);
+                    
+                    tooltip.textContent = `X: ${x}, Y: ${y}`;
+                    tooltip.style.left = (e.clientX - rect.left + 15) + 'px';
+                    tooltip.style.top = (e.clientY - rect.top + 15) + 'px';
+                    tooltip.style.display = 'block';
+                }
+            });
+            
+            // Hide tooltip when mouse leaves map
+            mapWrapper.addEventListener('mouseleave', function() {
+                tooltip.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
