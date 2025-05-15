@@ -359,83 +359,28 @@
         }
 
         /* මීඩියා විමසුම් සඳහා */
-        <!-- යොදන්න: ඔබට මීඩියා විමසුම් සඳහා CSS පමණක් කොටස - lines 525-544 වෙනුවට -->
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        margin-top: 50px; /* Fixed for mobile */
-        height: calc(100vh - 90px); /* Adjusted for footer */
-    }
-    
-    .place-list {
-        width: 100%;
-        height: 50%; /* Height increased from 40% to 50% */
-        min-height: 250px; /* Min height increased from 200px to 250px */
-        max-height: 60vh; /* Maximum height set to 60% of viewport height */
-        overflow-y: auto; /* Always show scroll when content overflows */
-    }
-    
-    .map-container {
-        height: 50%; /* Height adjusted to match place-list */
-    }
-    
-    /* Make footer sticky but not fixed */
-    .footer {
-        position: sticky;
-        bottom: 0;
-        height: 40px;
-        width: 100%;
-    }
-    
-    /* Improved place-list scrolling behavior */
-    .place-list ul {
-        max-height: calc(100% - 150px); /* Adjust space for header and buttons */
-        overflow-y: auto;
-    }
-    
-    /* Make alphabet buttons more compact */
-    .alphabet-buttons {
-        gap: 2px;
-        padding: 5px 0;
-    }
-    
-    .alphabet-button {
-        padding: 4px 8px;
-        font-size: 12px;
-        min-width: 25px;
-    }
-    
-    /* Add a toggle button for place list visibility */
-    .toggle-places-button {
-        display: block;
-        position: fixed;
-        bottom: 50px;
-        right: 10px;
-        background-color: #114704;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
-        line-height: 40px;
-        text-align: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        z-index: 100;
-    }
-    
-    /* Class to make place list fullscreen when needed */
-    .place-list.fullscreen {
-        position: fixed;
-        top: 50px;
-        left: 0;
-        right: 0;
-        bottom: 40px;
-        height: auto;
-        z-index: 200;
-        max-height: none;
-    }
-}
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                margin-top: 50px; /* Adjusted for mobile */
+                height: calc(100vh - 90px); /* Adjusted for footer */
+            }
+            
+            .place-list {
+                width: 100%;
+                height: 40%;
+                min-height: 200px;
+            }
+            
+            .map-container {
+                height: 60%;
+            }
+            
+            /* Ensure footer is visible on mobile */
+            .footer {
+                height: 40px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -746,8 +691,8 @@
                         },
                         { 
                             name: "පොළොන්නරුව", 
-                            xPercent: 57.4,
-                            yPercent: 52.2,
+                            xPercent: 57.3,
+                            yPercent: 52.3,
                             info: "දෙවන මහා නගරය ලෙස වසර 250ක පමණ කාලයක් පැවතුණි."
                         }
                     ]
