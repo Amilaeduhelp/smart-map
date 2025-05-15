@@ -63,11 +63,57 @@
             z-index: 10;
         }
 
-        .place-list h2 {
-            margin-top: 0;
+        /* Modified header styling to include dropdown */
+        .place-list-header {
             color: #333;
             border-bottom: 2px solid #8b4513;
             padding-bottom: 10px;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .place-list-header-text {
+            font-weight: bold;
+            font-size: 1.5em;
+            margin: 0;
+        }
+
+        .dropdown-arrow {
+            margin-left: 10px;
+        }
+
+        /* Custom dropdown styling */
+        .map-selector {
+            width: 100%;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .map-selector select {
+            padding: 8px 10px;
+            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            background-color: white;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .map-selector:after {
+            content: '▼';
+            font-size: 0.8em;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
         }
 
         .place-list ul {
@@ -163,32 +209,6 @@
             text-align: center;
             padding: 10px 0;
             width: 100%;
-        }
-        
-        .map-selector {
-            position: fixed;
-            top: 70px; /* Adjusted to accommodate the info bar */
-            right: 20px;
-            background-color: white;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 15;
-        }
-        
-        .map-selector select {
-            padding: 5px;
-            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 200px;
-        }
-        
-        .map-selector label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
         }
 
         /* Active place highlight */
@@ -310,6 +330,34 @@
             background-color: #6b3209;
         }
 
+        /* dropdown menu style */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            width: 100%;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 25;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        .dropdown-menu a {
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+            color: black;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
         /* මීඩියා විමසුම් සඳහා */
         @media (max-width: 768px) {
             .container {
@@ -328,10 +376,6 @@
                 height: 60%;
             }
             
-            .map-selector {
-                top: 60px; /* Adjusted for mobile */
-            }
-            
             /* Ensure footer is visible on mobile */
             .footer {
                 height: 40px;
@@ -347,7 +391,20 @@
 
     <div class="container">
         <div class="place-list">
-            <h2>ස්ථාන නාමාවලිය</h2>
+            <!-- Replace the heading with a clickable header that shows current map -->
+            <div class="place-list-header" id="mapSelectorHeader">
+                <div class="place-list-header-text" id="currentMapName">උසස් පෙළ ලංකා සිතියම</div>
+                <div class="dropdown-arrow">▼</div>
+            </div>
+            
+            <!-- The dropdown menu that will appear when header is clicked -->
+            <div class="dropdown-menu" id="mapDropdown">
+                <a href="#" data-value="sl_al">උසස් පෙළ ලංකා සිතියම</a>
+                <a href="#" data-value="india_al">උසස් පෙළ ඉන්දියා සිතියම</a>
+                <a href="#" data-value="europe_al">උසස් පෙළ යුරෝපා සිතියම</a>
+                <a href="#" data-value="sl_ol">සාමාන්‍ය පෙළ ලංකා සිතියම</a>
+                <a href="#" data-value="eurasia_ol">සාමාන්‍ය පෙළ යුරේසියා සිතියම</a>
+            </div>
             
             <!-- අකාරාදී බටන් -->
             <div class="alphabet-buttons" id="alphabetButtons">
@@ -363,25 +420,12 @@
         </div>
         
         <div class="map-container" id="mapContainer">
-            <div class="map-selector">
-                <label for="mapType">සිතියම් වර්ගය තෝරන්න:</label>
-                <select id="mapType">
-                    <option value="sl_al">උසස් පෙළ ලංකා සිතියම</option>
-                    <option value="india_al">උසස් පෙළ ඉන්දියා සිතියම</option>
-                    <option value="europe_al">උසස් පෙළ යුරෝපා සිතියම</option>
-                    <option value="sl_ol">සාමාන්‍ය පෙළ ලංකා සිතියම</option>
-                    <option value="eurasia_ol">සාමාන්‍ය පෙළ යුරේසියා සිතියම</option>
-                </select>
-            </div>
-            
             <div class="map-wrapper" id="mapWrapper">
                 <img src="https://www.eduhelp.lk/wp-content/uploads/2025/05/001_2020_ලංකා-ඉතිහාසය-සිතියම2-01.jpg" alt="සිතියම" class="map-image" id="mapImage">
                 <div id="locationMarker" class="location-marker" style="display: none;"></div>
                 <div id="locationRing" class="location-ring" style="display: none;"></div>
                 <div id="tooltip" class="tooltip"></div>
             </div>
-            
- 
         </div>
     </div>
     
@@ -402,12 +446,15 @@
             const locationMarker = document.getElementById('locationMarker');
             const locationRing = document.getElementById('locationRing');
             const tooltip = document.getElementById('tooltip');
-            const mapTypeSelect = document.getElementById('mapType');
-
             const footerResetButton = document.getElementById('footerResetButton');
             const alphabetButtons = document.getElementById('alphabetButtons');
             const showAllButton = document.getElementById('showAllButton');
             const infoContent = document.getElementById('infoContent');
+            
+            // New elements for the dropdown
+            const mapSelectorHeader = document.getElementById('mapSelectorHeader');
+            const currentMapName = document.getElementById('currentMapName');
+            const mapDropdown = document.getElementById('mapDropdown');
             
             // State variables
             let activePlace = null;
@@ -419,34 +466,32 @@
             const maps = {
                 sl_al: {
                     url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/001_2020_ලංකා-ඉතිහාසය-සිතියම2-01.jpg",
+                    displayName: "උසස් පෙළ ලංකා සිතියම",
                     places: [
                         {
-name: "අනුරාධපුරය",
+                            name: "අනුරාධපුරය",
                             xPercent: 40.2,
                             yPercent: 40.8,
                             info: "ශ්‍රී ලංකාවේ මුල් ම අගනුවර වෙයි. පණ්ඩුකාභය රජු මෙහි පාලකයා ය. පස්වන මිහිඳු රජු චෝළයින්ගේ ග්‍රහණයට නතු වන තුරු වර්ෂ 1450ක් පමණ ලංකාවේ අගනුවර ලෙස පැවතුණි."
-},
-{
-name: "පොළොන්නරුව",
+                        },
+                        {
+                            name: "පොළොන්නරුව",
                             xPercent: 58.3,
                             yPercent: 50.4,
                             info: "ශ්‍රී ලංකාවේ දෙවැනි අගනුවරයි. අනුරාධපුර යුගයේ අග එල්ල වූ චෝළ ආක්‍රමණ වලින් පසු ලංකාවේ උතුරු කොටසේ බලය අල්ලාගත් චෝලයෝ මෙය සිය මධ්‍යස්ථානය කරගත්හ.මෙය මධ්‍යස්ථානය කරගත් ලංකාවේ පළමු පාලකයා මහා විජයබාහු රජුය. පරාක්‍රම පාණ්ඩ්‍ය රජ දවස කාලිංගමාඝ මෙහි බලය අල්ලාගන්නා තුරු එය වසර 250ක් පමණ ලංකාවේ අගනුවර වශයෙන් පැවතුණි."
-},
-
-                       {
-name: "මහනුවර",
+                        },
+                        {
+                            name: "මහනුවර",
                             xPercent: 45.7,
                             yPercent: 63.5,
                             info: "සෙංකඩගලපුර හෙවත් ලංකාවේ අවසන් රාජධානියයි. කෝට්ටේ හයවන බුවනෙකබාහු හෙවත් සපුමල්කුමාරයා බලයේ සිටි කාලයේ සේනාසම්මත වික්‍රමබාහු රජු සෙංකඩගල රාජධානිප පිහිටුවී ය. 1815 දී ශ්‍රී වික්‍රමරාජසිංහ රජු ඉංග්‍රීසීන්ගේ ග්‍රහණයට නතුවන තුරු එය වර්ෂ 400ක් පමණ කාලයක් ලංකාවේ අගනුර වශයෙන් පැවතියේ ය. "
-},
-
+                        },
                         {
-name: "යාපනය",
+                            name: "යාපනය",
                             xPercent: 31.8,
                             yPercent: 12.8,
                             info: "ලංකාවේ තවත් ප්‍රාදේශීය රාජධානියක ප්‍රමුඛ නගරය යි.මෙහි ආරම්භය පිළිබඳ නිශ්චිත කාලවකවානු සඳහන් නැතත්, 1619දී පිලිප් ද ඔලිවේරා නම් පෘතුගීසි කපිතාත් මේජර්වරයා විසින් යටත් කරගන්නා තුරු එය ප්‍රාදේශීය රාජධානියක් වශයෙන් පැවතියේ ය.මෙහි වැඩි ම කාලයක් බලයේ සිටියේ ආර්යචක්‍රවර්තී පරපුරයි" 
-},
-
+                        },
                         { 
                             name: "ගාල්ල", 
                             xPercent: 43.0, 
@@ -465,17 +510,17 @@ name: "යාපනය",
                             yPercent: 34.5,
                             info: "කාශ්‍යප රජතුමා විසින් නිර්මාණය කරන ලද මෙම ගල් පර්වතය තුළ මහා රාජ මන්දිරයක් නිර්මාණය කළේය. ලෝක උරුමයක් ලෙස නම් කර ඇත."
                         },
-						{
-							name: "දඹකොළපටුන", 
+                        {
+                            name: "දඹකොළපටුන", 
                             xPercent: 30.2, 
                             yPercent: 9.7,
                             info: "ජම්බුකෝළපට්ටනය හෙවත් වත්මන් සම්බිලිතුරෙයි. මෙය ලංකාවේ පැරණි තොටුපළකි. නමුත් වාණිජ වරායක් නොවී ය. ශ්‍රී මහාබෝධිය වැඩමවීම මේ ඔස්සේ සිදු වූයෙන් ඉතිහාස ගතවිය. ඉතිහාසයේ මේ ස්ථානය ගැන සඳහන් වස්සේ අවස්ථා කිහිපයක දී පමණි."
-						},
-
+                        },
                     ]
                 },
                 india_al: {
                     url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/ඉන්දියා-ඉතිහාසය-අභ්‍යාස-සිතියම්-02-scaled.jpg",
+                    displayName: "උසස් පෙළ ඉන්දියා සිතියම",
                     places: [
                         { 
                             name: "දිල්ලි", 
@@ -511,6 +556,7 @@ name: "යාපනය",
                 },
                 europe_al: {
                     url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/යුරෝපා-ඉතිහාසය2.png",
+                    displayName: "උසස් පෙළ යුරෝපා සිතියම",
                     places: [
                         { 
                             name: "ලන්ඩන්", 
@@ -538,332 +584,338 @@ name: "යාපනය",
                         }
                     ]
                 },
- eurasia_ol: {
-    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web-සා-පෙළ-යුරෝපා-1-01.jpg",
-    places: [
-        { 
-            name: "රෝමය", 
-            xPercent: 48.0, 
-            yPercent: 58.0,
-            info: "රෝම අධිරාජ්‍යයේ අගනුවර වූ රෝමය ලෝක ඉතිහාසයේ වැදගත්ම නගරයක් ලෙස සැලකේ. පාප්වරුන්ගේ බලකොටුව ද මෙහි පිහිටා ඇත."
-        },
-        { 
-            name: "මොස්කව්", 
-            xPercent: 68.0, 
-            yPercent: 30.0,
-            info: "රුසියාවේ අගනුවර වන මොස්කව් නගරය, සෝවියට් සංගමයේ කේන්ද්‍රස්ථානය ලෙස තිබුණි."
-        },
-        { 
-            name: "බීජිං", 
-            xPercent: 85.0, 
-            yPercent: 45.0,
-            info: "චීනයේ අගනුවර වන බීජිං නගරය, පැරණි චීන අධිරාජ්‍යයේ කේන්ද්‍රස්ථානයකි."
-        },
-        { 
-            name: "ටෝකියෝ", 
-            xPercent: 92.0, 
-            yPercent: 50.0,
-            info: "ජපානයේ අගනුවර වන ටෝකියෝ නගරය, මෙයිජි යුගයේ සිට ජපානයේ ආර්ථික හා දේශපාලන කේන්ද්‍රස්ථානය වේ."
-        }
-    ]
-},
-sl_ol: {
-    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/සා-පෙළ_ලංකා-සිතියම-01.jpg",
-    places: [
-        { 
-            name: "අනුරාධපුරය", 
-            xPercent: 40.2, 
-            yPercent: 40.8,
-            info: "ශ්‍රී ලංකාවේ මුල් ම අගනුවර වෙයි. පණ්ඩුකාභය රජු මෙහි පාලකයා ය. වර්ෂ 1450ක් පමණ ලංකාවේ අගනුවර ලෙස පැවතුණි."
-        },
-        { 
-            name: "පොළොන්නරුව", 
-            xPercent: 58.3, 
-            yPercent: 50.4,
-            info: "ශ්‍රී ලංකාවේ දෙවැනි අගනුවරයි. මහා විජයබාහු රජු මෙහි පාලකයා ය. වසර 250ක් පමණ ලංකාවේ අගනුවර වශයෙන් පැවතුණි."
-        },
-        { 
-            name: "මහනුවර", 
-            xPercent: 45.7, 
-            yPercent: 63.5,
-            info: "ශ්‍රී ලංකාවේ අවසන් රාජධානියයි. සෙංකඩගල රාජධානිය ලෙස ද හැඳින්වේ. වර්ෂ 400ක් පමණ අගනුවර වශයෙන් පැවතියේ ය."
-        },
-        { 
-            name: "යාපනය", 
-            xPercent: 31.8, 
-            yPercent: 12.8,
-            info: "ලංකාවේ තවත් ප්‍රාදේශීය රාජධානියක ප්‍රමුඛ නගරය යි. ආර්යචක්‍රවර්තී පරපුර මෙහි පාලනය කළෝය."
-        }
-    ]
-}
-};
+               eurasia_ol: {
+                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web-සා-පෙළ-යුරෝපා-1-01.jpg",
+ displayName: "සාමාන්‍ය පෙළ යුරේසියා සිතියම",
+                    places: [
+                        { 
+                            name: "රෝමය", 
+                            xPercent: 48.0, 
+                            yPercent: 58.0,
+                            info: "රෝම අධිරාජ්‍යයේ අගනුවර වූ රෝමය ලෝක ඉතිහාසයේ වැදගත්ම නගරයක් ලෙස සැලකේ. පාප්වරුන්ගේ බලකොටුව ද මෙහි පිහිටා ඇත."
+                        },
+                        { 
+                            name: "මොස්කව්", 
+                            xPercent: 68.0, 
+                            yPercent: 30.0,
+                            info: "රුසියාවේ අගනුවර වන මොස්කව් නගරය, සෝවියට් සංගමයේ කේන්ද්‍රස්ථානය ලෙස තිබුණි."
+                        },
+                        { 
+                            name: "බීජිං", 
+                            xPercent: 85.0, 
+                            yPercent: 45.0,
+                            info: "චීනයේ අගනුවර වන බීජිං නගරය, පැරණි චීන අධිරාජ්‍යයේ කේන්ද්‍රස්ථානයකි."
+                        },
+                        { 
+                            name: "ටෝකියෝ", 
+                            xPercent: 92.0, 
+                            yPercent: 50.0,
+                            info: "ජපානයේ අගනුවර වන ටෝකියෝ නගරය, මෙයිජි යුගයේ සිට ජපානයේ ආර්ථික හා දේශපාලන කේන්ද්‍රස්ථානය වේ."
+                        }
+                    ]
+                },
+                sl_ol: {
+                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/සා-පෙළ-ලංකා-සිතියම.jpg",
+                    displayName: "සාමාන්‍ය පෙළ ලංකා සිතියම", 
+                    places: [
+                        { 
+                            name: "අනුරාධපුරය", 
+                            xPercent: 40.5, 
+                            yPercent: 41.0,
+                            info: "ශ්‍රී ලංකාවේ පළමු අගනුවර. වසර 1400 කට වැඩි කාලයක් අගනුවර ලෙස පැවතුණි."
+                        },
+                        { 
+                            name: "මහනුවර", 
+                            xPercent: 45.7, 
+                            yPercent: 63.5,
+                            info: "ශ්‍රී ලංකාවේ අවසාන ස්වාධීන රාජධානිය. 1815 දී බ්‍රිතාන්‍යයන්ට යටත් විය."
+                        },
+                        { 
+                            name: "පොළොන්නරුව", 
+                            xPercent: 58.3, 
+                            yPercent: 50.4,
+                            info: "දෙවන මහා නගරය ලෙස වසර 250ක පමණ කාලයක් පැවතුණි."
+                        }
+                    ]
+                }
+            };
 
-// Initialize map
-mapImage.src = maps[currentMapKey].url;
-populatePlacesList(maps[currentMapKey].places);
-createAlphabetButtons();
+            // Initialize map
+            mapImage.src = maps[currentMapKey].url;
+            populatePlacesList(maps[currentMapKey].places);
+            createAlphabetButtons();
+            
+            // Set map image size
+            mapImage.onload = function() {
+                // Set map dimensions at 100% (fixed)
+                mapWrapper.style.width = this.naturalWidth + 'px';
+                mapWrapper.style.height = this.naturalHeight + 'px';
+                
+                // Center the map in view
+                centerMapInView();
+            };
 
-// Set map image size
-mapImage.onload = function() {
-    // Set map dimensions at 100% (fixed)
-    mapWrapper.style.width = this.naturalWidth + 'px';
-    mapWrapper.style.height = this.naturalHeight + 'px';
-    
-    // Center the map in view
-    centerMapInView();
-};
-
-// Display places on the map
-function displayPlaces(places) {
-    // Clear existing list items
-    placesList.innerHTML = '';
-    
-    // Sort places by name
-    places.sort((a, b) => a.name.localeCompare(b, 'si'));
-    
-    // Add each place to the list
-    places.forEach(place => {
-        const listItem = document.createElement('li');
-        listItem.textContent = place.name;
-        listItem.addEventListener('click', function() {
-            // Remove active class from all items
-            const allItems = placesList.querySelectorAll('li');
-            allItems.forEach(item => item.classList.remove('active'));
-            
-            // Add active class to clicked item
-            this.classList.add('active');
-            
-            // Show marker and ring at place location
-            const xPos = (place.xPercent / 100) * mapImage.width;
-            const yPos = (place.yPercent / 100) * mapImage.height;
-            
-            showMarker(xPos, yPos, place.name, place.info);
-            
-            // Center the map on the marker
-            centerMapOnPoint(xPos, yPos);
-            
-            // Update active place
-            activePlace = place;
-            
-            // Hide all list items except the clicked one
-            const placeListContainer = document.querySelector('.place-list');
-            // Hide alphabet buttons
-            document.getElementById('alphabetButtons').style.display = 'none';
-            // Hide "Show All" button
-            document.getElementById('showAllButton').style.display = 'none';
-            // Add a "back" button to show all places again
-            if (!document.getElementById('backButton')) {
-                const backButton = document.createElement('button');
-                backButton.id = 'backButton';
-                backButton.className = 'show-all-button';
-                backButton.textContent = 'ලැයිස්තුවට ආපසු';
-                backButton.addEventListener('click', function() {
-                    // Show alphabet buttons and show all button again
-                    document.getElementById('alphabetButtons').style.display = 'flex';
-                    document.getElementById('showAllButton').style.display = 'block';
-                    // Show all list items
-                    allItems.forEach(item => item.style.display = 'block');
-                    // Remove back button
-                    this.remove();
-                });
-                placeListContainer.insertBefore(backButton, placesList);
+            // Display places on the map
+            function displayPlaces(places) {
+                // Clear existing list items
+                placesList.innerHTML = '';
+                
+                // Sort places by name
+                places.sort((a, b) => a.name.localeCompare(b, 'si'));
+                
+              // Add each place to the list
+              places.forEach(place => {
+                  const listItem = document.createElement('li');
+                  listItem.textContent = place.name;
+                  listItem.addEventListener('click', function() {
+                      // Remove active class from all items
+                      const allItems = placesList.querySelectorAll('li');
+                      allItems.forEach(item => item.classList.remove('active'));
+                      
+                      // Add active class to clicked item
+                      this.classList.add('active');
+                      
+                      // Show marker and ring at place location
+                      const xPos = (place.xPercent / 100) * mapImage.width;
+                      const yPos = (place.yPercent / 100) * mapImage.height;
+                      
+                      showMarker(xPos, yPos, place.name, place.info);
+                      
+                      // Center the map on the marker
+                      centerMapOnPoint(xPos, yPos);
+                      
+                      // Update active place
+                      activePlace = place;
+                      
+                      // Hide all list items except the clicked one
+                      const placeListContainer = document.querySelector('.place-list');
+                      // Hide alphabet buttons
+                      document.getElementById('alphabetButtons').style.display = 'none';
+                      // Hide "Show All" button
+                      document.getElementById('showAllButton').style.display = 'none';
+                      // Add a "back" button to show all places again
+                      if (!document.getElementById('backButton')) {
+                          const backButton = document.createElement('button');
+                          backButton.id = 'backButton';
+                          backButton.className = 'show-all-button';
+                          backButton.textContent = 'ලැයිස්තුවට ආපසු';
+                          backButton.addEventListener('click', function() {
+                              // Show alphabet buttons and show all button again
+                              document.getElementById('alphabetButtons').style.display = 'flex';
+                              document.getElementById('showAllButton').style.display = 'block';
+                              // Show all list items
+                              allItems.forEach(item => item.style.display = 'block');
+                              // Remove back button
+                              this.remove();
+                          });
+                          placeListContainer.insertBefore(backButton, placesList);
+                      }
+                      
+                      // Hide all list items except the clicked one
+                      allItems.forEach(item => {
+                          if (item !== this) {
+                              item.style.display = 'none';
+                          }
+                      });
+                  });
+                  placesList.appendChild(listItem);
+              });
             }
-            
-            // Hide all list items except the clicked one
-            allItems.forEach(item => {
-                if (item !== this) {
-                    item.style.display = 'none';
-                }
-            });
-        });
-        placesList.appendChild(listItem);
-    });
-}
 
-// Show marker and ring at specified position
-function showMarker(x, y, name, info) {
-    // Show the marker and ring
-    locationMarker.style.left = x + 'px';
-    locationMarker.style.top = y + 'px';
-    locationMarker.style.display = 'block';
-    
-    locationRing.style.left = x + 'px';
-    locationRing.style.top = y + 'px';
-    locationRing.style.display = 'block';
-    
-    // Update info content in the top bar
-    infoContent.textContent = info;
-    
-    // Show tooltip on hover
-    tooltip.textContent = name;
-    tooltip.style.left = (x + 15) + 'px';
-    tooltip.style.top = (y + 15) + 'px';
-    tooltip.style.display = 'block';
-}
+            // Show marker and ring at specified position
+            function showMarker(x, y, name, info) {
+                // Show the marker and ring
+                locationMarker.style.left = x + 'px';
+                locationMarker.style.top = y + 'px';
+                locationMarker.style.display = 'block';
+                
+                locationRing.style.left = x + 'px';
+                locationRing.style.top = y + 'px';
+                locationRing.style.display = 'block';
+                
+                // Update info content in the top bar
+                infoContent.textContent = info;
+                
+                // Show tooltip on hover
+                tooltip.textContent = name;
+                tooltip.style.left = (x + 15) + 'px';
+                tooltip.style.top = (y + 15) + 'px';
+                tooltip.style.display = 'block';
+            }
 
-// Center map in view
-function centerMapInView() {
-    const mapContainerWidth = mapContainer.clientWidth;
-    const mapContainerHeight = mapContainer.clientHeight;
-    const mapWidth = mapWrapper.clientWidth;
-    const mapHeight = mapWrapper.clientHeight;
-    
-    // Calculate scroll positions to center the map
-    const scrollLeft = (mapWidth - mapContainerWidth) / 2;
-    const scrollTop = (mapHeight - mapContainerHeight) / 2;
-    
-    // Set scroll positions
-    mapContainer.scrollLeft = scrollLeft;
-    mapContainer.scrollTop = scrollTop;
-}
+            // Center map in view
+            function centerMapInView() {
+                const mapContainerWidth = mapContainer.clientWidth;
+                const mapContainerHeight = mapContainer.clientHeight;
+                const mapWidth = mapWrapper.clientWidth;
+                const mapHeight = mapWrapper.clientHeight;
+                
+                // Calculate scroll positions to center the map
+                const scrollLeft = (mapWidth - mapContainerWidth) / 2;
+                const scrollTop = (mapHeight - mapContainerHeight) / 2;
+                
+                // Set scroll positions
+                mapContainer.scrollLeft = scrollLeft;
+                mapContainer.scrollTop = scrollTop;
+            }
 
-// Center map on a specific point
-function centerMapOnPoint(x, y) {
-    const mapContainerWidth = mapContainer.clientWidth;
-    const mapContainerHeight = mapContainer.clientHeight;
-    
-    // Calculate scroll positions to center the point
-    const scrollLeft = x - (mapContainerWidth / 2);
-    const scrollTop = y - (mapContainerHeight / 2);
-    
-    // Set scroll positions with animation
-    mapContainer.scrollTo({
-        left: scrollLeft,
-        top: scrollTop,
-        behavior: 'smooth'
-    });
-}
+            // Center map on a specific point
+            function centerMapOnPoint(x, y) {
+                const mapContainerWidth = mapContainer.clientWidth;
+                const mapContainerHeight = mapContainer.clientHeight;
+                
+                // Calculate scroll positions to center the point
+                const scrollLeft = x - (mapContainerWidth / 2);
+                const scrollTop = y - (mapContainerHeight / 2);
+                
+                // Set scroll positions with animation
+                mapContainer.scrollTo({
+                    left: scrollLeft,
+                    top: scrollTop,
+                    behavior: 'smooth'
+                });
+            }
 
-// Populate places list
-function populatePlacesList(places) {
-    displayPlaces(places);
-}
+            // Populate places list
+            function populatePlacesList(places) {
+                displayPlaces(places);
+            }
 
-// Reset view and clear markers
-function resetView() {
-    // Hide marker and ring
-    locationMarker.style.display = 'none';
-    locationRing.style.display = 'none';
-    tooltip.style.display = 'none';
-    
-    // Reset info content
-    infoContent.textContent = 'ස්ථානයක් තෝරන්න';
-    
-    // Center map in view
-    centerMapInView();
-    
-    // Clear active place
-    activePlace = null;
-    
-    // Remove active class from all list items
-    const allItems = placesList.querySelectorAll('li');
-    allItems.forEach(item => item.classList.remove('active'));
-    
-    // Reset letter filter
-    activeLetterFilter = null;
-    updateAlphabetButtonsState();
-    
-    // Show all places
-    displayPlaces(maps[currentMapKey].places);
-    
-    // Show alphabet buttons and "Show All" button
-    document.getElementById('alphabetButtons').style.display = 'flex';
-    document.getElementById('showAllButton').style.display = 'block';
-    
-    // Remove back button if exists
-    const backButton = document.getElementById('backButton');
-    if (backButton) {
-        backButton.remove();
-    }
-}
-
-// Create alphabet filter buttons
-function createAlphabetButtons() {
-    // Clear existing buttons
-    alphabetButtons.innerHTML = '';
-    
-    // Create array of Sinhala alphabet
-    const sinhalaAlphabet = [
-        'අ', 'ආ', 'ඇ', 'ඈ', 'ඉ', 'ඊ', 'උ', 'ඌ', 'එ', 'ඒ', 'ඔ', 'ඕ',
-        'ක', 'ඛ', 'ග', 'ඝ', 'ඞ', 'ච', 'ඡ', 'ජ', 'ඣ', 'ඤ', 'ට',
-        'ඩ', 'ණ', 'ත', 'ථ', 'ද', 'ධ', 'න', 'ප', 'ඵ', 'බ', 'භ', 'ම',
-        'ය', 'ර', 'ල', 'ව', 'ශ', 'ෂ', 'ස', 'හ', 'ළ'
-    ];
-    
-    // Get all place names from the current map
-    const places = maps[currentMapKey].places;
-    const firstLetters = places.map(place => place.name.charAt(0));
-    
-    // Create a button for each letter in the Sinhala alphabet
-    sinhalaAlphabet.forEach(letter => {
-        // Only create a button if there's at least one place starting with this letter
-        if (firstLetters.some(firstLetter => firstLetter === letter)) {
-            const button = document.createElement('button');
-            button.className = 'alphabet-button';
-            button.textContent = letter;
-            button.addEventListener('click', function() {
-                if (activeLetterFilter === letter) {
-                    // If clicking the active filter, clear it
-                    activeLetterFilter = null;
-                    displayPlaces(maps[currentMapKey].places);
-                } else {
-                    // Set new filter
-                    activeLetterFilter = letter;
-                    // Filter places by letter
-                    const filteredPlaces = maps[currentMapKey].places.filter(
-                        place => place.name.charAt(0) === letter
-                    );
-                    displayPlaces(filteredPlaces);
-                }
+            // Reset view and clear markers
+            function resetView() {
+                // Hide marker and ring
+                locationMarker.style.display = 'none';
+                locationRing.style.display = 'none';
+                tooltip.style.display = 'none';
+                
+                // Reset info content
+                infoContent.textContent = 'ස්ථානයක් තෝරන්න';
+                
+                // Center map in view
+                centerMapInView();
+                
+                // Clear active place
+                activePlace = null;
+                
+                // Remove active class from all list items
+                const allItems = placesList.querySelectorAll('li');
+                allItems.forEach(item => item.classList.remove('active'));
+                
+                // Reset letter filter
+                activeLetterFilter = null;
                 updateAlphabetButtonsState();
+                
+                // Show all places
+                displayPlaces(maps[currentMapKey].places);
+            }
+
+            // Create alphabet filter buttons
+            function createAlphabetButtons() {
+                // Clear existing buttons
+                alphabetButtons.innerHTML = '';
+                
+                // Create array of Sinhala alphabet
+                const sinhalaAlphabet = [
+                    'අ', 'ආ', 'ඇ', 'ඈ', 'ඉ', 'ඊ', 'උ', 'ඌ', 'එ', 'ඒ', 'ඔ', 'ඕ',
+                    'ක', 'ඛ', 'ග', 'ඝ', 'ඞ', 'ච', 'ඡ', 'ජ', 'ඣ', 'ඤ', 'ට',
+                    'ඩ', 'ණ', 'ත', 'ථ', 'ද', 'ධ', 'න', 'ප', 'ඵ', 'බ', 'භ', 'ම',
+                    'ය', 'ර', 'ල', 'ව', 'ශ', 'ෂ', 'ස', 'හ', 'ළ'
+                ];
+                
+                // Get all place names from the current map
+                const places = maps[currentMapKey].places;
+                const firstLetters = places.map(place => place.name.charAt(0));
+                
+                // Create a button for each letter in the Sinhala alphabet
+                sinhalaAlphabet.forEach(letter => {
+                    // Only create a button if there's at least one place starting with this letter
+                    if (firstLetters.some(firstLetter => firstLetter === letter)) {
+                        const button = document.createElement('button');
+                        button.className = 'alphabet-button';
+                        button.textContent = letter;
+                        button.addEventListener('click', function() {
+                            if (activeLetterFilter === letter) {
+                                // If clicking the active filter, clear it
+                                activeLetterFilter = null;
+                                displayPlaces(maps[currentMapKey].places);
+                            } else {
+                                // Set new filter
+                                activeLetterFilter = letter;
+                                // Filter places by letter
+                                const filteredPlaces = maps[currentMapKey].places.filter(
+                                    place => place.name.charAt(0) === letter
+                                );
+                                displayPlaces(filteredPlaces);
+                            }
+                            updateAlphabetButtonsState();
+                        });
+                        alphabetButtons.appendChild(button);
+                    }
+                });
+            }
+
+            // Update the active state of alphabet buttons
+            function updateAlphabetButtonsState() {
+                const buttons = alphabetButtons.querySelectorAll('.alphabet-button');
+                buttons.forEach(button => {
+                    if (button.textContent === activeLetterFilter) {
+                        button.classList.add('active');
+                    } else {
+                        button.classList.remove('active');
+                    }
+                });
+            }
+
+            // Event listeners - CHANGE THIS SECTION TO USE DROPDOWN INSTEAD OF SELECT ELEMENT
+            mapSelectorHeader.addEventListener('click', function() {
+                mapDropdown.classList.toggle('show');
             });
-            alphabetButtons.appendChild(button);
-        }
-    });
-}
+            
+            // Handle dropdown item click events
+            mapDropdown.querySelectorAll('a').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const mapKey = this.getAttribute('data-value');
+                    currentMapKey = mapKey;
+                    currentMapName.textContent = maps[mapKey].displayName;
+                    mapImage.src = maps[mapKey].url;
+                    resetView();
+                    createAlphabetButtons();
+                    mapDropdown.classList.remove('show');
+                });
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!mapSelectorHeader.contains(e.target) && !mapDropdown.contains(e.target)) {
+                    mapDropdown.classList.remove('show');
+                }
+            });
 
-// Update the active state of alphabet buttons
-function updateAlphabetButtonsState() {
-    const buttons = alphabetButtons.querySelectorAll('.alphabet-button');
-    buttons.forEach(button => {
-        if (button.textContent === activeLetterFilter) {
-            button.classList.add('active');
-        } else {
-            button.classList.remove('active');
-        }
-    });
-}
+            footerResetButton.addEventListener('click', resetView);
 
-// Event listeners
-mapTypeSelect.addEventListener('change', function() {
-    currentMapKey = this.value;
-    mapImage.src = maps[currentMapKey].url;
-    resetView();
-    createAlphabetButtons();
-});
+            showAllButton.addEventListener('click', function() {
+                // Clear letter filter
+                activeLetterFilter = null;
+                updateAlphabetButtonsState();
+                
+                // Show all places
+                displayPlaces(maps[currentMapKey].places);
+            });
 
+            // Hide tooltip when mouse leaves map container
+            mapContainer.addEventListener('mouseleave', function() {
+                if (!activePlace) {
+                    tooltip.style.display = 'none';
+                }
+            });
 
-footerResetButton.addEventListener('click', resetView);
-
-showAllButton.addEventListener('click', function() {
-    // Clear letter filter
-    activeLetterFilter = null;
-    updateAlphabetButtonsState();
-    
-    // Show all places
-    displayPlaces(maps[currentMapKey].places);
-});
-
-// Hide tooltip when mouse leaves map container
-mapContainer.addEventListener('mouseleave', function() {
-    if (!activePlace) {
-        tooltip.style.display = 'none';
-    }
-});
-
-// Initial setup
-resetView();
-});
-</script>
+            // Initial setup
+            resetView();
+            
+            // Set initial map name in header
+            currentMapName.textContent = maps[currentMapKey].displayName;
+        });
+    </script>
 </body>
 </html>
