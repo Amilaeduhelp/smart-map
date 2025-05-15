@@ -363,55 +363,77 @@
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
-        margin-top: 50px; /* Adjusted for mobile */
+        margin-top: 50px; /* Fixed for mobile */
         height: calc(100vh - 90px); /* Adjusted for footer */
     }
     
     .place-list {
         width: 100%;
-        /* Height changed from 40% to 50% for better visibility */
-        height: 50%; 
-        min-height: 250px;
-        overflow-y: auto;
-    }
-    
-    /* Make text bigger in the place list for mobile */
-    .place-list li {
-        padding: 15px;
-        font-size: 16px;
-    }
-    
-    /* Make alphabet buttons bigger for mobile */
-    .alphabet-button {
-        min-width: 35px;
-        padding: 8px 12px;
-        font-size: 16px;
+        height: 50%; /* Height increased from 40% to 50% */
+        min-height: 250px; /* Min height increased from 200px to 250px */
+        max-height: 60vh; /* Maximum height set to 60% of viewport height */
+        overflow-y: auto; /* Always show scroll when content overflows */
     }
     
     .map-container {
-        height: 50%; /* Adjusted from 60% to 50% */
+        height: 50%; /* Height adjusted to match place-list */
     }
     
-    /* Improve tooltip for mobile */
-    .tooltip {
-        font-size: 18px;
-        padding: 8px 12px;
-    }
-    
-    /* Increase the place-list header size */
-    .place-list-header-text {
-        font-size: 1.3em;
-    }
-    
-    /* Ensure footer is visible on mobile */
+    /* Make footer sticky but not fixed */
     .footer {
+        position: sticky;
+        bottom: 0;
         height: 40px;
+        width: 100%;
     }
     
-    /* Make the show all button more tappable */
-    .show-all-button, #backButton {
-        padding: 10px;
-        font-size: 16px;
+    /* Improved place-list scrolling behavior */
+    .place-list ul {
+        max-height: calc(100% - 150px); /* Adjust space for header and buttons */
+        overflow-y: auto;
+    }
+    
+    /* Make alphabet buttons more compact */
+    .alphabet-buttons {
+        gap: 2px;
+        padding: 5px 0;
+    }
+    
+    .alphabet-button {
+        padding: 4px 8px;
+        font-size: 12px;
+        min-width: 25px;
+    }
+    
+    /* Add a toggle button for place list visibility */
+    .toggle-places-button {
+        display: block;
+        position: fixed;
+        bottom: 50px;
+        right: 10px;
+        background-color: #114704;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        line-height: 40px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        z-index: 100;
+    }
+    
+    /* Class to make place list fullscreen when needed */
+    .place-list.fullscreen {
+        position: fixed;
+        top: 50px;
+        left: 0;
+        right: 0;
+        bottom: 40px;
+        height: auto;
+        z-index: 200;
+        max-height: none;
     }
 }
     </style>
