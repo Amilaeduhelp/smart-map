@@ -45,8 +45,9 @@
             display: flex;
             flex-direction: row;
             width: 100%;
-            height: 100%;
+            height: calc(100vh - 90px); /* Adjusted to accommodate both top and bottom bars */
             margin-top: 50px; /* Added to accommodate the fixed info bar */
+            margin-bottom: 40px; /* Added space for footer */
         }
 
         .place-list {
@@ -190,25 +191,6 @@
             color: #333;
         }
 
-        /* Reset button */
-        .reset-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #8b4513;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
-            z-index: 15;
-        }
-
-        .reset-button:hover {
-            background-color: #6b3209;
-        }
-
         /* Active place highlight */
         .place-list li.active {
             background-color: #e0e0e0;
@@ -266,11 +248,74 @@
             background-color: #218838;
         }
 
+        #backButton {
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
+            margin-bottom: 10px;
+            display: block;
+            width: 100%;
+        }
+
+        #backButton:hover {
+            background-color: #6b3209;
+        }
+
+        /* Footer styling - Fixed footer at bottom of page */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px; /* Fixed height */
+            background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+            border-top: 1px solid #ddd;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20; /* Ensure it's above other elements */
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .footer-brand {
+            font-weight: bold;
+        }
+
+        .footer-brand a {
+            color: #114704;
+            text-decoration: none;
+        }
+
+        .footer-brand a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-reset-button {
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
+        }
+
+        .footer-reset-button:hover {
+            background-color: #6b3209;
+        }
+
         /* මීඩියා විමසුම් සඳහා */
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
                 margin-top: 50px; /* Adjusted for mobile */
+                height: calc(100vh - 90px); /* Adjusted for footer */
             }
             
             .place-list {
@@ -286,30 +331,18 @@
             .map-selector {
                 top: 60px; /* Adjusted for mobile */
             }
-			#backButton {
-    background-color: #8b4513;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
-    margin-bottom: 10px;
-    display: block;
-    width: 100%;
-}
-
-#backButton:hover {
-    background-color: #6b3209;
-}
+            
+            /* Ensure footer is visible on mobile */
+            .footer {
+                height: 40px;
+            }
         }
     </style>
 </head>
 <body>
     <!-- New info bar that stays fixed at the top -->
     <div class="info-bar">
-        <div class="info-bar-brand">eduhelp.lk සිතියම් අත්වැල</div>
-        <div class="info-bar-content" id="infoContent">ස්ථානයක් තෝරන්න</div>
+        <div class="info-bar-content" id="infoContent">සැකසුම අමිල උඩවත්ත</div>
     </div>
 
     <div class="container">
@@ -348,8 +381,16 @@
                 <div id="tooltip" class="tooltip"></div>
             </div>
             
-            <button id="resetButton" class="reset-button">නැවත සැකසීම</button>
+ 
         </div>
+    </div>
+    
+    <!-- Fixed footer at bottom of page -->
+    <div class="footer">
+        <div class="footer-brand">
+            <a href="https://www.eduhelp.lk" target="_blank">eduhelp.lk</a>
+        </div>
+        <button id="footerResetButton" class="footer-reset-button">නැවත සැකසීම</button>
     </div>
 
     <script>
@@ -362,7 +403,8 @@
             const locationRing = document.getElementById('locationRing');
             const tooltip = document.getElementById('tooltip');
             const mapTypeSelect = document.getElementById('mapType');
-            const resetButton = document.getElementById('resetButton');
+
+            const footerResetButton = document.getElementById('footerResetButton');
             const alphabetButtons = document.getElementById('alphabetButtons');
             const showAllButton = document.getElementById('showAllButton');
             const infoContent = document.getElementById('infoContent');
@@ -496,147 +538,147 @@ name: "යාපනය",
                         }
                     ]
                 },
-                sl_ol: {
-                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web-සා-පෙළ-ලංකා-01.jpg",
-					places: [
-                        { 
-                            name: "ගාල්ල", 
-                            xPercent: 43.0, 
-                            yPercent: 80.0,
-                            info: "දකුණු වෙරළබඩ තිබෙන පුරාණ වරාය නගරයකි. පෘතුගීසීන්, ලන්දේසීන් සහ බ්‍රිතාන්‍යයන් යටතේ වැදගත් වෙළඳ කේන්ද්‍රස්ථානයක් විය."
-                        },
-                        { 
-                            name: "යාපනය", 
-                            xPercent: 51.0, 
-                            yPercent: 6.0,
-                            info: "උතුරු පළාතේ ප්‍රධාන නගරය වන යාපනය යාපන රාජධානියේ අගනුවර විය. පෘතුගීසි, ලන්දේසි හා බ්‍රිතාන්‍ය පාලනයට ද නතු වී තිබේ."
-                        },
-                        { 
-                            name: "කොළඹ", 
-                            xPercent: 40.0, 
-                            yPercent: 60.0,
-                            info: "ශ්‍රී ලංකාවේ වත්මන් අගනුවර වන කොළඹ, පෘතුගීසි, ලන්දේසි හා බ්‍රිතාන්‍ය යටත් විජිත සමයේ ප්‍රධාන වෙළඳ කේන්ද්‍රස්ථානය විය."
-                        },
-                        { 
-                            name: "කතරගම", 
-                            xPercent: 65.0, 
-                            yPercent: 78.0,
-                            info: "කතරගම දෙවිඳුන්ට කැප කර ඇති ප්‍රධාන පූජා භූමියකි. සිංහල, දෙමළ හා මුස්ලිම් ජනතාවගේ ගෞරවයට පාත්‍ර වී ඇත."
-                        }
-                    ]
-                },
-                eurasia_ol: {
-                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web-සා-පෙළ-යුරෝපා-1-01.jpg",
-                   places: [
-                        { 
-                            name: "රෝමය", 
-                            xPercent: 48.0, 
-                            yPercent: 58.0,
-                            info: "රෝම අධිරාජ්‍යයේ අගනුවර වූ රෝමය ලෝක ඉතිහාසයේ වැදගත්ම නගරයක් ලෙස සැලකේ. පාප්වරුන්ගේ බලකොටුව ද මෙහි පිහිටා ඇත."
-                        },
-                        { 
-                            name: "මොස්කව්", 
-                            xPercent: 68.0, 
-                            yPercent: 30.0,
-                            info: "රුසියාවේ අගනුවර වන මොස්කව් නගරය, සෝවියට් සංගමයේ කේන්ද්‍රස්ථානය ලෙස තිබුණි."
-                        },
-                        { 
-                            name: "බීජිං", 
-                            xPercent: 85.0, 
-                            yPercent: 45.0,
-                            info: "චීනයේ අගනුවර වන බීජිං නගරය, පැරණි චීන අධිරාජ්‍යයේ කේන්ද්‍රස්ථානයකි."
-                        },
-                        { 
-                            name: "ටෝකියෝ", 
-                            xPercent: 92.0, 
-                            yPercent: 50.0,
-                            info: "ජපානයේ අගනුවර වන ටෝකියෝ නගරය, මෙයිජි යුගයේ සිට ජපානයේ ආර්ථික හා දේශපාලන කේන්ද්‍රස්ථානය වේ."
-                        }
-                    ]
-                }
-            };
-
-            // Initialize map
-            mapImage.src = maps[currentMapKey].url;
-            populatePlacesList(maps[currentMapKey].places);
-            createAlphabetButtons();
-            
-            // Set map image size
-            mapImage.onload = function() {
-                // Set map dimensions at 100% (fixed)
-                mapWrapper.style.width = this.naturalWidth + 'px';
-                mapWrapper.style.height = this.naturalHeight + 'px';
-                
-                // Center the map in view
-                centerMapInView();
-            };
-
-            // Display places on the map
-            function displayPlaces(places) {
-                // Clear existing list items
-                placesList.innerHTML = '';
-                
-                // Sort places by name
-                places.sort((a, b) => a.name.localeCompare(b, 'si'));
-                
-      // Add each place to the list
-places.forEach(place => {
-    const listItem = document.createElement('li');
-    listItem.textContent = place.name;
-    listItem.addEventListener('click', function() {
-        // Remove active class from all items
-        const allItems = placesList.querySelectorAll('li');
-        allItems.forEach(item => item.classList.remove('active'));
-        
-        // Add active class to clicked item
-        this.classList.add('active');
-        
-        // Show marker and ring at place location
-        const xPos = (place.xPercent / 100) * mapImage.width;
-        const yPos = (place.yPercent / 100) * mapImage.height;
-        
-        showMarker(xPos, yPos, place.name, place.info);
-        
-        // Center the map on the marker
-        centerMapOnPoint(xPos, yPos);
-        
-        // Update active place
-        activePlace = place;
-        
-        // Hide all list items except the clicked one
-        const placeListContainer = document.querySelector('.place-list');
-        // Hide alphabet buttons
-        document.getElementById('alphabetButtons').style.display = 'none';
-        // Hide "Show All" button
-        document.getElementById('showAllButton').style.display = 'none';
-        // Add a "back" button to show all places again
-        if (!document.getElementById('backButton')) {
-            const backButton = document.createElement('button');
-            backButton.id = 'backButton';
-            backButton.className = 'show-all-button';
-            backButton.textContent = 'ලැයිස්තුවට ආපසු';
-            backButton.addEventListener('click', function() {
-                // Show alphabet buttons and show all button again
-                document.getElementById('alphabetButtons').style.display = 'flex';
-                document.getElementById('showAllButton').style.display = 'block';
-                // Show all list items
-                allItems.forEach(item => item.style.display = 'block');
-                // Remove back button
-                this.remove();
-            });
-            placeListContainer.insertBefore(backButton, placesList);
+ eurasia_ol: {
+    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web-සා-පෙළ-යුරෝපා-1-01.jpg",
+    places: [
+        { 
+            name: "රෝමය", 
+            xPercent: 48.0, 
+            yPercent: 58.0,
+            info: "රෝම අධිරාජ්‍යයේ අගනුවර වූ රෝමය ලෝක ඉතිහාසයේ වැදගත්ම නගරයක් ලෙස සැලකේ. පාප්වරුන්ගේ බලකොටුව ද මෙහි පිහිටා ඇත."
+        },
+        { 
+            name: "මොස්කව්", 
+            xPercent: 68.0, 
+            yPercent: 30.0,
+            info: "රුසියාවේ අගනුවර වන මොස්කව් නගරය, සෝවියට් සංගමයේ කේන්ද්‍රස්ථානය ලෙස තිබුණි."
+        },
+        { 
+            name: "බීජිං", 
+            xPercent: 85.0, 
+            yPercent: 45.0,
+            info: "චීනයේ අගනුවර වන බීජිං නගරය, පැරණි චීන අධිරාජ්‍යයේ කේන්ද්‍රස්ථානයකි."
+        },
+        { 
+            name: "ටෝකියෝ", 
+            xPercent: 92.0, 
+            yPercent: 50.0,
+            info: "ජපානයේ අගනුවර වන ටෝකියෝ නගරය, මෙයිජි යුගයේ සිට ජපානයේ ආර්ථික හා දේශපාලන කේන්ද්‍රස්ථානය වේ."
         }
-        
-        // Hide all list items except the clicked one
-        allItems.forEach(item => {
-            if (item !== this) {
-                item.style.display = 'none';
+    ]
+},
+sl_ol: {
+    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/සා-පෙළ_ලංකා-සිතියම-01.jpg",
+    places: [
+        { 
+            name: "අනුරාධපුරය", 
+            xPercent: 40.2, 
+            yPercent: 40.8,
+            info: "ශ්‍රී ලංකාවේ මුල් ම අගනුවර වෙයි. පණ්ඩුකාභය රජු මෙහි පාලකයා ය. වර්ෂ 1450ක් පමණ ලංකාවේ අගනුවර ලෙස පැවතුණි."
+        },
+        { 
+            name: "පොළොන්නරුව", 
+            xPercent: 58.3, 
+            yPercent: 50.4,
+            info: "ශ්‍රී ලංකාවේ දෙවැනි අගනුවරයි. මහා විජයබාහු රජු මෙහි පාලකයා ය. වසර 250ක් පමණ ලංකාවේ අගනුවර වශයෙන් පැවතුණි."
+        },
+        { 
+            name: "මහනුවර", 
+            xPercent: 45.7, 
+            yPercent: 63.5,
+            info: "ශ්‍රී ලංකාවේ අවසන් රාජධානියයි. සෙංකඩගල රාජධානිය ලෙස ද හැඳින්වේ. වර්ෂ 400ක් පමණ අගනුවර වශයෙන් පැවතියේ ය."
+        },
+        { 
+            name: "යාපනය", 
+            xPercent: 31.8, 
+            yPercent: 12.8,
+            info: "ලංකාවේ තවත් ප්‍රාදේශීය රාජධානියක ප්‍රමුඛ නගරය යි. ආර්යචක්‍රවර්තී පරපුර මෙහි පාලනය කළෝය."
+        }
+    ]
+}
+};
+
+// Initialize map
+mapImage.src = maps[currentMapKey].url;
+populatePlacesList(maps[currentMapKey].places);
+createAlphabetButtons();
+
+// Set map image size
+mapImage.onload = function() {
+    // Set map dimensions at 100% (fixed)
+    mapWrapper.style.width = this.naturalWidth + 'px';
+    mapWrapper.style.height = this.naturalHeight + 'px';
+    
+    // Center the map in view
+    centerMapInView();
+};
+
+// Display places on the map
+function displayPlaces(places) {
+    // Clear existing list items
+    placesList.innerHTML = '';
+    
+    // Sort places by name
+    places.sort((a, b) => a.name.localeCompare(b, 'si'));
+    
+    // Add each place to the list
+    places.forEach(place => {
+        const listItem = document.createElement('li');
+        listItem.textContent = place.name;
+        listItem.addEventListener('click', function() {
+            // Remove active class from all items
+            const allItems = placesList.querySelectorAll('li');
+            allItems.forEach(item => item.classList.remove('active'));
+            
+            // Add active class to clicked item
+            this.classList.add('active');
+            
+            // Show marker and ring at place location
+            const xPos = (place.xPercent / 100) * mapImage.width;
+            const yPos = (place.yPercent / 100) * mapImage.height;
+            
+            showMarker(xPos, yPos, place.name, place.info);
+            
+            // Center the map on the marker
+            centerMapOnPoint(xPos, yPos);
+            
+            // Update active place
+            activePlace = place;
+            
+            // Hide all list items except the clicked one
+            const placeListContainer = document.querySelector('.place-list');
+            // Hide alphabet buttons
+            document.getElementById('alphabetButtons').style.display = 'none';
+            // Hide "Show All" button
+            document.getElementById('showAllButton').style.display = 'none';
+            // Add a "back" button to show all places again
+            if (!document.getElementById('backButton')) {
+                const backButton = document.createElement('button');
+                backButton.id = 'backButton';
+                backButton.className = 'show-all-button';
+                backButton.textContent = 'ලැයිස්තුවට ආපසු';
+                backButton.addEventListener('click', function() {
+                    // Show alphabet buttons and show all button again
+                    document.getElementById('alphabetButtons').style.display = 'flex';
+                    document.getElementById('showAllButton').style.display = 'block';
+                    // Show all list items
+                    allItems.forEach(item => item.style.display = 'block');
+                    // Remove back button
+                    this.remove();
+                });
+                placeListContainer.insertBefore(backButton, placesList);
             }
+            
+            // Hide all list items except the clicked one
+            allItems.forEach(item => {
+                if (item !== this) {
+                    item.style.display = 'none';
+                }
+            });
         });
+        placesList.appendChild(listItem);
     });
-    placesList.appendChild(listItem);
-});
-            }
+}
 
 // Show marker and ring at specified position
 function showMarker(x, y, name, info) {
@@ -705,7 +747,7 @@ function resetView() {
     tooltip.style.display = 'none';
     
     // Reset info content
-    infoContent.textContent = 'සැකසුම-අමිල උඩවත්ත';
+    infoContent.textContent = 'ස්ථානයක් තෝරන්න';
     
     // Center map in view
     centerMapInView();
@@ -715,16 +757,16 @@ function resetView() {
     
     // Remove active class from all list items
     const allItems = placesList.querySelectorAll('li');
-    allItems.forEach(item => {
-        item.classList.remove('active');
-        item.style.display = 'block'; // Show all list items
-    });
+    allItems.forEach(item => item.classList.remove('active'));
     
     // Reset letter filter
     activeLetterFilter = null;
     updateAlphabetButtonsState();
     
-    // Show alphabet buttons and show all button
+    // Show all places
+    displayPlaces(maps[currentMapKey].places);
+    
+    // Show alphabet buttons and "Show All" button
     document.getElementById('alphabetButtons').style.display = 'flex';
     document.getElementById('showAllButton').style.display = 'block';
     
@@ -733,9 +775,6 @@ function resetView() {
     if (backButton) {
         backButton.remove();
     }
-    
-    // Show all places
-    displayPlaces(maps[currentMapKey].places);
 }
 
 // Create alphabet filter buttons
@@ -803,7 +842,8 @@ mapTypeSelect.addEventListener('change', function() {
     createAlphabetButtons();
 });
 
-resetButton.addEventListener('click', resetView);
+
+footerResetButton.addEventListener('click', resetView);
 
 showAllButton.addEventListener('click', function() {
     // Clear letter filter
