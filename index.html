@@ -176,7 +176,7 @@
             transform: translate(-50%, -50%);
             z-index: 4;
             pointer-events: none;
-            animation: pulse 1.5s infinite;
+            animation: pulse 1s infinite;
         }
 
         @keyframes pulse {
@@ -317,11 +317,11 @@
         }
 
         .footer-reset-button {
-            background-color: #8b4513;
+            background-color: #b71a09;
             color: white;
             border: none;
             padding: 5px 10px;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
         }
@@ -432,7 +432,7 @@
     <!-- Fixed footer at bottom of page -->
     <div class="footer">
         <div class="footer-brand">
-            <a href="https://www.eduhelp.lk" target="_blank">අමිල උඩවත්ත-eduhelp.lk</a>
+            <a href="https://www.eduhelp.lk/index.php/educational-services/" target="_blank">අමිල උඩවත්ත-eduhelp.lk</a>
         </div>
         <button id="footerResetButton" class="footer-reset-button">Reset</button>
     </div>
@@ -463,7 +463,7 @@
             const currentZoom = 1.0; // Fixed at 100% zoom
             
             // Define maps with their URLs, places, and historical info
-            const maps = {
+ const maps = {
                 sl_al: {
                     url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/001_2020_ලංකා-ඉතිහාසය-සිතියම2-01.jpg",
                     displayName: "උසස් පෙළ ලංකා සිතියම",
@@ -609,127 +609,125 @@
 ]
 },
                 india_al: {
-                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/ඉන්දියා-ඉතිහාසය-අභ්‍යාස-සිතියම්-02-scaled.jpg",
+                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/IND-with-MB_2019a-scaled.jpg",
                     displayName: "උසස් පෙළ ඉන්දියා සිතියම",
                     places: [
+                       
                         { 
-                            name: "දිල්ලි", 
-                            xPercent: 45.0, 
-                            yPercent: 28.0,
-                            info: "දිල්ලි සුල්තාන් සමයේ හා මුගල් අධිරාජ්‍යයේ අගනුවර ලෙස පැවැත්විණි. ඉන්දියාවේ වත්මන් අගනුවර ද වෙයි."
-                        },
-                        { 
-                            name: "මුම්බායි", 
-                            xPercent: 32.0, 
-                            yPercent: 55.0,
+							name: "බොම්බාය",
+                            xPercent: 30.8,
+                            yPercent: 61.3,
+
                             info: "මුම්බායි නගරය ඉන්දියාවේ ප්‍රධාන වාණිජ හා මූල්‍ය මධ්‍යස්ථානය වෙයි. එය මුලින් පෘතුගීසීන් විසින් පාලනය කරන ලදි."
+},
+{ 
+                            name: "කල්කටා", 
+                            xPercent: 74.1,
+                            yPercent: 52.3,
+
+                            info: " "
                         },
-                        { 
-                            name: "කොල්කතා", 
-                            xPercent: 62.0, 
-                            yPercent: 45.0,
-                            info: "ශ්‍රී ලංකාවේ මුල් ම අගනුවර වෙයි. පන්සිවිකාය රජු මෙහි පාලකයා ය. වර්ෂ 1450ක් පමණ ලංකාවේ අගනුවර ලෙස පැවතුණි."
-                        },
-                        { 
-                            name: "වාරාණසි", 
-                            xPercent: 55.0, 
-                            yPercent: 40.0,
+   { 
+                            name: "බරණැස්(වාරාණසි)", 
+                            xPercent: 57.6,
+                            yPercent: 46.5,
                             info: "ගංගා නදිය අසල පිහිටි මෙම ඓතිහාසික නගරය හින්දු ආගමික කටයුතු සඳහා වැදගත් මධ්‍යස්ථානයක් ලෙස පවතී."
                         },
                         { 
-                            name: "පාටලිපුත්‍ර", 
-                            xPercent: 60.0, 
-                            yPercent: 43.0,
+                            name: "පාටලිපුත්‍ර(පැට්නා)", 
+                            xPercent: 63.5,
+                            yPercent: 44.9,
+
                             info: "මෞර්ය අධිරාජ්‍යයේ අගනුවර වූ මෙම නගරය අශෝක අධිරාජයාගේ පාලන කාලයේදී විශේෂ වැදගත්කමක් දැරීය."
-                        }
+                        },
+
                     ]
                 },
                 europe_al: {
-                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/යුරෝපා-ඉතිහාසය2.png",
+                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web_Europe-01-scaled.jpg",
                     displayName: "උසස් පෙළ යුරෝපා සිතියම",
                     places: [
                         { 
                             name: "ලන්ඩන්", 
-                            xPercent: 38.0, 
-                            yPercent: 40.0,
+                            xPercent: 26.3,
+                            yPercent: 46.2,
                             info: "බ්‍රිතාන්‍ය අධිරාජ්‍යයේ අගනුවර ලෙස ලන්ඩනය ලෝක ඉතිහාසයේ වැදගත් වෙයි. එය තේම්ස් ගංඟාව අසල පිහිටා ඇත."
                         },
                         { 
                             name: "පැරිස්", 
-                            xPercent: 42.0, 
-                            yPercent: 45.0,
+                            xPercent: 26.5,
+                            yPercent: 53.0,
                             info: "ප්‍රංශ අධිරාජ්‍යයේ අගනුවර ලෙස සහ යුරෝපීය නැවෝදයේ වැදගත් මධ්‍යස්ථානයක් වූ පැරිස් නගරය ලෝක ඉතිහාසයට බෙහෙවින් බලපෑවේය."
                         },
                         { 
                             name: "රෝමය", 
-                            xPercent: 48.0, 
-                            yPercent: 58.0,
+                            xPercent: 36.4,
+                            yPercent: 76.0,
                             info: "රෝම අධිරාජ්‍යයේ අගනුවර වූ රෝමය ලෝක ඉතිහාසයේ වැදගත්ම නගරයක් ලෙස සැලකේ. පාප්වරුන්ගේ බලකොටුව ද මෙහි පිහිටා ඇත."
                         },
                         { 
                             name: "බර්ලින්", 
-                            xPercent: 52.0, 
-                            yPercent: 38.0,
+                            xPercent: 38.3,
+                            yPercent: 50.5,
                             info: "ජර්මනියේ අගනුවර වන බර්ලින් නගරය දෙවන ලෝක යුද්ධය අවසානයේ සීතල යුද්ධයේ කේන්ද්‍රස්ථානයක් විය."
                         }
                     ]
                 },
-               eurasia_ol: {
-                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web-සා-පෙළ-යුරෝපා-1-01.jpg",
- displayName: "සාමාන්‍ය පෙළ යුරේසියා සිතියම",
-                    places: [
-                        { 
-                            name: "රෝමය", 
-                            xPercent: 48.0, 
-                            yPercent: 58.0,
-                            info: "රෝම අධිරාජ්‍යයේ අගනුවර වූ රෝමය ලෝක ඉතිහාසයේ වැදගත්ම නගරයක් ලෙස සැලකේ. පාප්වරුන්ගේ බලකොටුව ද මෙහි පිහිටා ඇත."
-                        },
-                        { 
-                            name: "මොස්කව්", 
-                            xPercent: 68.0, 
-                            yPercent: 30.0,
-                            info: "රුසියාවේ අගනුවර වන මොස්කව් නගරය, සෝවියට් සංගමයේ කේන්ද්‍රස්ථානය ලෙස තිබුණි."
-                        },
-                        { 
-                            name: "බීජිං", 
-                            xPercent: 85.0, 
-                            yPercent: 45.0,
-                            info: "චීනයේ අගනුවර වන බීජිං නගරය, පැරණි චීන අධිරාජ්‍යයේ කේන්ද්‍රස්ථානයකි."
-                        },
-                        { 
-                            name: "ටෝකියෝ", 
-                            xPercent: 92.0, 
-                            yPercent: 50.0,
-                            info: "ජපානයේ අගනුවර වන ටෝකියෝ නගරය, මෙයිජි යුගයේ සිට ජපානයේ ආර්ථික හා දේශපාලන කේන්ද්‍රස්ථානය වේ."
-                        }
-                    ]
-                },
                 sl_ol: {
-                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/සා-පෙළ-ලංකා-සිතියම.jpg",
+                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web-සා-පෙළ-ලංකා-01.jpg",
                     displayName: "සාමාන්‍ය පෙළ ලංකා සිතියම", 
                     places: [
                         { 
                             name: "අනුරාධපුරය", 
-                            xPercent: 40.5, 
-                            yPercent: 41.0,
+                            xPercent: 37.9,
+                            yPercent: 41.6,
                             info: "ශ්‍රී ලංකාවේ පළමු අගනුවර. වසර 1400 කට වැඩි කාලයක් අගනුවර ලෙස පැවතුණි."
                         },
                         { 
                             name: "මහනුවර", 
-                            xPercent: 45.7, 
-                            yPercent: 63.5,
+                            xPercent: 45.5,
+                            yPercent: 67.0,
                             info: "ශ්‍රී ලංකාවේ අවසාන ස්වාධීන රාජධානිය. 1815 දී බ්‍රිතාන්‍යයන්ට යටත් විය."
                         },
                         { 
                             name: "පොළොන්නරුව", 
-                            xPercent: 58.3, 
-                            yPercent: 50.4,
+                            xPercent: 57.4,
+                            yPercent: 52.2,
                             info: "දෙවන මහා නගරය ලෙස වසර 250ක පමණ කාලයක් පැවතුණි."
+                        }
+                    ]
+                },
+                eurasia_ol: {
+                    url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web-Eurasia-map-01.jpg",
+                    displayName: "සාමාන්‍ය පෙළ යුරේසියා සිතියම",
+                    places: [
+                        { 
+                            name: "රෝමය", 
+                            xPercent: 19.7,
+                            yPercent: 49.2,
+                            info: "රෝම අධිරාජ්‍යයේ අගනුවර වූ රෝමය ලෝක ඉතිහාසයේ වැදගත්ම නගරයක් ලෙස සැලකේ. පාප්වරුන්ගේ බලකොටුව ද මෙහි පිහිටා ඇත."
+                        },
+                        { 
+                            name: "මොස්කව්", 
+                            xPercent: 31.8,
+                            yPercent: 34.1,
+                            info: "රුසියාවේ අගනුවර වන මොස්කව් නගරය, සෝවියට් සංගමයේ කේන්ද්‍රස්ථානය ලෙස තිබුණි."
+                        },
+                        { 
+                            name: "බීජිං", 
+                            xPercent: 68.4,
+                            yPercent: 50.6,
+                            info: "චීනයේ අගනුවර වන බීජිං නගරය, පැරණි චීන අධිරාජ්‍යයේ කේන්ද්‍රස්ථානයකි."
+                        },
+                        { 
+                            name: "ටෝකියෝ", 
+                            xPercent: 80.0,
+                            yPercent: 53.4,
+                            info: "ජපානයේ අගනුවර වන ටෝකියෝ නගරය, මෙයිජි යුගයේ සිට ජපානයේ ආර්ථික හා දේශපාලන කේන්ද්‍රස්ථානය වේ."
                         }
                     ]
                 }
             };
-
             // Initialize map
             mapImage.src = maps[currentMapKey].url;
             populatePlacesList(maps[currentMapKey].places);
