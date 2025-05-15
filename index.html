@@ -286,6 +286,22 @@
             .map-selector {
                 top: 60px; /* Adjusted for mobile */
             }
+			#backButton {
+    background-color: #8b4513;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
+    margin-bottom: 10px;
+    display: block;
+    width: 100%;
+}
+
+#backButton:hover {
+    background-color: #6b3209;
+}
         }
     </style>
 </head>
@@ -563,32 +579,63 @@ name: "යාපනය",
                 // Sort places by name
                 places.sort((a, b) => a.name.localeCompare(b, 'si'));
                 
-                // Add each place to the list
-                places.forEach(place => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = place.name;
-                    listItem.addEventListener('click', function() {
-                        // Remove active class from all items
-                        const allItems = placesList.querySelectorAll('li');
-                        allItems.forEach(item => item.classList.remove('active'));
-                        
-                        // Add active class to clicked item
-                        this.classList.add('active');
-                        
-                        // Show marker and ring at place location
-                        const xPos = (place.xPercent / 100) * mapImage.width;
-                        const yPos = (place.yPercent / 100) * mapImage.height;
-                        
-                        showMarker(xPos, yPos, place.name, place.info);
-                        
-                        // Center the map on the marker
-                        centerMapOnPoint(xPos, yPos);
-                        
-                        // Update active place
-                        activePlace = place;
-                    });
-                    placesList.appendChild(listItem);
-                });
+      // Add each place to the list
+places.forEach(place => {
+    const listItem = document.createElement('li');
+    listItem.textContent = place.name;
+    listItem.addEventListener('click', function() {
+        // Remove active class from all items
+        const allItems = placesList.querySelectorAll('li');
+        allItems.forEach(item => item.classList.remove('active'));
+        
+        // Add active class to clicked item
+        this.classList.add('active');
+        
+        // Show marker and ring at place location
+        const xPos = (place.xPercent / 100) * mapImage.width;
+        const yPos = (place.yPercent / 100) * mapImage.height;
+        
+        showMarker(xPos, yPos, place.name, place.info);
+        
+        // Center the map on the marker
+        centerMapOnPoint(xPos, yPos);
+        
+        // Update active place
+        activePlace = place;
+        
+        // Hide all list items except the clicked one
+        const placeListContainer = document.querySelector('.place-list');
+        // Hide alphabet buttons
+        document.getElementById('alphabetButtons').style.display = 'none';
+        // Hide "Show All" button
+        document.getElementById('showAllButton').style.display = 'none';
+        // Add a "back" button to show all places again
+        if (!document.getElementById('backButton')) {
+            const backButton = document.createElement('button');
+            backButton.id = 'backButton';
+            backButton.className = 'show-all-button';
+            backButton.textContent = 'ලැයිස්තුවට ආපසු';
+            backButton.addEventListener('click', function() {
+                // Show alphabet buttons and show all button again
+                document.getElementById('alphabetButtons').style.display = 'flex';
+                document.getElementById('showAllButton').style.display = 'block';
+                // Show all list items
+                allItems.forEach(item => item.style.display = 'block');
+                // Remove back button
+                this.remove();
+            });
+            placeListContainer.insertBefore(backButton, placesList);
+        }
+        
+        // Hide all list items except the clicked one
+        allItems.forEach(item => {
+            if (item !== this) {
+                item.style.display = 'none';
+            }
+        });
+    });
+    placesList.appendChild(listItem);
+});
             }
 
 // Show marker and ring at specified position
@@ -658,7 +705,7 @@ function resetView() {
     tooltip.style.display = 'none';
     
     // Reset info content
-    infoContent.textContent = 'ස්ථානයක් තෝරන්න';
+    infoContent.textContent = 'සැකසුම-අමිල උඩවත්ත';
     
     // Center map in view
     centerMapInView();
@@ -668,11 +715,24 @@ function resetView() {
     
     // Remove active class from all list items
     const allItems = placesList.querySelectorAll('li');
-    allItems.forEach(item => item.classList.remove('active'));
+    allItems.forEach(item => {
+        item.classList.remove('active');
+        item.style.display = 'block'; // Show all list items
+    });
     
     // Reset letter filter
     activeLetterFilter = null;
     updateAlphabetButtonsState();
+    
+    // Show alphabet buttons and show all button
+    document.getElementById('alphabetButtons').style.display = 'flex';
+    document.getElementById('showAllButton').style.display = 'block';
+    
+    // Remove back button if exists
+    const backButton = document.getElementById('backButton');
+    if (backButton) {
+        backButton.remove();
+    }
     
     // Show all places
     displayPlaces(maps[currentMapKey].places);
