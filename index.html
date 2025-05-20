@@ -289,6 +289,31 @@
         .dropdown-menu a:hover { background-color: #f1f1f1; }
         .dropdown-menu.show { display: block; }
 
+        /* Custom Scrollbar Styles for Webkit browsers (Chrome, Safari, Edge) */
+        /* Thin scrollbar for map-container and place-list-content-wrapper */
+        .map-container::-webkit-scrollbar,
+        .place-list-content-wrapper::-webkit-scrollbar {
+            width: 8px; /* Width of the vertical scrollbar */
+            height: 8px; /* Height of the horizontal scrollbar */
+        }
+
+        .map-container::-webkit-scrollbar-track,
+        .place-list-content-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1; /* Color of the track */
+            border-radius: 4px;
+        }
+
+        .map-container::-webkit-scrollbar-thumb,
+        .place-list-content-wrapper::-webkit-scrollbar-thumb {
+            background: #888; /* Color of the scrollbar thumb */
+            border-radius: 4px;
+        }
+
+        .map-container::-webkit-scrollbar-thumb:hover,
+        .place-list-content-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #555; /* Color of the scrollbar thumb on hover */
+        }
+
 
         /* මීඩියා විමසුම් සඳහා - Popup is inherently mobile-friendly */
         @media (max-width: 768px) {
@@ -497,8 +522,10 @@
 					{ "name": "සේරුවාවිල", "xPercent": 67.7, "yPercent": 41.7, "info": "#" },
 					{ "name": "සේරිනගර", "xPercent": 67.7, "yPercent": 41.7, "info": "#" },
 					{ "name": "මැදිරිගිරිය", "xPercent": 57.1, "yPercent": 43.4, "info": "#" },
-					{ "name": "මණ්ඩලගිරි(මැදිරිගිරිය)", "xPercent": 57.1, "yPercent": 43.4, "info": "#" },
-
+					{ "name": "මණ්ඩලගිරි(මැදිරිගිරිය)", "xPercent": 57.1, "yPercent": 43.4, "info": "#" },					
+					{ "name": "කන්තලේ වැව", "xPercent": 58.7, "yPercent": 41.3, "info": "#" },
+					{ "name": "හුරුළු වැව", "xPercent": 50.1, "yPercent": 44.0, "info": "#" },
+					{ "name": "රිටිගල", "xPercent": 47.8, "yPercent": 46.5, "info": "#" },
 
 					] },
                 india_al: { url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/IND-with-MB_2019a-scaled.jpg", displayName: "උසස් පෙළ ඉන්දියා සිතියම", places: [ 
@@ -541,7 +568,8 @@
 
             function displayPlaces(places) {
                 placesListUL.innerHTML = ''; // Use placesListUL
-                places.sort((a, b) => a.name.localeCompare(b, 'si'));
+                // Corrected sorting for name property
+                places.sort((a, b) => a.name.localeCompare(b.name, 'si')); 
                 
                 places.forEach(place => {
                     const listItem = document.createElement('li');
@@ -668,6 +696,7 @@
                 const firstLetters = places.map(place => place.name.charAt(0));
                 
                 sinhalaAlphabet.forEach(letter => {
+                    // Only create a button if there's at least one place starting with that letter
                     if (firstLetters.some(firstLetter => firstLetter === letter)) {
                         const button = document.createElement('button');
                         button.className = 'alphabet-button';
