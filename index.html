@@ -480,6 +480,7 @@
                 activeLetterFilter = null;
                 updateAlphabetButtonsState();
                 resetPopupButtonsVisibility(true); // Show alphabet and show all buttons
+                removeBackButton(); // Ensure back button is removed when opening
             });
 
             closePopupButton.addEventListener('click', function() {
@@ -672,13 +673,12 @@
                 addBackButton(); // Add back button
 
                 // Filter visible places in the list to only show the selected one
-                allItems.forEach(item => {
-                    if (item.textContent !== place.name) {
-                        item.style.display = 'none';
-                    } else {
-                        item.style.display = 'block'; // Ensure the selected one is visible
-                    }
-                });
+                placesListUL.innerHTML = ''; // Clear main list first
+                const listItem = document.createElement('li');
+                listItem.textContent = place.name;
+                listItem.classList.add('active'); // Add active class to the single selected item
+                placesListUL.appendChild(listItem);
+
 
                 // Clear search input and hide suggestions when a place is selected
                 placeSearchInput.value = '';
@@ -821,6 +821,8 @@
                                 displayPlaces(filteredPlaces);
                             }
                             updateAlphabetButtonsState();
+                            resetPopupButtonsVisibility(true); // Always show these buttons when alphabet filter is active
+                            removeBackButton(); // Remove back button if alphabet filtering
                         });
                         alphabetButtons.appendChild(button);
                     }
@@ -874,6 +876,8 @@
                 activeLetterFilter = null;
                 updateAlphabetButtonsState();
                 populatePlacesList(maps[currentMapKey].places); // Repopulate within popup
+                resetPopupButtonsVisibility(true); // Always show these buttons when showing all
+                removeBackButton(); // Ensure back button is removed
             });
 
             mapContainer.addEventListener('mouseleave', function() {
@@ -895,18 +899,23 @@
                     const filteredPlaces = allPlaces.filter(place => 
                         place.name.toLowerCase().includes(searchTerm)
                     );
-                    displayPlaces(filteredPlaces); // Show filtered results in main list
+                    
+                    // Only show suggestions in the suggestions list
+                    displaySuggestions(filteredPlaces.slice(0, 5));
+                    
+                    // Clear the main places list when search input is active
+                    placesListUL.innerHTML = '';
 
-                    // Generate suggestions
-                    const suggestions = filteredPlaces.slice(0, 5); // Take top 5
-                    displaySuggestions(suggestions);
+                    // Hide alphabet buttons and show all button
+                    resetPopupButtonsVisibility(false);
+                    removeBackButton(); // Ensure back button is removed when searching
                 } else {
-                    displayPlaces(allPlaces); // Show all places if search is empty
+                    // If search input is empty, hide suggestions and show all places in the main list
                     suggestionsList.innerHTML = '';
                     suggestionsList.style.display = 'none';
+                    populatePlacesList(allPlaces); // Show all places in main list
+                    resetPopupButtonsVisibility(true); // Show alphabet and show all buttons
                 }
-                resetPopupButtonsVisibility(searchTerm === ''); // Hide alphabet/show all if searching, show otherwise
-                removeBackButton(); // Remove back button if searching
             });
 
             function displaySuggestions(suggestions) {
