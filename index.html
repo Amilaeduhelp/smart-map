@@ -2,16 +2,15 @@
 <html lang="si">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Smart සිතියම් පොත</title>
     <style>
-        /* pull-to-refresh වැළැක්වීමට අලුතින් එකතු කළ කේතය */
-        html, body {
-            overscroll-behavior-y: contain;
-            touch-action: pan-x pan-y;
-            -webkit-overflow-scrolling: touch;
+        /* pull-to-refresh වැළැක්වීමට වඩාත් කාර්යක්ෂම කේතය */
+        html {
             height: 100%;
+            width: 100%;
             overflow: hidden;
+            position: fixed;
         }
 
         body {
