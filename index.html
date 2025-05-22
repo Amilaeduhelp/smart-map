@@ -536,7 +536,7 @@
                 mapDropdown.classList.remove('show'); // Also close dropdown if open
             });
             
-            const maps = {
+           const maps = {
                 sl_al: { url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/AL-ලංකා-01-01-1.jpg",
                     displayName: "උසස් පෙළ ලංකා සිතියම",
                     places: [ 
@@ -963,27 +963,32 @@
                 if (place.type === 'point') {
                     tooltipX = (place.xPercent / 100) * mapImage.naturalWidth;
                     tooltipY = (place.yPercent / 100) * mapImage.naturalHeight;
-                } else if (place.type === 'arrow' && place.points && place.points.length > 0) {
-                    // Use the last point of the arrow for tooltip positioning
-                    const lastPoint = place.points[place.points.length - 1];
-                    tooltipX = (lastPoint.xPercent / 100) * mapImage.naturalWidth;
-                    tooltipY = (lastPoint.yPercent / 100) * mapImage.naturalHeight;
-                } else if (place.type === 'region' && place.polygonPoints && place.polygonPoints.length > 0) {
-                    // Calculate centroid for better tooltip positioning
-                    let sumX = 0, sumY = 0;
-                    place.polygonPoints.forEach(point => {
-                        sumX += point.xPercent;
-                        sumY += point.yPercent;
-                    });
-                    tooltipX = (sumX / place.polygonPoints.length / 100) * mapImage.naturalWidth;
-                    tooltipY = (sumY / place.polygonPoints.length / 100) * mapImage.naturalHeight;
+                    // For points, we still use centerMapOnPoint for precise centering
+                    centerMapOnPoint(tooltipX, tooltipY);
+                } else if (place.type === 'arrow' || place.type === 'region') {
+                    // For regions and arrows, use the fitFeatureIntoView
+                    fitFeatureIntoView(place);
+
+                    // For tooltip, calculate centroid or use a prominent point
+                    if (place.points && place.points.length > 0) { // For arrow
+                        const lastPoint = place.points[place.points.length - 1];
+                        tooltipX = (lastPoint.xPercent / 100) * mapImage.naturalWidth;
+                        tooltipY = (lastPoint.yPercent / 100) * mapImage.naturalHeight;
+                    } else if (place.polygonPoints && place.polygonPoints.length > 0) { // For region
+                        let sumX = 0, sumY = 0;
+                        place.polygonPoints.forEach(p => {
+                            sumX += p.xPercent;
+                            sumY += p.yPercent;
+                        });
+                        tooltipX = (sumX / place.polygonPoints.length / 100) * mapImage.naturalWidth;
+                        tooltipY = (sumY / place.polygonPoints.length / 100) * mapImage.naturalHeight;
+                    }
                 }
 
                 if (tooltipX !== undefined && tooltipY !== undefined) {
                     tooltip.style.left = (tooltipX + 15) + 'px'; 
                     tooltip.style.top = (tooltipY + 15) + 'px';  
                     tooltip.style.display = 'block';
-                    centerMapOnPoint(tooltipX, tooltipY); // Center map on the feature's main point
                 } else {
                     tooltip.style.display = 'none'; // Hide tooltip if no valid position
                 }
@@ -1068,8 +1073,10 @@
             function centerMapInView() {
                 const mapContainerWidth = mapContainer.clientWidth;
                 const mapContainerHeight = mapContainer.clientHeight;
-                const mapWidth = mapWrapper.clientWidth;
-                const mapHeight = mapWrapper.clientHeight;
+                // Get the current scaled dimensions of the mapWrapper
+                const mapWidth = mapWrapper.offsetWidth; // Use offsetWidth/Height for rendered dimensions
+                const mapHeight = mapWrapper.offsetHeight;
+                
                 const scrollLeft = (mapWidth - mapContainerWidth) / 2;
                 const scrollTop = (mapHeight - mapContainerHeight) / 2;
                 mapContainer.scrollLeft = scrollLeft;
@@ -1079,9 +1086,100 @@
             function centerMapOnPoint(x, y) {
                 const mapContainerWidth = mapContainer.clientWidth;
                 const mapContainerHeight = mapContainer.clientHeight;
-                const scrollLeft = x - (mapContainerWidth / 2);
-                const scrollTop = y - (mapContainerHeight / 2);
+                
+                // Adjust x, y based on current scale of the mapWrapper
+                const currentScale = mapWrapper.offsetWidth / mapImage.naturalWidth;
+                const scaledX = x * currentScale;
+                const scaledY = y * currentScale;
+
+                const scrollLeft = scaledX - (mapContainerWidth / 2);
+                const scrollTop = scaledY - (mapContainerHeight / 2);
                 mapContainer.scrollTo({ left: scrollLeft, top: scrollTop, behavior: 'smooth' });
+            }
+
+            // --- නව ශ්‍රිතය: තෝරාගත් feature එක view එකට ගැලපෙන සේ පරිමාණය කිරීම සහ කේන්ද්‍රගත කිරීම ---
+            function fitFeatureIntoView(feature) {
+                const mapWidth = mapImage.naturalWidth;
+                const mapHeight = mapImage.naturalHeight;
+
+                let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+                if (feature.type === 'point') {
+                    // Points are handled by centerMapOnPoint, but for generality:
+                    const x = (feature.xPercent / 100) * mapWidth;
+                    const y = (feature.yPercent / 100) * mapHeight;
+                    minX = x; maxX = x;
+                    minY = y; maxY = y;
+                } else if (feature.type === 'arrow' && feature.points) {
+                    feature.points.forEach(p => {
+                        const x = (p.xPercent / 100) * mapWidth;
+                        const y = (p.yPercent / 100) * mapHeight;
+                        minX = Math.min(minX, x);
+                        minY = Math.min(minY, y);
+                        maxX = Math.max(maxX, x);
+                        maxY = Math.max(maxY, y);
+                    });
+                } else if (feature.type === 'region' && feature.polygonPoints) {
+                    feature.polygonPoints.forEach(p => {
+                        const x = (p.xPercent / 100) * mapWidth;
+                        const y = (p.yPercent / 100) * mapHeight;
+                        minX = Math.min(minX, x);
+                        minY = Math.min(minY, y);
+                        maxX = Math.max(maxX, x);
+                        maxY = Math.max(maxY, y);
+                    });
+                } else {
+                    return; // Invalid feature type
+                }
+
+                // Add padding to the bounding box
+                const padding = 50; // pixels to add around the feature
+                minX -= padding;
+                minY -= padding;
+                maxX += padding;
+                maxY += padding;
+
+                // Ensure minX/Y are not negative and maxX/Y don't exceed map dimensions
+                minX = Math.max(0, minX);
+                minY = Math.max(0, minY);
+                maxX = Math.min(mapWidth, maxX);
+                maxY = Math.min(mapHeight, maxY);
+
+                const viewportWidth = mapContainer.clientWidth;
+                const viewportHeight = mapContainer.clientHeight;
+
+                const featureWidth = maxX - minX;
+                const featureHeight = maxY - minY;
+
+                let newScale = 1; // Default scale
+
+                if (featureWidth > 0 && featureHeight > 0) {
+                    const scaleX = viewportWidth / featureWidth;
+                    const scaleY = viewportHeight / featureHeight;
+                    newScale = Math.min(scaleX, scaleY);
+                }
+                
+                // Constrain zoom level
+                const minZoomLimit = 0.5; // Minimum zoom out
+                const maxZoomLimit = 2.0; // Maximum zoom in
+                newScale = Math.max(minZoomLimit, Math.min(maxZoomLimit, newScale));
+
+                // Apply the scale to the mapWrapper
+                mapWrapper.style.transformOrigin = '0 0'; // Scale from top-left
+                mapWrapper.style.transform = `scale(${newScale})`;
+
+                // Calculate scroll position to center the scaled feature
+                const centerX = (minX + maxX) / 2;
+                const centerY = (minY + maxY) / 2;
+
+                const scrollLeft = (centerX * newScale) - (viewportWidth / 2);
+                const scrollTop = (centerY * newScale) - (viewportHeight / 2);
+
+                mapContainer.scrollTo({
+                    left: scrollLeft,
+                    top: scrollTop,
+                    behavior: 'smooth'
+                });
             }
 
             function populatePlacesList(places) {
@@ -1145,9 +1243,12 @@
                 hidePointMarkers(); // Hide point markers
                 tooltip.style.display = 'none';
                 infoContent.textContent = 'ස්ථානයක් තෝරන්න'; // Reset info bar text
-                centerMapInView();
-                activePlace = null;
                 
+                // Reset mapWrapper scale to 1 (normal size)
+                mapWrapper.style.transform = 'scale(1)';
+                centerMapInView(); // Recenter the unscaled map
+                
+                activePlace = null;
                 resetPopupState(); // This will handle list and button visibility
                 // Optionally close popup on reset, or leave it as is
                 // placeListPopup.classList.remove('visible');
