@@ -195,23 +195,65 @@
 
         .map-wrapper {
             position: relative;
-            width: fit-content;
-            height: auto; /* Changed from fit-content to auto */
-            min-width: 100%;
-            min-height: 100%;
+            /* Removed min-width and min-height here. JS will set exact dimensions. */
+            /* Dimensions will be set by JavaScript based on natural image size */
         }
 
         .map-image {
             display: block;
+            width: 100%; /* Ensure image fills the wrapper's width */
+            height: auto; /* Maintain aspect ratio */
         }
 
-        .location-marker, .location-ring, .tooltip /* Unchanged */ {
-            /* ... existing styles ... */
+        /* SVG Overlay Styles */
+        #mapOverlaySVG {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5; /* Above map image, below markers/tooltips */
+            pointer-events: none; /* Allow clicks to pass through to the image */
         }
-        .location-marker { position: absolute; width: 10px; height: 10px; background-color: red; border-radius: 50%; transform: translate(-50%, -50%); z-index: 5; pointer-events: none; }
-        .location-ring { position: absolute; width: 80px; height: 80px; border: 4px solid red; border-radius: 50%; transform: translate(-50%, -50%); z-index: 4; pointer-events: none; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; } }
-        .tooltip { position: absolute; background-color: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 4px; font-size: 25px; pointer-events: none; z-index: 6; display: none; transform: translateX(40px); }
+
+        /* Marker styles */
+        .location-marker { 
+            position: absolute; 
+            width: 10px; 
+            height: 10px; 
+            background-color: red; 
+            border-radius: 50%; 
+            transform: translate(-50%, -50%); 
+            z-index: 6; /* Above SVG overlay */
+            pointer-events: none; 
+        }
+        .location-ring { 
+            position: absolute; 
+            width: 80px; 
+            height: 80px; 
+            border: 4px solid red; 
+            border-radius: 50%; 
+            transform: translate(-50%, -50%); 
+            z-index: 6; /* Above SVG overlay */
+            pointer-events: none; 
+            animation: pulse 1s infinite; 
+        }
+        @keyframes pulse { 
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 
+            100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; } 
+        }
+        .tooltip { 
+            position: absolute; 
+            background-color: rgba(0,0,0,0.8); 
+            color: white; 
+            padding: 10px 20px; 
+            border-radius: 4px; 
+            font-size: 25px; 
+            pointer-events: none; 
+            z-index: 7; /* Above markers */
+            display: none; 
+            transform: translateX(40px); 
+        }
 
 
         .place-list li.active {
@@ -293,25 +335,25 @@
         /* Thin scrollbar for map-container and place-list-content-wrapper */
         .map-container::-webkit-scrollbar,
         .place-list-content-wrapper::-webkit-scrollbar {
-            width: 8px; /* Width of the vertical scrollbar */
-            height: 8px; /* Height of the horizontal scrollbar */
+            width: 8px; /* Vertical scrollbar width */
+            height: 8px; /* Horizontal scrollbar height */
         }
 
         .map-container::-webkit-scrollbar-track,
         .place-list-content-wrapper::-webkit-scrollbar-track {
-            background: #f1f1f1; /* Color of the track */
+            background: #f1f1f1; /* Track color */
             border-radius: 4px;
         }
 
         .map-container::-webkit-scrollbar-thumb,
         .place-list-content-wrapper::-webkit-scrollbar-thumb {
-            background: #888; /* Color of the scrollbar thumb */
+            background: #888; /* Scrollbar thumb color */
             border-radius: 4px;
         }
 
         .map-container::-webkit-scrollbar-thumb:hover,
         .place-list-content-wrapper::-webkit-scrollbar-thumb:hover {
-            background: #555; /* Color of the scrollbar thumb on hover */
+            background: #555; /* Scrollbar thumb color on hover */
         }
 
         /* Styles for Search Input and Suggestions */
@@ -387,7 +429,12 @@
     <div class="container">
         <div class="map-container" id="mapContainer">
             <div class="map-wrapper" id="mapWrapper">
-                <img src="https://www.eduhelp.lk/wp-content/uploads/2025/05/AL-ලංකා-01-01.jpg" alt="සිතියම" class="map-image" id="mapImage">
+                <img src="https://www.eduhelp.lk/wp-content/uploads/2025/05/AL-ලංකා-01-01-1.jpg" alt="සිතියම" class="map-image" id="mapImage">
+                <svg id="mapOverlaySVG" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                       
+                    </defs>
+                </svg>
                 <div id="locationMarker" class="location-marker" style="display: none;"></div>
                 <div id="locationRing" class="location-ring" style="display: none;"></div>
                 <div id="tooltip" class="tooltip"></div>
@@ -413,11 +460,10 @@
 
         <div class="place-list-content-wrapper">
             <input type="text" id="placeSearchInput" placeholder="ස්ථාන සොයන්න...">
-            <ul id="suggestionsList"></ul> <div class="alphabet-buttons" id="alphabetButtons">
-            </div>
+            <ul id="suggestionsList"></ul> 
+            <div class="alphabet-buttons" id="alphabetButtons"></div>
             <button id="showAllButton" class="show-all-button">සියලුම ස්ථාන</button>
-            <ul id="placesList">
-            </ul>
+            <ul id="placesList"></ul>
         </div>
     </div>
     
@@ -433,7 +479,8 @@
             const mapContainer = document.getElementById('mapContainer');
             const mapWrapper = document.getElementById('mapWrapper');
             const mapImage = document.getElementById('mapImage');
-            
+            const mapOverlaySVG = document.getElementById('mapOverlaySVG'); // New: SVG overlay
+
             // Place List Popup elements
             const placeListPopup = document.getElementById('placeListPopup'); // The main popup div
             const placesListUL = document.getElementById('placesList'); // The UL for place names
@@ -475,6 +522,7 @@
                 placeListPopup.classList.toggle('visible');
                 // When opening the popup, reset search and filters
                 placeSearchInput.value = '';
+                suggestionsList.innerHTML = '';
                 suggestionsList.style.display = 'none';
                 populatePlacesList(maps[currentMapKey].places); // Ensure all places are shown when opening
                 activeLetterFilter = null;
@@ -492,259 +540,375 @@
                 sl_al: { url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/AL-ලංකා-01-01-1.jpg",
                     displayName: "උසස් පෙළ ලංකා සිතියම",
                     places: [ 
-					{ "name": "අනුරාධපුරය", "xPercent": 40.2, "yPercent": 40.8, "info": "ශ්‍රී ලංකාවේ මුල් ම අගනුවර වෙයි. පණ්ඩුකාභය රජු මෙහි පාලකයා ය. පස්වන මිහිඳු රජු චෝළයින්ගේ ග්‍රහණයට නතු වන තුරු වර්ෂ 1450ක් පමණ ලංකාවේ අගනුවර ලෙස පැවතුණි." }, 
-					{ "name": "පොළොන්නරුව", "xPercent": 58.3, "yPercent": 50.4, "info": "ශ්‍රී ලංකාවේ දෙවැනි අගනුවරයි. අනුරාධපුර යුගයේ අග එල්ල වූ චෝළ ආක්‍රමණ වලින් පසු ලංකාවේ උතුරු කොටසේ බලය අල්ලාගත් චෝලයෝ මෙය සිය මධ්‍යස්ථානය කරගත්හ.මෙය මධ්‍යස්ථානය කරගත් ලංකාවේ පළමු පාලකයා මහා විජයබාහු රජුය. පරාක්‍රම පාණ්ඩ්‍ය රජ දවස කාලිංගමාඝ මෙහි බලය අල්ලාගන්නා තුරු එය වසර 250ක් පමණ ලංකාවේ අගනුවර වශයෙන් පැවතුණි." }, 
-					{ "name": "මහනුවර", "xPercent": 45.7, "yPercent": 63.5, "info": "සෙංකඩගලපුර හෙවත් ලංකාවේ අවසන් රාජධානියයි. කෝට්ටේ හයවන බුවනෙකබාහු හෙවත් සපුමල්කුමාරයා බලයේ සිටි කාලයේ සේනාසම්මත වික්‍රමබාහු රජු සෙංකඩගල රාජධානිප පිහිටුවී ය. 1815 දී ශ්‍රී වික්‍රමරාජසිංහ රජු ඉංග්‍රීසීන්ගේ ග්‍රහණයට නතුවන තුරු එය වර්ෂ 400ක් පමණ කාලයක් ලංකාවේ අගනුර වශයෙන් පැවතියේ ය. " }, 
-					{ "name": "යාපනය", "xPercent": 31.8, "yPercent": 12.8, "info": "ලංකාවේ තවත් ප්‍රාදේශීය රාජධානියක ප්‍රමුඛ නගරය යි.මෙහි ආරම්භය පිළිබඳ නිශ්චිත කාලවකවානු සඳහන් නැතත්, 1619දී පිලිප් ද ඔලිවේරා නම් පෘතුගීසි කපිතාත් මේජර්වරයා විසින් යටත් කරගන්නා තුරු එය ප්‍රාදේශීය රාජධානියක් වශයෙන් පැවතියේ ය.මෙහි වැඩි ම කාලයක් බලයේ සිටියේ ආර්යචක්‍රවර්තී පරපුරයි" }, 
-					{ "name": "ගාල්ල", "xPercent": 30.9, "yPercent": 89.2, "info": "ලංකාවේ දකුණු වෙරළාශ්‍රිත පැරණි වරායකි. ගම්පොළ යුගයේ දී චීන සෙන්පති චෙංහෝගේ පැමිණීමට අදාළ සාධකයක් වන ත්‍රිභාෂා සෙල්ලිපිය මේ අසල තිබී හමු වී තිබේ." }, 
-					{ "name": "තිස්සමහාරාමය", "xPercent": 64.8, "yPercent": 84.9, "info": "ලංකාවේ දකුණු පළාත්බදව ඇති ඓතිහාසික නගරයකි. වඩාත් ප්‍රකට වී ඇත්තේ ආගමික අංශයෙනි.මෙය පැරණි මාගම හෙවත් කාවන්තිස්ස රජුගේ අගනුවර සීමාවට අයත් ස්ථානයක් වශයෙන් හඳුනාගෙන ඇත." }, 
-					{ "name": "සීගිරිය", "xPercent": 50.3, "yPercent": 50.3, "info": "අනුරාධපුර යුගයේ එක් පාලන මධ්‍යස්ථානයකි. ගිරි බලකාටුවක් හෝ රාජකීය විනෝද උයනකි.පළමු කාශ්‍යප රජු මේ නිර්මාණයේ හිමිකරු විය හැක. නමුත් ධාතුසේන රජසමයේ මෙහි ඉදිකිරීම් ඇරඹී යයි ද මතයකි." }, 
-					{ "name": "දඹකොළපටුන", "xPercent": 30.2, "yPercent": 9.7, "info": "ජම්බුකෝළපට්ටනය හෙවත් වත්මන් සම්බිලිතුරෙයි. මෙය ලංකාවේ පැරණි තොටුපළකි. නමුත් වාණිජ වරායක් නොවී ය. ශ්‍රී මහාබෝධිය වැඩමවීම මේ ඔස්සේ සිදු වූයෙන් ඉතිහාස ගතවිය. ඉතිහාසයේ මේ ස්ථානය ගැන සඳහන් වස්සේ අවස්ථා කිහිපයක දී පමණි." }, 
-					{ "name": "සම්බිලිතුරෙයි(දඹකොළපටුන)", "xPercent": 30.2, "yPercent": 9.7, "info": "ජම්බුකෝළපට්ටනය හෙවත් වත්මන් සම්බිලිතුරෙයි. මෙය ලංකාවේ පැරණි තොටුපළකි. නමුත් වාණිජ වරායක් නොවී ය. ශ්‍රී මහාබෝධිය වැඩමවීම මේ ඔස්සේ සිදු වූයෙන් ඉතිහාස ගතවිය. ඉතිහාසයේ මේ ස්ථානය ගැන සඳහන් වස්සේ අවස්ථා කිහිපයක දී පමණි." }, 
-					{ "name": "ජම්බුකෝළපට්ටන", "xPercent": 30.2, "yPercent": 9.7, "info": "ජම්බුකෝළපට්ටනය හෙවත් වත්මන් සම්බිලිතුරෙයි. මෙය ලංකාවේ පැරණි තොටුපළකි. නමුත් වාණිජ වරායක් නොවී ය. ශ්‍රී මහාබෝධිය වැඩමවීම මේ ඔස්සේ සිදු වූයෙන් ඉතිහාස ගතවිය. ඉතිහාසයේ මේ ස්ථානය ගැන සඳහන් වස්සේ අවස්ථා කිහිපයක දී පමණි." }, 
-					{ "name": "පේදුරුතුඩුව", "xPercent": 38.1, "yPercent": 9.5, "info": "" }, { "name": "කන්කසන්තුරේ", "xPercent": 29.6, "yPercent": 9.9, "info": "" }, 
-					{ "name": "සූකරතිත්ථ(ඌරාතොට)", "xPercent": 27.6, "yPercent": 12.2, "info": "ලංකාවේ යාපන අර්ධද්වීපයේ පරිවාර දූපත් සමූහයේ විශාල ම දූපත වන කයිට්ස් හි පිහිටා තිබේ.සූකරතිත්ථ යනු ද මෙයම ය. " }, 
-					{ "name": "ඌරාතොට(සූකරතිත්ථ)", "xPercent": 27.6, "yPercent": 12.2, "info": "ලංකාවේ යාපන අර්ධද්වීපයේ පරිවාර දූපත් සමූහයේ විශාල ම දූපත වන කයිට්ස් හි පිහිටා තිබේ.සූකරතිත්ථ යනු ද මෙයම ය. " }, 
-					{ "name": "හැමන්හිල්", "xPercent": 27.7, "yPercent": 10.0, "info": "ලංකාවේ ලන්දේසි බලකොටුවකි" }, 
-					{ "name": "නල්ලූර්", "xPercent": 32.4, "yPercent": 12.3, "info": "යාපන රාජධානියේ රජ මාළිගය පිහිටා තිබූ ස්ථානය යි.සුප්‍රසිද්ධ කෝවිලක් ද පිහිටා තිබේ." }, 
-					{ "name": "අලිමංකඩ", "xPercent": 42.1, "yPercent": 15.4, "info": "ලංකාවේ ප්‍රාග් ඓතිහාසික ස්ථානයකි. යුධ කඳවුරක් හා ආරක්ෂක මර්මස්ථානයක් වශයෙන් අතීතයේ සිට අද දක්වාත් ප්‍රකටව පවතී.කෝට්ටේ යුගයේ මෙය ජාවක සෙබලුන් විසින් රැකවල් කළ නිසා 'ජාවක කෝට්ටේ' නමින් හඳුන්වා ඇත." }, 
-					{ "name": "කන්දරෝඩය", "xPercent": 30.9, "yPercent": 11.2, "info": "යාපන අර්ධද්වීපයේ බෞද්ධ නටබුන් රැසක් සහිත ස්ථානයකි. මෙහි ඇති කුඩා ස්ථූප සමූහය අග්නිදිග ආසියානු ලක්ෂණ සහිතය." }, 
-					{ "name": "කදුරුගොඩ", "xPercent": 30.9, "yPercent": 11.2, "info": "යාපන අර්ධද්වීපයේ බෞද්ධ නටබුන් රැසක් සහිත ස්ථානයකි. මෙහි ඇති කුඩා ස්ථූප සමූහය අග්නිදිග ආසියානු ලක්ෂණ සහිතය." }, 
-					{ "name": "පාචීනාරාමය", "xPercent": 34.2, "yPercent": 9.9, "info": "උතුරු ලංකාවේ ඉපැරණි බෞද්ධ සිද්ධස්ථානයකි." }, 
-					{ "name": "වැල්වැටිතුරෙයි", "xPercent": 35.8, "yPercent": 9.5, "info": "පැරණි ලංකාවේ වරායකි." }, 
-					{ "name": "පියංගුදීප", "xPercent": 25.9, "yPercent": 14.1, "info": "යාපන අර්ධද්වීපයේ පරිවාර දූපත් සමූහය අතරින් එකකි. බෞද්ධ නටඹුන් තිබූ ස්ථානයකි." }, 
-					{ "name": "ඉරණමඩුව", "xPercent": 41.7, "yPercent": 19.5, "info": "ප්‍රාග් ඓතිහාසික අතින් අතිශය වැදගත් ස්ථානයකි. මෙහි පස් ස්ථර පිහිටීම 'ඉරණමඩු සංයුතිය' නමින් හඳුන්වයි." }, 
-					{ "name": "ඉරණමඩු වැව", "xPercent": 43.8, "yPercent": 20.4, "info": "කනගරායන් ආරුව ආශ්‍රිත ජලාශයකි." }, 
-					{ "name": "කුරුන්දි", "xPercent": 51.3, "yPercent": 22.0, "info": "ඉපැරණි බෞද්ධ සිද්ධස්ථානයකි" }, 
-					{ "name": "මුලතිව්", "xPercent": 54.6, "yPercent": 21.7, "info": "පැරණි වරයෙක් තිබූ ස්ථානයකැයි අනුමාන කරන තැනකි." }, 
-					{ "name": "මීපාතොට", "xPercent": 32.9, "yPercent": 23.5, "info": "මධුපාදතිත්ථ නමින් ද හඳුන්වන මේ ස්ථානය පැරණි වරායකි" },
-					{ "name": "මධුපාදතිත්ථ", "xPercent": 32.9, "yPercent": 23.5, "info": "මධුපාදතිත්ථ නමින් ද හඳුන්වන මේ ස්ථානය පැරණි වරායකි" },
-					{ "name": "මහාතිත්ථ", "xPercent": 27.8, "yPercent": 27.7, "info": "මහාතීර්ථ, මාතොට, මාන්තෙයි ආදි නම් වලින් ද හැඳින්වෙන මෙය අනුරාධපුර යුගයේ ලංකාවේ ප්‍රධාන අන්තර්ජාතික වරායයි. මෙය මල්වතු ඔයේ පැරණි මෝදර ආශ්‍රිතව පිහිටා තිබේ." },
-					{ "name": "මාතොට(මහාතිත්ථ)", "xPercent": 27.8, "yPercent": 27.7, "info": "මහාතීර්ථ, මාතොට, මාන්තෙයි ආදි නම් වලින් ද හැඳින්වෙන මෙය අනුරාධපුර යුගයේ ලංකාවේ ප්‍රධාන අන්තර්ජාතික වරායයි. මෙය මල්වතු ඔයේ පැරණි මෝදර ආශ්‍රිතව පිහිටා තිබේ." },
-					{ "name": "මාන්තෙයි(මහාතිත්ථ)", "xPercent": 27.8, "yPercent": 27.7, "info": "මහාතීර්ථ, මාතොට, මාන්තෙයි ආදි නම් වලින් ද හැඳින්වෙන මෙය අනුරාධපුර යුගයේ ලංකාවේ ප්‍රධාන අන්තර්ජාතික වරායයි. මෙය මල්වතු ඔයේ පැරණි මෝදර ආශ්‍රිතව පිහිටා තිබේ." },
-					{ "name": "මාන්තෝට්ටම්(මහාතිත්ථ)", "xPercent": 27.8, "yPercent": 27.7, "info": "මහාතීර්ථ, මාතොට, මාන්තෙයි ආදි නම් වලින් ද හැඳින්වෙන මෙය අනුරාධපුර යුගයේ ලංකාවේ ප්‍රධාන අන්තර්ජාතික වරායයි. මෙය මල්වතු ඔයේ පැරණි මෝදර ආශ්‍රිතව පිහිටා තිබේ." },
-					{ "name": "මහපටුන්(මහාතිත්ථ)", "xPercent": 27.8, "yPercent": 27.7, "info": "මහාතීර්ථ, මාතොට, මාන්තෙයි ආදි නම් වලින් ද හැඳින්වෙන මෙය අනුරාධපුර යුගයේ ලංකාවේ ප්‍රධාන අන්තර්ජාතික වරායයි. මෙය මල්වතු ඔයේ පැරණි මෝදර ආශ්‍රිතව පිහිටා තිබේ." },
-					{ "name": "තිරුකේතීශ්වරම්", "xPercent": 28.9, "yPercent": 27.7, "info": "වෙළඳාම සඳහා මහාතිත්ථයට ආ ඉන්දීය හින්දුභක්තික ජනවාගේ ආගමික අවශ්‍යතා වෙනුවෙන් කළ හින්දු කෝවිලක් සේ පිළිගැනෙයි" },
-					{ "name": "යෝධ වැව", "xPercent": 30.7, "yPercent": 29.3, "info": "#" },
-					{ "name": "මඩු", "xPercent": 33.8, "yPercent": 30.0, "info": "#" },
-					{ "name": "කෝකිලායි කලපුව", "xPercent": 57.9, "yPercent": 28.7, "info": "#" },
-					{ "name": "ආකට්ටිමුරුප්පු වැව", "xPercent": 29.2, "yPercent": 32.1, "info": "ධාතුසේන රජුගේ වාරි ව්‍යාපෘතියකි" },
-					{ "name": "උපතිස්ස ග්‍රාමය(?)", "xPercent": 37.6, "yPercent": 34.5, "info": "සංක්‍රමණික ඉන්දීය ජනයා බලය පිහිටුවාගත් ලංකාවේ මුල් කාලීන ජනාවාසයකි'යි අනුමාන කෙරේ" },
-					{ "name": "තන්තිරිමලේ", "xPercent": 35.8, "yPercent": 35.3, "info": "උතුරුමැද පළාතේ පැරණි බෞද්ධ මධ්‍යස්ථානයකි." },
-					{ "name": "කුදිරමලේ", "xPercent": 26.3, "yPercent": 36.2, "info": "ප්‍රාග් ඓතිහාසික සාධක ලැබුණු භූමියකි" },
-					{ "name": "පොම්පරිප්පු", "xPercent": 25.5, "yPercent": 40.5, "info": "පූර්ව ඓතිහාසික ස්ථානයකි. මෙහි තිබී බරණි සුසාන ක්‍රමයේ සාධක හමුවූ ස්ථානයකි." },
-					{ "name": "විල්පත්තු", "xPercent": 27.1, "yPercent": 39.4, "info": "ප්‍රාග් ඓතිහාසික සාධක ලැබුණු තැනකි." },
-					{ "name": "විජිතපුර(?)", "xPercent": 39.0, "yPercent": 45.3, "info": "#" },
-					{ "name": "තිසා වැව", "xPercent": 39.4, "yPercent": 40.3, "info": "#" },
-					{ "name": "නුවර වැව", "xPercent": 41.5, "yPercent": 40.6, "info": "#" },
-					{ "name": "නාච්චිදූව වැව", "xPercent": 42.9, "yPercent": 42.8, "info": "#" },
-					{ "name": "චේතියගිරි(මිහින්තලේ)", "xPercent": 42.2, "yPercent": 41.6, "info": "#" },
-					{ "name": "මිහින්තලේ", "xPercent": 42.2, "yPercent": 41.6, "info": "#" },
-					{ "name": "සෑ ගිරි(මිහින්තලේ)", "xPercent": 42.2, "yPercent": 41.6, "info": "#" },
-					{ "name": "තිරියාය(ගිරිකණ්ඩ)", "xPercent": 59.6, "yPercent": 30.4, "info": "#" },
-					{ "name": "ගිරිකණ්ඩ(තිරියාය))", "xPercent": 59.6, "yPercent": 30.4, "info": "#" },
-					{ "name": "පල්ලවංක", "xPercent": 60.9, "yPercent": 30.7, "info": "#" },
-					{ "name": "ගෝකණ්ණතිත්ථ", "xPercent": 64.9, "yPercent": 37.2, "info": "#" },
-					{ "name": "ත්‍රිකුණාමල වරාය", "xPercent": 64.9, "yPercent": 37.2, "info": "#" },
-					{ "name": "ගෝකණ්ණ", "xPercent": 64.9, "yPercent": 37.2, "info": "#" },
-					{ "name": "ෆෙඩ්රික් කොටුව", "xPercent": 66.0, "yPercent": 37.1, "info": "#" },
-					{ "name": "ගෝකණ්ණ විහාරය", "xPercent": 66.0, "yPercent": 37.1, "info": "#" },
-					{ "name": "තිරුකෝණේශ්වරම්", "xPercent": 66.0, "yPercent": 37.3, "info": "#" },
-					{ "name": "කෝණේශ්වරම්", "xPercent": 66.0, "yPercent": 37.3, "info": "#" },
-					{ "name": "කොට්ටියාරම", "xPercent": 68.0, "yPercent": 38.3, "info": "#" },
-					{ "name": "කොට්ඨසාර", "xPercent": 68.0, "yPercent": 38.3, "info": "#" },
-					{ "name": "කොටසර", "xPercent": 68.0, "yPercent": 38.3, "info": "#" },
-					{ "name": "ලංකාපටුන", "xPercent": 69.8, "yPercent": 41.6, "info": "#" },
-					{ "name": "සේරුවාවිල", "xPercent": 67.7, "yPercent": 41.7, "info": "#" },
-					{ "name": "සේරිනගර", "xPercent": 67.7, "yPercent": 41.7, "info": "#" },
-					{ "name": "මැදිරිගිරිය", "xPercent": 57.1, "yPercent": 43.4, "info": "#" },
-					{ "name": "මණ්ඩලගිරි(මැදිරිගිරිය)", "xPercent": 57.1, "yPercent": 43.4, "info": "#" },					
-					{ "name": "කන්තලේ වැව", "xPercent": 58.1, "yPercent": 41.4, "info": "#" },
-					{ "name": "හුරුළු වැව", "xPercent": 50.1, "yPercent": 44.0, "info": "#" },
-					{ "name": "රිටිගල", "xPercent": 47.8, "yPercent": 46.5, "info": "#" },
-					{ "name": "කසාපබ්බත", "xPercent": 41.6, "yPercent": 44.0, "info": "#" },
-					{ "name": "උරුවේලතිත්ථ", "xPercent": 23.7, "yPercent": 40.5, "info": "#" },
-					{ "name": "උරුවේලගාම", "xPercent": 23.7, "yPercent": 40.5, "info": "#" },
-					{ "name": "උරුවේල්තොට", "xPercent": 23.7, "yPercent": 40.5, "info": "#" },
-					{ "name": "කල්පිටිය", "xPercent": 20.6, "yPercent": 42.4, "info": "#" },
-					{ "name": "පුත්තලම", "xPercent": 22.3, "yPercent": 46.2, "info": "#" },
-					{ "name": "සලාවත්තොට(හලාවත)", "xPercent": 21.2, "yPercent": 55.8, "info": "#" },
-					{ "name": "හලාවත", "xPercent": 21.2, "yPercent": 55.8, "info": "#" },
-					{ "name": "සල්වතොට", "xPercent": 21.2, "yPercent": 55.8, "info": "#" },
-					{ "name": "සැල්වතොට", "xPercent": 21.2, "yPercent": 55.8, "info": "#" },
-					{ "name": "මුන්නේස්වරම්", "xPercent": 22.4, "yPercent": 56.0, "info": "#" },
-					{ "name": "පඬුවස්නුවර", "xPercent": 27.8, "yPercent": 56.9, "info": "#" },
-					{ "name": "පරක්කමපුර", "xPercent": 27.8, "yPercent": 56.9, "info": "#" },
-					{ "name": "තෝණිගල", "xPercent": 46.1, "yPercent": 32.9, "info": "සිරිමේඝවණ්ණ රජුගේ සෙල්ලිපිය පිහිටි ස්ථානය යි." },
-					{ "name": "තෝනිගල(ආනමඩුවේ)", "xPercent": 25.1, "yPercent": 49.4, "info": "#" },
-					{ "name": "කුරුණැගල", "xPercent": 39.5, "yPercent": 59.6, "info": "#" },
-					{ "name": "මාතලේ", "xPercent": 45.5, "yPercent": 59.1, "info": "#" },
-					{ "name": "යාපහුව", "xPercent": 36.9, "yPercent": 52.1, "info": "#" },
-					{ "name": "තබ්බෝව වැව", "xPercent": 25.8, "yPercent": 47.0, "info": "#" },
-					{ "name": "සැස්සේරුව", "xPercent": 38.6, "yPercent": 47.9, "info": "#" },
-					{ "name": "අවුකන", "xPercent": 43.6, "yPercent": 48.9, "info": "#" },
-					{ "name": "කලා වැව", "xPercent": 44.4, "yPercent": 48.3, "info": "#" },
-					{ "name": "ඉබ්බන්කටුව", "xPercent": 45.3, "yPercent": 53.2, "info": "#" },
-					{ "name": "දඹුල්ල", "xPercent": 46.5, "yPercent": 53.0, "info": "#" },
-					{ "name": "මාපාගල", "xPercent": 49.7, "yPercent": 49.3, "info": "#" },
-					{ "name": "අලිගල", "xPercent": 50.7, "yPercent": 49.5, "info": "#" },
-					{ "name": "පොතාන", "xPercent": 49.9, "yPercent": 49.6, "info": "#" },
-					{ "name": "පිදුරංගල", "xPercent": 50.7, "yPercent": 49.8, "info": "#" },
-					{ "name": "බසවක්කුලම(අබය වැව)", "xPercent": 39.6, "yPercent": 39.8, "info": "#" },
-					{ "name": "පදවිය වැව", "xPercent": 52.9, "yPercent": 32.7, "info": "#" },
-					{ "name": "කවුඩුල්ල වැව", "xPercent": 55.6, "yPercent": 45.0, "info": "#" },
-					{ "name": "මින්නේරිය වැව", "xPercent": 54.8, "yPercent": 46.5, "info": "#" },
-					{ "name": "ගිරිතලේ වැව", "xPercent": 56.4, "yPercent": 48.2, "info": "#" },
-					{ "name": "සෝම නගර", "xPercent": 61.5, "yPercent": 45.5, "info": "#" },
-					{ "name": "ලෝණ නගර", "xPercent": 68.8, "yPercent": 44.8, "info": "#" },
-					{ "name": "පරාක්‍රම සමුද්‍රය", "xPercent": 57.0, "yPercent": 50.7, "info": "#" },
-					{ "name": "නාලන්ද", "xPercent": 43.6, "yPercent": 53.1, "info": "#" },
-					{ "name": "මොරගහකන්ද ජලාශය", "xPercent": 48.5, "yPercent": 55.1, "info": "#" },
-					{ "name": "බෝවතැන්න ජලාශය", "xPercent": 47.0, "yPercent": 55.4, "info": "#" },
-					{ "name": "ගන්නොරුව", "xPercent": 44.1, "yPercent": 62.3, "info": "#" },
-					{ "name": "පොල්ගොල්ල අමුණ", "xPercent": 45.3, "yPercent": 62.6, "info": "#" },
-					{ "name": "අඟමැඬිල්ල අමුණ", "xPercent": 55.1, "yPercent": 51.8, "info": "#" },
-					{ "name": "ඇළහැර අමුණ", "xPercent": 51.6, "yPercent": 54.3, "info": "#" },
-					{ "name": "කසාතොට(කච්ඡකතිත්ථ)", "xPercent": 59.8, "yPercent": 51.2, "info": "#" },
-					{ "name": "දාස්තොට (සහස්සතිත්ථ)", "xPercent": 59.2, "yPercent": 51.8, "info": "#" },
-					{ "name": "දිඹුලාගල", "xPercent": 58.8, "yPercent": 52.5, "info": "#" },
-					{ "name": "නාලිකේරවත්ථු", "xPercent": 57.2, "yPercent": 54.7, "info": "#" },
-					{ "name": "කෝඨනගර", "xPercent": 56.6, "yPercent": 57.4, "info": "#" },
-					{ "name": "අම්බතිත්ථ", "xPercent": 56.3, "yPercent": 57.9, "info": "#" },
-					{ "name": "ලංකා පබ්බත", "xPercent": 55.2, "yPercent": 58.4, "info": "#" },
-					{ "name": "මාදුරුඔය ජලාශය", "xPercent": 68.9, "yPercent": 57.6, "info": "#" },
-					{ "name": "මඩකලපුව", "xPercent": 78.1, "yPercent": 56.2, "info": "#" },
-					{ "name": "ලුණුවිල", "xPercent": 21.9, "yPercent": 58.6, "info": "#" },
-					{ "name": "දඹදෙණිය", "xPercent": 28.8, "yPercent": 60.8, "info": "#" },
-					{ "name": "අඹේපුස්ස", "xPercent": 32.6, "yPercent": 64.1, "info": "#" },
-					{ "name": "දැදිගම", "xPercent": 33.3, "yPercent": 64.4, "info": "#" },
-					{ "name": "මැණික්කඩවර", "xPercent": 33.7, "yPercent": 65.1, "info": "#" },
-					{ "name": "අත්තනගල්ල", "xPercent": 29.8, "yPercent": 66.0, "info": "#" },
-					{ "name": "මීගමුව", "xPercent": 21.3, "yPercent": 63.7, "info": "#" },
-					{ "name": "මුතුරාජවෙල", "xPercent": 22.0, "yPercent": 66.5, "info": "#" },
-					{ "name": "වත්තල", "xPercent": 21.6, "yPercent": 67.0, "info": "#" },
-					{ "name": "කැළණිය", "xPercent": 23.3, "yPercent": 69.0, "info": "#" },
-					{ "name": "කොළඹ", "xPercent": 21.3, "yPercent": 69.2, "info": "#" },
-					{ "name": "කිත්සිරිමෙවන් කැළණිය", "xPercent": 22.8, "yPercent": 69.6, "info": "#" },
-					{ "name": "කෝට්ටේ", "xPercent": 22.5, "yPercent": 70.2, "info": "#" },
-					{ "name": "මුල්ලේරියාව", "xPercent": 23.1, "yPercent": 70.3, "info": "#" },
-					{ "name": "මල්වාන", "xPercent": 26.0, "yPercent": 69.1, "info": "#" },
-					{ "name": "බෙලිගල", "xPercent": 35.6, "yPercent": 62.6, "info": "#" },
-					{ "name": "දන්තුරේ", "xPercent": 43.7, "yPercent": 62.5, "info": "#" },
-					{ "name": "බලන", "xPercent": 42.8, "yPercent": 63.5, "info": "#" },
-					{ "name": "වාකිරිගල", "xPercent": 39.2, "yPercent": 64.4, "info": "#" },
-					{ "name": "දෙවනගල", "xPercent": 35.3, "yPercent": 65.2, "info": "#" },
-					{ "name": "බෙලිලෙන", "xPercent": 39.6, "yPercent": 67.6, "info": "#" },
-					{ "name": "සීතාවක", "xPercent": 34.5, "yPercent": 69.7, "info": "#" },
-					{ "name": "පළාබත්ගල", "xPercent": 40.3, "yPercent": 72.3, "info": "#" },
-					{ "name": "බටතොටලෙන", "xPercent": 36.8, "yPercent": 72.7, "info": "#" },
-					{ "name": "බටදොඹලෙන", "xPercent": 37.3, "yPercent": 74.2, "info": "#" },
-					{ "name": "පාලින්දනුවර", "xPercent": 34.5, "yPercent": 79.5, "info": "#" },
-					{ "name": "පේරාදෙණිය", "xPercent": 44.7, "yPercent": 63.8, "info": "#" },
-					{ "name": "කඩුගන්නාව", "xPercent": 43.9, "yPercent": 63.9, "info": "#" },
-					{ "name": "හඟුරන්කෙත", "xPercent": 49.0, "yPercent": 65.3, "info": "#" },
-					{ "name": "වික්ටෝරියා ජලාශය", "xPercent": 46.9, "yPercent": 63.3, "info": "#" },
-					{ "name": "රන්දෙණිගල ජලාශය", "xPercent": 48.4, "yPercent": 63.8, "info": "#" },
-					{ "name": "රන්ටැඹේ ජලාශය", "xPercent": 50.0, "yPercent": 64.5, "info": "#" },
-					{ "name": "මිණිපේ අමුණ", "xPercent": 55.3, "yPercent": 65.4, "info": "#" },
-					{ "name": "ගම්පොළ", "xPercent": 42.9, "yPercent": 66.6, "info": "ගඟසිරිපුර/ගංගාශ්‍රීපුර" },
-					{ "name": "ගංදෙණිය(මිණිපේ)", "xPercent": 54.8, "yPercent": 65.2, "info": "#" },
-					{ "name": "තලවාකැලේ", "xPercent": 47.6, "yPercent": 71.9, "info": "#" },
-					{ "name": "කොත්මලේ", "xPercent": 44.9, "yPercent": 70.2, "info": "#" },
-					{ "name": "කොත්මලේ ජලාශය", "xPercent": 45.3, "yPercent": 70.0, "info": "#" },
-					{ "name": "ශ්‍රීපාදය", "xPercent": 40.3, "yPercent": 73.2, "info": "#" },
-					{ "name": "හෝර්ටන් තැන්න", "xPercent": 48.6, "yPercent": 72.3, "info": "#" },
-					{ "name": "බලංගොඩ", "xPercent": 48.2, "yPercent": 76.5, "info": "#" },
-					{ "name": "බෙරගල", "xPercent": 55.5, "yPercent": 74.7, "info": "#" },
-					{ "name": "බදුල්ල", "xPercent": 56.5, "yPercent": 71.0, "info": "#" },
-					{ "name": "බණ්ඩාරවෙල", "xPercent": 54.1, "yPercent": 69.8, "info": "#" },
-					{ "name": "රන්දෙණිවෙල සටන්බිම", "xPercent": 59.5, "yPercent": 71.7, "info": "#" },
-					{ "name": "මඩොල්සිම", "xPercent": 60.1, "yPercent": 70.4, "info": "#" },
-					{ "name": "නිල්ගල", "xPercent": 65.0, "yPercent": 66.8, "info": "#" },
-					{ "name": "දානිගල", "xPercent": 67.4, "yPercent": 63.7, "info": "#" },
-					{ "name": "ගල්ඔය ජලාශය", "xPercent": 71.3, "yPercent": 66.1, "info": "#" },
-					{ "name": "හේනෙබැද්ද", "xPercent": 67.9, "yPercent": 67.8, "info": "#" },		
-					{ "name": "මහියංගණය(මියුගුණ/බිංතැන්න)", "xPercent": 57.1, "yPercent": 63.1, "info": "#" },
-					{ "name": "සොරබොර වැව", "xPercent": 57.7, "yPercent": 63.1, "info": "#" },
-					{ "name": "උල්හිටිය ජලාශය", "xPercent": 64.7, "yPercent": 61.3, "info": "#" },
-					{ "name": "රත්කිඳ ජලාශය", "xPercent": 66.8, "yPercent": 60.1, "info": "#" },
-					{ "name": "කුඩුම්බිගල", "xPercent": 80.5, "yPercent": 74.6, "info": "#" },
-					{ "name": "ගෝවින්දමලය(ගොවිඳුහෙළ)", "xPercent": 73.9, "yPercent": 68.0, "info": "#" },
-					{ "name": "දීඝවාපි", "xPercent": 78.8, "yPercent": 65.6, "info": "#" },
-					{ "name": "පහන්බුණු දනව්ව(පානදුර)", "xPercent": 23.3, "yPercent": 75.4, "info": "#" },
-					{ "name": "රයිගම", "xPercent": 26.4, "yPercent": 75.4, "info": "#" },
-					{ "name": "කාළතිත්ථ(කළුතර)", "xPercent": 23.8, "yPercent": 77.1, "info": "#" },
-					{ "name": "බේරුවල", "xPercent": 24.5, "yPercent": 79.0, "info": "#" },
-					{ "name": "භීමතිත්ථ(බෙන්තර)", "xPercent": 24.9, "yPercent": 80.8, "info": "#" },
-					{ "name": "තිත්ථගාම(තොටගමුව)", "xPercent": 27.4, "yPercent": 86.5, "info": "#" },
-					{ "name": "ගිම්හතිත්ථ", "xPercent": 27.4, "yPercent": 86.5, "info": "#" },
-					{ "name": "වල්ලිගාම(වැලිගම)", "xPercent": 37.6, "yPercent": 90.8, "info": "#" },
-					{ "name": "මාතර", "xPercent": 41.0, "yPercent": 91.4, "info": "#" },
-					{ "name": "දෙවිනුවර(දෙවුන්දර)", "xPercent": 41.8, "yPercent": 91.9, "info": "#" },
-					{ "name": "මහපලාන", "xPercent": 39.6, "yPercent": 88.4, "info": "#" },
-					{ "name": "අගලවත්ත", "xPercent": 29.4, "yPercent": 78.9, "info": "#" },
-					{ "name": "පාහියන් ලෙන", "xPercent": 32.1, "yPercent": 76.7, "info": "#" },
-					{ "name": "ගිලීමලේ", "xPercent": 37.9, "yPercent": 80.0, "info": "#" },
-					{ "name": "හෙන ගහපු ගල", "xPercent": 52.1, "yPercent": 88.5, "info": "#" },
-					{ "name": "මහානාගහුල", "xPercent": 52.7, "yPercent": 86.8, "info": "#" },
-					{ "name": "රංචාමඩම", "xPercent": 47.8, "yPercent": 82.2, "info": "#" },
-					{ "name": "උඩරංචාමඩම", "xPercent": 47.8, "yPercent": 82.2, "info": "#" },
-					{ "name": "රාවණාඇල්ල", "xPercent": 57.2, "yPercent": 74.6, "info": "#" },
-					{ "name": "උඩවලව ජලාශය", "xPercent": 51.6, "yPercent": 77.5, "info": "#" },
-					{ "name": "බෙල්ලන්බැදි පැලැස්ස", "xPercent": 52.7, "yPercent": 80.2, "info": "#" },
-					{ "name": "මාගම", "xPercent": 63.5, "yPercent": 85.3, "info": "#" },
-					{ "name": "ගොඩවාය", "xPercent": 56.5, "yPercent": 88.5, "info": "#" },
-					{ "name": "හම්බන්තොට", "xPercent": 59.0, "yPercent": 88.0, "info": "#" },
-					{ "name": "බූන්දල", "xPercent": 62.9, "yPercent": 87.2, "info": "#" },
-					{ "name": "පතිරාජවෙල", "xPercent": 62.9, "yPercent": 87.2, "info": "#" },
-					{ "name": "තොටළුතොට", "xPercent": 65.8, "yPercent": 86.0, "info": "#" },
-					{ "name": "චිත්තල පබ්බත", "xPercent": 66.4, "yPercent": 83.1, "info": "#" },
-					{ "name": "මිනිහාගල්කන්ද", "xPercent": 73.6, "yPercent": 82.7, "info": "#" },
-					{ "name": "උඩපොතන", "xPercent": 76.1, "yPercent": 81.4, "info": "#" },
-					{ "name": "කුමන", "xPercent": 77.1, "yPercent": 80.4, "info": "#" },
-					{ "name": "පලුට්ටඨගිරි(පලටුපාන)", "xPercent": 63.5, "yPercent": 84.5, "info": "#" },
-					{ "name": "කාචරගාම", "xPercent": 65.3, "yPercent": 81.6, "info": "#" },
-					{ "name": "තිස්සවැව", "xPercent": 66.0, "yPercent": 81.8, "info": "#" },
-					{ "name": "ගුත්තහාලක", "xPercent": 60.6, "yPercent": 73.5, "info": "#" },
-					{ "name": "ගුත්තහාලක(ගුත්තල/බුත්තල)", "xPercent": 60.9, "yPercent": 73.0, "info": "#" },
-					{ "name": "උදුන්දොර", "xPercent": 60.9, "yPercent": 73.0, "info": "#" },
-					{ "name": "යුධගනාව", "xPercent": 60.2, "yPercent": 72.9, "info": "#" },
-					] },
+					{ "name": "අනුරාධපුරය", "type": "point", "xPercent": 40.2, "yPercent": 40.8, "info": "ශ්‍රී ලංකාවේ මුල් ම අගනුවර වෙයි. පණ්ඩුකාභය රජු මෙහි පාලකයා ය. පස්වන මිහිඳු රජු චෝළයින්ගේ ග්‍රහණයට නතු වන තුරු වර්ෂ 1450ක් පමණ ලංකාවේ අගනුවර ලෙස පැවතුණි." }, 
+					{ "name": "පොළොන්නරුව", "type": "point", "xPercent": 58.3, "yPercent": 50.4, "info": "ශ්‍රී ලංකාවේ දෙවැනි අගනුවරයි. අනුරාධපුර යුගයේ අග එල්ල වූ චෝළ ආක්‍රමණ වලින් පසු ලංකාවේ උතුරු කොටසේ බලය අල්ලාගත් චෝලයෝ මෙය සිය මධ්‍යස්ථානය කරගත්හ.මෙය මධ්‍යස්ථානය කරගත් ලංකාවේ පළමු පාලකයා මහා විජයබාහු රජුය. පරාක්‍රම පාණ්ඩ්‍ය රජ දවස කාලිංගමාඝ මෙහි බලය අල්ලාගන්නා තුරු එය වසර 250ක් පමණ ලංකාවේ අගනුවර වශයෙන් පැවතුණි." }, 
+					{ "name": "මහනුවර", "type": "point", "xPercent": 45.7, "yPercent": 63.5, "info": "සෙංකඩගලපුර හෙවත් ලංකාවේ අවසන් රාජධානියයි. කෝට්ටේ හයවන බුවනෙකබාහු හෙවත් සපුමල්කුමාරයා බලයේ සිටි කාලයේ සේනාසම්මත වික්‍රමබාහු රජු සෙංකඩගල රාජධානිප පිහිටුවී ය. 1815 දී ශ්‍රී වික්‍රමරාජසිංහ රජු ඉංග්‍රීසීන්ගේ ග්‍රහණයට නතුවන තුරු එය වර්ෂ 400ක් පමණ කාලයක් ලංකාවේ අගනුර වශයෙන් පැවතියේ ය. " }, 
+					{ "name": "යාපනය", "type": "point", "xPercent": 31.8, "yPercent": 12.8, "info": "ලංකාවේ තවත් ප්‍රාදේශීය රාජධානියක ප්‍රමුඛ නගරය යි.මෙහි ආරම්භය පිළිබඳ නිශ්චිත කාලවකවානු සඳහන් නැතත්, 1619දී පිලිප් ද ඔලිවේරා නම් පෘතුගීසි කපිතාත් මේජර්වරයා විසින් යටත් කරගන්නා තුරු එය ප්‍රාදේශීය රාජධානියක් වශයෙන් පැවතියේ ය.මෙහි වැඩි ම කාලයක් බලයේ සිටියේ ආර්යචක්‍රවර්තී පරපුරයි" }, 
+					{ "name": "ගාල්ල", "type": "point", "xPercent": 30.9, "yPercent": 89.2, "info": "ලංකාවේ දකුණු වෙරළාශ්‍රිත පැරණි වරායකි. ගම්පොළ යුගයේ දී චීන සෙන්පති චෙංහෝගේ පැමිණීමට අදාළ සාධකයක් වන ත්‍රිභාෂා සෙල්ලිපිය මේ අසල තිබී හමු වී තිබේ." }, 
+					{ "name": "තිස්සමහාරාමය", "type": "point", "xPercent": 64.8, "yPercent": 84.9, "info": "ලංකාවේ දකුණු පළාත්බදව ඇති ඓතිහාසික නගරයකි. වඩාත් ප්‍රකට වී ඇත්තේ ආගමික අංශයෙනි.මෙය පැරණි මාගම හෙවත් කාවන්තිස්ස රජුගේ අගනුවර සීමාවට අයත් ස්ථානයක් වශයෙන් හඳුනාගෙන ඇත." }, 
+					{ "name": "සීගිරිය", "type": "point", "xPercent": 50.3, "yPercent": 50.3, "info": "අනුරාධපුර යුගයේ එක් පාලන මධ්‍යස්ථානයකි. ගිරි බලකාටුවක් හෝ රාජකීය විනෝද උයනකි.පළමු කාශ්‍යප රජු මේ නිර්මාණයේ හිමිකරු විය හැක. නමුත් ධාතුසේන රජසමයේ මෙහි ඉදිකිරීම් ඇරඹී යයි ද මතයකි." }, 
+					{ "name": "දඹකොළපටුන", "type": "point", "xPercent": 30.2, "yPercent": 9.7, "info": "ජම්බුකෝළපට්ටනය හෙවත් වත්මන් සම්බිලිතුරෙයි. මෙය ලංකාවේ පැරණි තොටුපළකි. නමුත් වාණිජ වරායක් නොවී ය. ශ්‍රී මහාබෝධිය වැඩමවීම මේ ඔස්සේ සිදු වූයෙන් ඉතිහාස ගතවිය. ඉතිහාසයේ මේ ස්ථානය ගැන සඳහන් වස්සේ අවස්ථා කිහිපයක දී පමණි." }, 
+					{ "name": "සම්බිලිතුරෙයි(දඹකොළපටුන)", "type": "point", "xPercent": 30.2, "yPercent": 9.7, "info": "ජම්බුකෝළපට්ටනය හෙවත් වත්මන් සම්බිලිතුරෙයි. මෙය ලංකාවේ පැරණි තොටුපළකි. නමුත් වාණිජ වරායක් නොවී ය. ශ්‍රී මහාබෝධිය වැඩමවීම මේ ඔස්සේ සිදු වූයෙන් ඉතිහාස ගතවිය. ඉතිහාසයේ මේ ස්ථානය ගැන සඳහන් වස්සේ අවස්ථා කිහිපයක දී පමණි." }, 
+					{ "name": "ජම්බුකෝළපට්ටන", "type": "point", "xPercent": 30.2, "yPercent": 9.7, "info": "ජම්බුකෝළපට්ටනය හෙවත් වත්මන් සම්බිලිතුරෙයි. මෙය ලංකාවේ පැරණි තොටුපළකි. නමුත් වාණිජ වරායක් නොවී ය. ශ්‍රී මහාබෝධිය වැඩමවීම මේ ඔස්සේ සිදු වූයෙන් ඉතිහාස ගතවිය. ඉතිහාසයේ මේ ස්ථානය ගැන සඳහන් වස්සේ අවස්ථා කිහිපයක දී පමණි." }, 
+					{ "name": "පේදුරුතුඩුව", "type": "point", "xPercent": 38.1, "yPercent": 9.5, "info": "" }, { "name": "කන්කසන්තුරේ", "type": "point", "xPercent": 29.6, "yPercent": 9.9, "info": "" }, 
+					{ "name": "සූකරතිත්ථ(ඌරාතොට)", "type": "point", "xPercent": 27.6, "yPercent": 12.2, "info": "ලංකාවේ යාපන අර්ධද්වීපයේ පරිවාර දූපත් සමූහයේ විශාල ම දූපත වන කයිට්ස් හි පිහිටා තිබේ.සූකරතිත්ථ යනු ද මෙයම ය. " }, 
+					{ "name": "ඌරාතොට(සූකරතිත්ථ)", "type": "point", "xPercent": 27.6, "yPercent": 12.2, "info": "ලංකාවේ යාපන අර්ධද්වීපයේ පරිවාර දූපත් සමූහයේ විශාල ම දූපත වන කයිට්ස් හි පිහිටා තිබේ.සූකරතිත්ථ යනු ද මෙයම ය. " }, 
+					{ "name": "හැමන්හිල්", "type": "point", "xPercent": 27.7, "yPercent": 10.0, "info": "ලංකාවේ ලන්දේසි බලකොටුවකි" }, 
+					{ "name": "නල්ලූර්", "type": "point", "xPercent": 32.4, "yPercent": 12.3, "info": "යාපන රාජධානියේ රජ මාළිගය පිහිටා තිබූ ස්ථානය යි.සුප්‍රසිද්ධ කෝවිලක් ද පිහිටා තිබේ." }, 
+					{ "name": "අලිමංකඩ", "type": "point", "xPercent": 42.1, "yPercent": 15.4, "info": "ලංකාවේ ප්‍රාග් ඓතිහාසික ස්ථානයකි. යුධ කඳවුරක් හා ආරක්ෂක මර්මස්ථානයක් වශයෙන් අතීතයේ සිට අද දක්වාත් ප්‍රකටව පවතී.කෝට්ටේ යුගයේ මෙය ජාවක සෙබලුන් විසින් රැකවල් කළ නිසා 'ජාවක කෝට්ටේ' නමින් හඳුන්වා ඇත." }, 
+					{ "name": "කන්දරෝඩය", "type": "point", "xPercent": 30.9, "yPercent": 11.2, "info": "යාපන අර්ධද්වීපයේ බෞද්ධ නටබුන් රැසක් සහිත ස්ථානයකි. මෙහි ඇති කුඩා ස්ථූප සමූහය අග්නිදිග ආසියානු ලක්ෂණ සහිතය." }, 
+					{ "name": "කදුරුගොඩ", "type": "point", "xPercent": 30.9, "yPercent": 11.2, "info": "යාපන අර්ධද්වීපයේ බෞද්ධ නටබුන් රැසක් සහිත ස්ථානයකි. මෙහි ඇති කුඩා ස්ථූප සමූහය අග්නිදිග ආසියානු ලක්ෂණ සහිතය." }, 
+					{ "name": "පාචීනාරාමය", "type": "point", "xPercent": 34.2, "yPercent": 9.9, "info": "උතුරු ලංකාවේ ඉපැරණි බෞද්ධ සිද්ධස්ථානයකි." }, 
+					{ "name": "වැල්වැටිතුරෙයි", "type": "point", "xPercent": 35.8, "yPercent": 9.5, "info": "පැරණි ලංකාවේ වරායකි." }, 
+					{ "name": "පියංගුදීප", "type": "point", "xPercent": 25.9, "yPercent": 14.1, "info": "යාපන අර්ධද්වීපයේ පරිවාර දූපත් සමූහය අතරින් එකකි. බෞද්ධ නටඹුන් තිබූ ස්ථානයකි." }, 
+					{ "name": "ඉරණමඩුව", "type": "point", "xPercent": 41.7, "yPercent": 19.5, "info": "ප්‍රාග් ඓතිහාසික අතින් අතිශය වැදගත් ස්ථානයකි. මෙහි පස් ස්ථර පිහිටීම 'ඉරණමඩු සංයුතිය' නමින් හඳුන්වයි." }, 
+					{ "name": "ඉරණමඩු වැව", "type": "point", "xPercent": 43.8, "yPercent": 20.4, "info": "කනගරායන් ආරුව ආශ්‍රිත ජලාශයකි." }, 
+					{ "name": "කුරුන්දි", "type": "point", "xPercent": 51.3, "yPercent": 22.0, "info": "ඉපැරණි බෞද්ධ සිද්ධස්ථානයකි" }, 
+					{ "name": "මුලතිව්", "type": "point", "xPercent": 54.6, "yPercent": 21.7, "info": "පැරණි වරයෙක් තිබූ ස්ථානයකැයි අනුමාන කරන තැනකි." }, 
+					{ "name": "මීපාතොට", "type": "point", "xPercent": 32.9, "yPercent": 23.5, "info": "මධුපාදතිත්ථ නමින් ද හඳුන්වන මේ ස්ථානය පැරණි වරායකි" },
+					{ "name": "මධුපාදතිත්ථ", "type": "point", "xPercent": 32.9, "yPercent": 23.5, "info": "මධුපාදතිත්ථ නමින් ද හඳුන්වන මේ ස්ථානය පැරණි වරායකි" },
+					{ "name": "මහාතිත්ථ", "type": "point", "xPercent": 27.8, "yPercent": 27.7, "info": "මහාතීර්ථ, මාතොට, මාන්තෙයි ආදි නම් වලින් ද හැඳින්වෙන මෙය අනුරාධපුර යුගයේ ලංකාවේ ප්‍රධාන අන්තර්ජාතික වරායයි. මෙය මල්වතු ඔයේ පැරණි මෝදර ආශ්‍රිතව පිහිටා තිබේ." },
+					{ "name": "මාතොට(මහාතිත්ථ)", "type": "point", "xPercent": 27.8, "yPercent": 27.7, "info": "මහාතීර්ථ, මාතොට, මාන්තෙයි ආදි නම් වලින් ද හැඳින්වෙන මෙය අනුරාධපුර යුගයේ ලංකාවේ ප්‍රධාන අන්තර්ජාතික වරායයි. මෙය මල්වතු ඔයේ පැරණි මෝදර ආශ්‍රිතව පිහිටා තිබේ." },
+					{ "name": "මාන්තෙයි(මහාතිත්ථ)", "type": "point", "xPercent": 27.8, "yPercent": 27.7, "info": "මහාතීර්ථ, මාතොට, මාන්තෙයි ආදි නම් වලින් ද හැඳින්වෙන මෙය අනුරාධපුර යුගයේ ලංකාවේ ප්‍රධාන අන්තර්ජාතික වරායයි. මෙය මල්වතු ඔයේ පැරණි මෝදර ආශ්‍රිතව පිහිටා තිබේ." },
+					{ "name": "මාන්තෝට්ටම්(මහාතිත්ථ)", "type": "point", "xPercent": 27.8, "yPercent": 27.7, "info": "මහාතීර්ථ, මාතොට, මාන්තෙයි ආදි නම් වලින් ද හැඳින්වෙන මෙය අනුරාධපුර යුගයේ ලංකාවේ ප්‍රධාන අන්තර්ජාතික වරායයි. මෙය මල්වතු ඔයේ පැරණි මෝදර ආශ්‍රිතව පිහිටා තිබේ." },
+					{ "name": "මහපටුන්(මහාතිත්ථ)", "type": "point", "xPercent": 27.8, "yPercent": 27.7, "info": "මහාතීර්ථ, මාතොට, මාන්තෙයි ආදි නම් වලින් ද හැඳින්වෙන මෙය අනුරාධපුර යුගයේ ලංකාවේ ප්‍රධාන අන්තර්ජාතික වරායයි. මෙය මල්වතු ඔයේ පැරණි මෝදර ආශ්‍රිතව පිහිටා තිබේ." },
+					{ "name": "තිරුකේතීශ්වරම්", "type": "point", "xPercent": 28.9, "yPercent": 27.7, "info": "වෙළඳාම සඳහා මහාතිත්ථයට ආ ඉන්දීය හින්දුභක්තික ජනවාගේ ආගමික අවශ්‍යතා වෙනුවෙන් කළ හින්දු කෝවිලක් සේ පිළිගැනෙයි" },
+					{ "name": "යෝධ වැව", "type": "point", "xPercent": 30.7, "yPercent": 29.3, "info": "#" },
+					{ "name": "මඩු", "type": "point", "xPercent": 33.8, "yPercent": 30.0, "info": "#" },
+					{ "name": "කෝකිලායි කලපුව", "type": "point", "xPercent": 57.9, "yPercent": 28.7, "info": "#" },
+					{ "name": "ආකට්ටිමුරුප්පු වැව", "type": "point", "xPercent": 29.2, "yPercent": 32.1, "info": "ධාතුසේන රජුගේ වාරි ව්‍යාපෘතියකි" },
+					{ "name": "උපතිස්ස ග්‍රාමය(?)", "type": "point", "xPercent": 37.6, "yPercent": 34.5, "info": "සංක්‍රමණික ඉන්දීය ජනයා බලය පිහිටුවාගත් ලංකාවේ මුල් කාලීන ජනාවාසයකි'යි අනුමාන කෙරේ" },
+					{ "name": "තන්තිරිමලේ", "type": "point", "xPercent": 35.8, "yPercent": 35.3, "info": "උතුරුමැද පළාතේ පැරණි බෞද්ධ මධ්‍යස්ථානයකි." },
+					{ "name": "කුදිරමලේ", "type": "point", "xPercent": 26.3, "yPercent": 36.2, "info": "ප්‍රාග් ඓතිහාසික සාධක ලැබුණු භූමියකි" },
+					{ "name": "පොම්පරිප්පු", "type": "point", "xPercent": 25.5, "yPercent": 40.5, "info": "පූර්ව ඓතිහාසික ස්ථානයකි. මෙහි තිබී බරණි සුසාන ක්‍රමයේ සාධක හමුවූ ස්ථානයකි." },
+					{ "name": "විල්පත්තු", "type": "point", "xPercent": 27.1, "yPercent": 39.4, "info": "ප්‍රාග් ඓතිහාසික සාධක ලැබුණු තැනකි." },
+					{ "name": "විජිතපුර(?)", "type": "point", "xPercent": 39.0, "yPercent": 45.3, "info": "#" },
+					{ "name": "තිසා වැව", "type": "point", "xPercent": 39.4, "yPercent": 40.3, "info": "#" },
+					{ "name": "නුවර වැව", "type": "point", "xPercent": 41.5, "yPercent": 40.6, "info": "#" },
+					{ "name": "නාච්චිදූව වැව", "type": "point", "xPercent": 42.9, "yPercent": 42.8, "info": "#" },
+					{ "name": "චේතියගිරි(මිහින්තලේ)", "type": "point", "xPercent": 42.2, "yPercent": 41.6, "info": "#" },
+					{ "name": "මිහින්තලේ", "type": "point", "xPercent": 42.2, "yPercent": 41.6, "info": "#" },
+					{ "name": "සෑ ගිරි(මිහින්තලේ)", "type": "point", "xPercent": 42.2, "yPercent": 41.6, "info": "#" },
+					{ "name": "තිරියාය(ගිරිකණ්ඩ)", "type": "point", "xPercent": 59.6, "yPercent": 30.4, "info": "#" },
+					{ "name": "ගිරිකණ්ඩ(තිරියාය))", "type": "point", "xPercent": 59.6, "yPercent": 30.4, "info": "#" },
+					{ "name": "පල්ලවංක", "type": "point", "xPercent": 60.9, "yPercent": 30.7, "info": "#" },
+					{ "name": "ගෝකණ්ණතිත්ථ", "type": "point", "xPercent": 64.9, "yPercent": 37.2, "info": "#" },
+					{ "name": "ත්‍රිකුණාමල වරාය", "type": "point", "xPercent": 64.9, "yPercent": 37.2, "info": "#" },
+					{ "name": "ගෝකණ්ණ", "type": "point", "xPercent": 64.9, "yPercent": 37.2, "info": "#" },
+					{ "name": "ෆෙඩ්රික් කොටුව", "type": "point", "xPercent": 66.0, "yPercent": 37.1, "info": "#" },
+					{ "name": "ගෝකණ්ණ විහාරය", "type": "point", "xPercent": 66.0, "yPercent": 37.1, "info": "#" },
+					{ "name": "තිරුකෝණේශ්වරම්", "type": "point", "xPercent": 66.0, "yPercent": 37.3, "info": "#" },
+					{ "name": "කෝණේශ්වරම්", "type": "point", "xPercent": 66.0, "yPercent": 37.3, "info": "#" },
+					{ "name": "කොට්ටියාරම", "type": "point", "xPercent": 68.0, "yPercent": 38.3, "info": "#" },
+					{ "name": "කොට්ඨසාර", "type": "point", "xPercent": 68.0, "yPercent": 38.3, "info": "#" },
+					{ "name": "කොටසර", "type": "point", "xPercent": 68.0, "yPercent": 38.3, "info": "#" },
+					{ "name": "ලංකාපටුන", "type": "point", "xPercent": 69.8, "yPercent": 41.6, "info": "#" },
+					{ "name": "සේරුවාවිල", "type": "point", "xPercent": 67.7, "yPercent": 41.7, "info": "#" },
+					{ "name": "සේරිනගර", "type": "point", "xPercent": 67.7, "yPercent": 41.7, "info": "#" },
+					{ "name": "මැදිරිගිරිය", "type": "point", "xPercent": 57.1, "yPercent": 43.4, "info": "#" },
+					{ "name": "මණ්ඩලගිරි(මැදිරිගිරිය)", "type": "point", "xPercent": 57.1, "yPercent": 43.4, "info": "#" },					
+					{ "name": "කන්තලේ වැව", "type": "point", "xPercent": 58.1, "yPercent": 41.4, "info": "#" },
+					{ "name": "හුරුළු වැව", "type": "point", "xPercent": 50.1, "yPercent": 44.0, "info": "#" },
+					{ "name": "රිටිගල", "type": "point", "xPercent": 47.8, "yPercent": 46.5, "info": "#" },
+					{ "name": "කසාපබ්බත", "type": "point", "xPercent": 41.6, "yPercent": 44.0, "info": "#" },
+					{ "name": "උරුවේලතිත්ථ", "type": "point", "xPercent": 23.7, "yPercent": 40.5, "info": "#" },
+					{ "name": "උරුවේලගාම", "type": "point", "xPercent": 23.7, "yPercent": 40.5, "info": "#" },
+					{ "name": "උරුවේල්තොට", "type": "point", "xPercent": 23.7, "yPercent": 40.5, "info": "#" },
+					{ "name": "කල්පිටිය", "type": "point", "xPercent": 20.6, "yPercent": 42.4, "info": "#" },
+					{ "name": "පුත්තලම", "type": "point", "xPercent": 22.3, "yPercent": 46.2, "info": "#" },
+					{ "name": "සලාවත්තොට(හලාවත)", "type": "point", "xPercent": 21.2, "yPercent": 55.8, "info": "#" },
+					{ "name": "හලාවත", "type": "point", "xPercent": 21.2, "yPercent": 55.8, "info": "#" },
+					{ "name": "සල්වතොට", "type": "point", "xPercent": 21.2, "yPercent": 55.8, "info": "#" },
+					{ "name": "සැල්වතොට", "type": "point", "xPercent": 21.2, "yPercent": 55.8, "info": "#" },
+					{ "name": "මුන්නේස්වරම්", "type": "point", "xPercent": 22.4, "yPercent": 56.0, "info": "#" },
+					{ "name": "පඬුවස්නුවර", "type": "point", "xPercent": 27.8, "yPercent": 56.9, "info": "#" },
+					{ "name": "පරක්කමපුර", "type": "point", "xPercent": 27.8, "yPercent": 56.9, "info": "#" },
+					{ "name": "තෝණිගල", "type": "point", "xPercent": 46.1, "yPercent": 32.9, "info": "සිරිමේඝවණ්ණ රජුගේ සෙල්ලිපිය පිහිටි ස්ථානය යි." },
+					{ "name": "තෝනිගල(ආනමඩුවේ)", "type": "point", "xPercent": 25.1, "yPercent": 49.4, "info": "#" },
+					{ "name": "කුරුණැගල", "type": "point", "xPercent": 39.5, "yPercent": 59.6, "info": "#" },
+					{ "name": "මාතලේ", "type": "point", "xPercent": 45.5, "yPercent": 59.1, "info": "#" },
+					{ "name": "යාපහුව", "type": "point", "xPercent": 36.9, "yPercent": 52.1, "info": "#" },
+					{ "name": "තබ්බෝව වැව", "type": "point", "xPercent": 25.8, "yPercent": 47.0, "info": "#" },
+					{ "name": "සැස්සේරුව", "type": "point", "xPercent": 38.6, "yPercent": 47.9, "info": "#" },
+					{ "name": "අවුකන", "type": "point", "xPercent": 43.6, "yPercent": 48.9, "info": "#" },
+					{ "name": "කලා වැව", "type": "point", "xPercent": 44.4, "yPercent": 48.3, "info": "#" },
+					{ "name": "ඉබ්බන්කටුව", "type": "point", "xPercent": 45.3, "yPercent": 53.2, "info": "#" },
+					{ "name": "දඹුල්ල", "type": "point", "xPercent": 46.5, "yPercent": 53.0, "info": "#" },
+					{ "name": "මාපාගල", "type": "point", "xPercent": 49.7, "yPercent": 49.3, "info": "#" },
+					{ "name": "අලිගල", "type": "point", "xPercent": 50.7, "yPercent": 49.5, "info": "#" },
+					{ "name": "පොතාන", "type": "point", "xPercent": 49.9, "yPercent": 49.6, "info": "#" },
+					{ "name": "පිදුරංගල", "type": "point", "xPercent": 50.7, "yPercent": 49.8, "info": "#" },
+					{ "name": "බසවක්කුලම(අබය වැව)", "type": "point", "xPercent": 39.6, "yPercent": 39.8, "info": "#" },
+					{ "name": "පදවිය වැව", "type": "point", "xPercent": 52.9, "yPercent": 32.7, "info": "#" },
+					{ "name": "කවුඩුල්ල වැව", "type": "point", "xPercent": 55.6, "yPercent": 45.0, "info": "#" },
+					{ "name": "මින්නේරිය වැව", "type": "point", "xPercent": 54.8, "yPercent": 46.5, "info": "#" },
+					{ "name": "ගිරිතලේ වැව", "type": "point", "xPercent": 56.4, "yPercent": 48.2, "info": "#" },
+					{ "name": "සෝම නගර", "type": "point", "xPercent": 61.5, "yPercent": 45.5, "info": "#" },
+					{ "name": "ලෝණ නගර", "type": "point", "xPercent": 68.8, "yPercent": 44.8, "info": "#" },
+					{ "name": "පරාක්‍රම සමුද්‍රය", "type": "point", "xPercent": 57.0, "yPercent": 50.7, "info": "#" },
+					{ "name": "නාලන්ද", "type": "point", "xPercent": 43.6, "yPercent": 53.1, "info": "#" },
+					{ "name": "මොරගහකන්ද ජලාශය", "type": "point", "xPercent": 48.5, "yPercent": 55.1, "info": "#" },
+					{ "name": "බෝවතැන්න ජලාශය", "type": "point", "xPercent": 47.0, "yPercent": 55.4, "info": "#" },
+					{ "name": "ගන්නොරුව", "type": "point", "xPercent": 44.1, "yPercent": 62.3, "info": "#" },
+					{ "name": "පොල්ගොල්ල අමුණ", "type": "point", "xPercent": 45.3, "yPercent": 62.6, "info": "#" },
+					{ "name": "අඟමැඬිල්ල අමුණ", "type": "point", "xPercent": 55.1, "yPercent": 51.8, "info": "#" },
+					{ "name": "ඇළහැර අමුණ", "type": "point", "xPercent": 51.6, "yPercent": 54.3, "info": "#" },
+					{ "name": "කසාතොට(කච්ඡකතිත්ථ)", "type": "point", "xPercent": 59.8, "yPercent": 51.2, "info": "#" },
+					{ "name": "දාස්තොට (සහස්සතිත්ථ)", "type": "point", "xPercent": 59.2, "yPercent": 51.8, "info": "#" },
+					{ "name": "දිඹුලාගල", "type": "point", "xPercent": 58.8, "yPercent": 52.5, "info": "#" },
+					{ "name": "නාලිකේරවත්ථු", "type": "point", "xPercent": 57.2, "yPercent": 54.7, "info": "#" },
+					{ "name": "කෝඨනගර", "type": "point", "xPercent": 56.6, "yPercent": 57.4, "info": "#" },
+					{ "name": "අම්බතිත්ථ", "type": "point", "xPercent": 56.3, "yPercent": 57.9, "info": "#" },
+					{ "name": "ලංකා පබ්බත", "type": "point", "xPercent": 55.2, "yPercent": 58.4, "info": "#" },
+					{ "name": "මාදුරුඔය ජලාශය", "type": "point", "xPercent": 68.9, "yPercent": 57.6, "info": "#" },
+					{ "name": "මඩකලපුව", "type": "point", "xPercent": 78.1, "yPercent": 56.2, "info": "#" },
+					{ "name": "ලුණුවිල", "type": "point", "xPercent": 21.9, "yPercent": 58.6, "info": "#" },
+					{ "name": "දඹදෙණිය", "type": "point", "xPercent": 28.8, "yPercent": 60.8, "info": "#" },
+					{ "name": "අඹේපුස්ස", "type": "point", "xPercent": 32.6, "yPercent": 64.1, "info": "#" },
+					{ "name": "දැදිගම", "type": "point", "xPercent": 33.3, "yPercent": 64.4, "info": "#" },
+					{ "name": "මැණික්කඩවර", "type": "point", "xPercent": 33.7, "yPercent": 65.1, "info": "#" },
+					{ "name": "අත්තනගල්ල", "type": "point", "xPercent": 29.8, "yPercent": 66.0, "info": "#" },
+					{ "name": "මීගමුව", "type": "point", "xPercent": 21.3, "yPercent": 63.7, "info": "#" },
+					{ "name": "මුතුරාජවෙල", "type": "point", "xPercent": 22.0, "yPercent": 66.5, "info": "#" },
+					{ "name": "වත්තල", "type": "point", "xPercent": 21.6, "yPercent": 67.0, "info": "#" },
+					{ "name": "කැළණිය", "type": "point", "xPercent": 23.3, "yPercent": 69.0, "info": "#" },
+					{ "name": "කොළඹ", "type": "point", "xPercent": 21.3, "yPercent": 69.2, "info": "#" },
+					{ "name": "කිත්සිරිමෙවන් කැළණිය", "type": "point", "xPercent": 22.8, "yPercent": 69.6, "info": "#" },
+					{ "name": "කෝට්ටේ", "type": "point", "xPercent": 22.5, "yPercent": 70.2, "info": "#" },
+					{ "name": "මුල්ලේරියාව", "type": "point", "xPercent": 23.1, "yPercent": 70.3, "info": "#" },
+					{ "name": "මල්වාන", "type": "point", "xPercent": 26.0, "yPercent": 69.1, "info": "#" },
+					{ "name": "බෙලිගල", "type": "point", "xPercent": 35.6, "yPercent": 62.6, "info": "#" },
+					{ "name": "දන්තුරේ", "type": "point", "xPercent": 43.7, "yPercent": 62.5, "info": "#" },
+					{ "name": "බලන", "type": "point", "xPercent": 42.8, "yPercent": 63.5, "info": "#" },
+					{ "name": "වාකිරිගල", "type": "point", "xPercent": 39.2, "yPercent": 64.4, "info": "#" },
+					{ "name": "දෙවනගල", "type": "point", "xPercent": 35.3, "yPercent": 65.2, "info": "#" },
+					{ "name": "බෙලිලෙන", "type": "point", "xPercent": 39.6, "yPercent": 67.6, "info": "#" },
+					{ "name": "සීතාවක", "type": "point", "xPercent": 34.5, "yPercent": 69.7, "info": "#" },
+					{ "name": "පළාබත්ගල", "type": "point", "xPercent": 40.3, "yPercent": 72.3, "info": "#" },
+					{ "name": "බටතොටලෙන", "type": "point", "xPercent": 36.8, "yPercent": 72.7, "info": "#" },
+					{ "name": "බටදොඹලෙන", "type": "point", "xPercent": 37.3, "yPercent": 74.2, "info": "#" },
+					{ "name": "පාලින්දනුවර", "type": "point", "xPercent": 34.5, "yPercent": 79.5, "info": "#" },
+					{ "name": "පේරාදෙණිය", "type": "point", "xPercent": 44.7, "yPercent": 63.8, "info": "#" },
+					{ "name": "කඩුගන්නාව", "type": "point", "xPercent": 43.9, "yPercent": 63.9, "info": "#" },
+					{ "name": "හඟුරන්කෙත", "type": "point", "xPercent": 49.0, "yPercent": 65.3, "info": "#" },
+					{ "name": "වික්ටෝරියා ජලාශය", "type": "point", "xPercent": 46.9, "yPercent": 63.3, "info": "#" },
+					{ "name": "රන්දෙණිගල ජලාශය", "type": "point", "xPercent": 48.4, "yPercent": 63.8, "info": "#" },
+					{ "name": "රන්ටැඹේ ජලාශය", "type": "point", "xPercent": 50.0, "yPercent": 64.5, "info": "#" },
+					{ "name": "මිණිපේ අමුණ", "type": "point", "xPercent": 55.3, "yPercent": 65.4, "info": "#" },
+					{ "name": "ගම්පොළ", "type": "point", "xPercent": 42.9, "yPercent": 66.6, "info": "ගඟසිරිපුර/ගංගාශ්‍රීපුර" },
+					{ "name": "ගංදෙණිය(මිණිපේ)", "type": "point", "xPercent": 54.8, "yPercent": 65.2, "info": "#" },
+					{ "name": "තලවාකැලේ", "type": "point", "xPercent": 47.6, "yPercent": 71.9, "info": "#" },
+					{ "name": "කොත්මලේ", "type": "point", "xPercent": 44.9, "yPercent": 70.2, "info": "#" },
+					{ "name": "කොත්මලේ ජලාශය", "type": "point", "xPercent": 45.3, "yPercent": 70.0, "info": "#" },
+					{ "name": "ශ්‍රීපාදය", "type": "point", "xPercent": 40.3, "yPercent": 73.2, "info": "#" },
+					{ "name": "හෝර්ටන් තැන්න", "type": "point", "xPercent": 48.6, "yPercent": 72.3, "info": "#" },
+					{ "name": "බලංගොඩ", "type": "point", "xPercent": 48.2, "yPercent": 76.5, "info": "#" },
+					{ "name": "බෙරගල", "type": "point", "xPercent": 55.5, "yPercent": 74.7, "info": "#" },
+					{ "name": "බදුල්ල", "type": "point", "xPercent": 56.5, "yPercent": 71.0, "info": "#" },
+					{ "name": "බණ්ඩාරවෙල", "type": "point", "xPercent": 54.1, "yPercent": 69.8, "info": "#" },
+					{ "name": "රන්දෙණිවෙල සටන්බිම", "type": "point", "xPercent": 59.5, "yPercent": 71.7, "info": "#" },
+					{ "name": "මඩොල්සිම", "type": "point", "xPercent": 60.1, "yPercent": 70.4, "info": "#" },
+					{ "name": "නිල්ගල", "type": "point", "xPercent": 65.0, "yPercent": 66.8, "info": "#" },
+					{ "name": "දානිගල", "type": "point", "xPercent": 67.4, "yPercent": 63.7, "info": "#" },
+					{ "name": "ගල්ඔය ජලාශය", "type": "point", "xPercent": 71.3, "yPercent": 66.1, "info": "#" },
+					{ "name": "හේනෙබැද්ද", "type": "point", "xPercent": 67.9, "yPercent": 67.8, "info": "#" },		
+					{ "name": "මහියංගණය(මියුගුණ/බිංතැන්න)", "type": "point", "xPercent": 57.1, "yPercent": 63.1, "info": "#" },
+					{ "name": "සොරබොර වැව", "type": "point", "xPercent": 57.7, "yPercent": 63.1, "info": "#" },
+					{ "name": "උල්හිටිය ජලාශය", "type": "point", "xPercent": 64.7, "yPercent": 61.3, "info": "#" },
+					{ "name": "රත්කිඳ ජලාශය", "type": "point", "xPercent": 66.8, "yPercent": 60.1, "info": "#" },
+					{ "name": "කුඩුම්බිගල", "type": "point", "xPercent": 80.5, "yPercent": 74.6, "info": "#" },
+					{ "name": "ගෝවින්දමලය(ගොවිඳුහෙළ)", "type": "point", "xPercent": 73.9, "yPercent": 68.0, "info": "#" },
+					{ "name": "දීඝවාපි", "type": "point", "xPercent": 78.8, "yPercent": 65.6, "info": "#" },
+					{ "name": "පහන්බුණු දනව්ව(පානදුර)", "type": "point", "xPercent": 23.3, "yPercent": 75.4, "info": "#" },
+					{ "name": "රයිගම", "type": "point", "xPercent": 26.4, "yPercent": 75.4, "info": "#" },
+					{ "name": "කාළතිත්ථ(කළුතර)", "type": "point", "xPercent": 23.8, "yPercent": 77.1, "info": "#" },
+					{ "name": "බේරුවල", "type": "point", "xPercent": 24.5, "yPercent": 79.0, "info": "#" },
+					{ "name": "භීමතිත්ථ(බෙන්තර)", "type": "point", "xPercent": 24.9, "yPercent": 80.8, "info": "#" },
+					{ "name": "තිත්ථගාම(තොටගමුව)", "type": "point", "xPercent": 27.4, "yPercent": 86.5, "info": "#" },
+					{ "name": "ගිම්හතිත්ථ", "type": "point", "xPercent": 27.4, "yPercent": 86.5, "info": "#" },
+					{ "name": "වල්ලිගාම(වැලිගම)", "type": "point", "xPercent": 37.6, "yPercent": 90.8, "info": "#" },
+					{ "name": "මාතර", "type": "point", "xPercent": 41.0, "yPercent": 91.4, "info": "#" },
+					{ "name": "දෙවිනුවර(දෙවුන්දර)", "type": "point", "xPercent": 41.8, "yPercent": 91.9, "info": "#" },
+					{ "name": "මහපලාන", "type": "point", "xPercent": 39.6, "yPercent": 88.4, "info": "#" },
+					{ "name": "අගලවත්ත", "type": "point", "xPercent": 29.4, "yPercent": 78.9, "info": "#" },
+					{ "name": "පාහියන් ලෙන", "type": "point", "xPercent": 32.1, "yPercent": 76.7, "info": "#" },
+					{ "name": "ගිලීමලේ", "type": "point", "xPercent": 37.9, "yPercent": 80.0, "info": "#" },
+					{ "name": "හෙන ගහපු ගල", "type": "point", "xPercent": 52.1, "yPercent": 88.5, "info": "#" },
+					{ "name": "මහානාගහුල", "type": "point", "xPercent": 52.7, "yPercent": 86.8, "info": "#" },
+					{ "name": "රංචාමඩම", "type": "point", "xPercent": 47.8, "yPercent": 82.2, "info": "#" },
+					{ "name": "උඩරංචාමඩම", "type": "point", "xPercent": 47.8, "yPercent": 82.2, "info": "#" },
+					{ "name": "රාවණාඇල්ල", "type": "point", "xPercent": 57.2, "yPercent": 74.6, "info": "#" },
+					{ "name": "උඩවලව ජලාශය", "type": "point", "xPercent": 51.6, "yPercent": 77.5, "info": "#" },
+					{ "name": "බෙල්ලන්බැදි පැලැස්ස", "type": "point", "xPercent": 52.7, "yPercent": 80.2, "info": "#" },
+					{ "name": "මාගම", "type": "point", "xPercent": 63.5, "yPercent": 85.3, "info": "#" },
+					{ "name": "ගොඩවාය", "type": "point", "xPercent": 56.5, "yPercent": 88.5, "info": "#" },
+					{ "name": "හම්බන්තොට", "type": "point", "xPercent": 59.0, "yPercent": 88.0, "info": "#" },
+					{ "name": "බූන්දල", "type": "point", "xPercent": 62.9, "yPercent": 87.2, "info": "#" },
+					{ "name": "පතිරාජවෙල", "type": "point", "xPercent": 62.9, "yPercent": 87.2, "info": "#" },
+					{ "name": "තොටළුතොට", "type": "point", "xPercent": 65.8, "yPercent": 86.0, "info": "#" },
+					{ "name": "චිත්තල පබ්බත", "type": "point", "xPercent": 66.4, "yPercent": 83.1, "info": "#" },
+					{ "name": "මිනිහාගල්කන්ද", "type": "point", "xPercent": 73.6, "yPercent": 82.7, "info": "#" },
+					{ "name": "උඩපොතන", "type": "point", "xPercent": 76.1, "yPercent": 81.4, "info": "#" },
+					{ "name": "කුමන", "type": "point", "xPercent": 77.1, "yPercent": 80.4, "info": "#" },
+					{ "name": "පලුට්ටඨගිරි(පලටුපාන)", "type": "point", "xPercent": 63.5, "yPercent": 84.5, "info": "#" },
+					{ "name": "කාචරගාම", "type": "point", "xPercent": 65.3, "yPercent": 81.6, "info": "#" },
+					{ "name": "තිස්සවැව", "type": "point", "xPercent": 66.0, "yPercent": 81.8, "info": "#" },
+					{ "name": "ගුත්තහාලක", "type": "point", "xPercent": 60.6, "yPercent": 73.5, "info": "#" },
+					{ "name": "ගුත්තහාලක(ගුත්තල/බුත්තල)", "type": "point", "xPercent": 60.9, "yPercent": 73.0, "info": "#" },
+					{ "name": "උදුන්දොර", "type": "point", "xPercent": 60.9, "yPercent": 73.0, "info": "#" },
+					{ "name": "යුධගනාව", "type": "point", "xPercent": 60.2, "yPercent": 72.9, "info": "#" },// නව එකතු කිරීම්: ඊතල සහ ප්‍රදේශ සලකුණු
+                    { "name": "මහවැලි ගඟ", 
+                      "type": "arrow", 
+                      "points": [
+{ "xPercent": 63.2, "yPercent": 43.5},{ "xPercent": 65.3, "yPercent": 39.1},{ "xPercent": 64.1, "yPercent": 43.9}, { "xPercent": 63.8, "yPercent": 46.0},{ "xPercent": 61.1, "yPercent": 47.4},{ "xPercent": 61.2, "yPercent": 47.4},{ "xPercent": 60.8, "yPercent": 49.9},{ "xPercent": 58.5, "yPercent": 52.4},{ "xPercent": 56.9, "yPercent": 52.9},{ "xPercent": 55.8, "yPercent": 58.7},{ "xPercent": 56.9, "yPercent": 64.0},{ "xPercent": 56.2, "yPercent": 65.4},{ "xPercent": 50.2, "yPercent": 65.3},{ "xPercent": 49.8, "yPercent": 64.1},{ "xPercent": 44.6, "yPercent": 62.5},{ "xPercent": 44.2, "yPercent": 66.4},{ "xPercent": 43.0, "yPercent": 66.5},{ "xPercent": 41.4, "yPercent": 68.9},{ "xPercent": 41.4, "yPercent": 70.1}                     
+], 
+                      "color": "#0077be", 
+                      "lineWidth": 25, // රේඛාවේ පළල
+                      "opacity": 0.7, // විනිවිදභාවය
+                      "info": "ශ්‍රී ලංකාවේ දිගම ගංගාවයි. එය මධ්‍යම කඳුකරයෙන් ආරම්භ වී ත්‍රිකුණාමලය අසලින් මුහුදට වැටේ." 
+                    },
+
+                    { "name": "කනකරායන් ආරු", 
+                      "type": "arrow", 
+                      "points": [
+{ "xPercent": 47.0, "yPercent": 29.6 },{ "xPercent": 47.2, "yPercent": 28.4 },{ "xPercent": 46.3, "yPercent": 27.8 },{ "xPercent": 46.6, "yPercent": 27.2 },{ "xPercent": 45.6, "yPercent": 25.8 },{ "xPercent": 45.3, "yPercent": 24.9 },{ "xPercent": 43.8, "yPercent": 22.4 },{ "xPercent": 44.3, "yPercent": 22.0 },{ "xPercent": 43.6, "yPercent": 21.1 },{ "xPercent": 43.9, "yPercent": 19.9 },{ "xPercent": 44.0, "yPercent": 18.9 },{ "xPercent": 44.8, "yPercent": 18.2 },{ "xPercent": 45.2, "yPercent": 18.0 },{ "xPercent": 45.7, "yPercent": 16.9 }
+], 
+                      "color": "#0077be", 
+                      "lineWidth": 15, 
+                      "opacity": 0.7, 
+                      "info": "ශ්‍රී ලංකාවේ උතුරු කඳුකරයෙන් ආරම්භ වී මන්නාරම් මුහුදට වැටෙන ගඟකි. අනුරාධපුර රාජධානියේ ජල සම්පාදනයට මෙම ගංගාව මහත් වැදගත්කමක් ගත්තේය." 
+                    },
+
+                    { "name": "මලවතු ඔය", 
+                      "type": "arrow", 
+                      "points": [
+{ "xPercent": 29.8, "yPercent": 50.2 },{ "xPercent": 32.1, "yPercent": 49.8 },{ "xPercent": 34.2, "yPercent": 48.9 },{ "xPercent": 36.0, "yPercent": 47.8 },{ "xPercent": 37.5, "yPercent": 46.2 },{ "xPercent": 38.8, "yPercent": 44.1 },{ "xPercent": 39.7, "yPercent": 42.3 },{ "xPercent": 40.2, "yPercent": 40.8 }
+], 
+                      "color": "#0077be", 
+                      "lineWidth": 12, 
+                      "opacity": 0.7, 
+                      "info": "අනුරාධපුරය හරහා ගලා බසින ගංගාවකි. අනුරාධපුර නගරයේ ජල සම්පාදනයට විශේෂ වැදගත්කමක් ගත්තේය." 
+                    },
+
+{ "name": "බස්නාහිර පළාත", 
+  "type": "region", 
+  "polygonPoints": [
+      { "xPercent": 22.0, "yPercent": 62.7 },      { "xPercent": 23.4, "yPercent": 62.7 },      { "xPercent": 24.9, "yPercent": 62.7 },      { "xPercent": 26.4, "yPercent": 62.0 },      { "xPercent": 27.0, "yPercent": 61.9 },      { "xPercent": 27.8, "yPercent": 62.7 },      { "xPercent": 28.5, "yPercent": 62.7 },      { "xPercent": 29.3, "yPercent": 62.0 },      { "xPercent": 30.7, "yPercent": 62.0 },
+      { "xPercent": 30.7, "yPercent": 62.5 },      { "xPercent": 32.2, "yPercent": 63.2 },      { "xPercent": 32.0, "yPercent": 64.0 },      { "xPercent": 31.1, "yPercent": 64.7 },
+      { "xPercent": 30.9, "yPercent": 65.7 },      { "xPercent": 31.2, "yPercent": 65.8 },      { "xPercent": 32.0, "yPercent": 65.5 },      { "xPercent": 32.2, "yPercent": 65.8 },
+      { "xPercent": 31.4, "yPercent": 67.1 },      { "xPercent": 31.4, "yPercent": 68.3 },      { "xPercent": 31.9, "yPercent": 69.2 },      { "xPercent": 32.7, "yPercent": 69.7 },
+      { "xPercent": 32.3, "yPercent": 70.7 },      { "xPercent": 31.6, "yPercent": 71.3 },      { "xPercent": 31.6, "yPercent": 71.8 },      { "xPercent": 32.1, "yPercent": 72.4 },
+      { "xPercent": 31.4, "yPercent": 73.2 },      { "xPercent": 31.9, "yPercent": 73.9 },      { "xPercent": 32.0, "yPercent": 74.9 },      { "xPercent": 33.1, "yPercent": 76.1 },
+      { "xPercent": 34.2, "yPercent": 77.3 },      { "xPercent": 34.9, "yPercent": 77.9 },      { "xPercent": 34.7, "yPercent": 78.6 },      { "xPercent": 35.7, "yPercent": 79.7 },
+      { "xPercent": 36.6, "yPercent": 80.7 },      { "xPercent": 35.9, "yPercent": 81.4 },      { "xPercent": 34.5, "yPercent": 81.8 },      { "xPercent": 33.8, "yPercent": 82.8 },
+      { "xPercent": 32.5, "yPercent": 82.0 },      { "xPercent": 31.6, "yPercent": 82.3 },      { "xPercent": 31.2, "yPercent": 82.7 },      { "xPercent": 29.4, "yPercent": 82.3 },      { "xPercent": 27.7, "yPercent": 81.3 },      { "xPercent": 26.9, "yPercent": 81.3 },      { "xPercent": 25.4, "yPercent": 80.8 },      { "xPercent": 24.8, "yPercent": 80.8 },      { "xPercent": 24.7, "yPercent": 80.5 },      { "xPercent": 24.5, "yPercent": 78.8 },      { "xPercent": 23.7, "yPercent": 77.9 },      { "xPercent": 23.9, "yPercent": 77.1 },      { "xPercent": 23.5, "yPercent": 76.5 },
+      { "xPercent": 23.0, "yPercent": 75.5 },      { "xPercent": 22.7, "yPercent": 74.6 },      { "xPercent": 22.1, "yPercent": 73.2 },      { "xPercent": 21.3, "yPercent": 72.2 },
+      { "xPercent": 21.5, "yPercent": 71.3 },      { "xPercent": 21.0, "yPercent": 69.9 },      { "xPercent": 21.2, "yPercent": 69.2 },      { "xPercent": 21.6, "yPercent": 69.2 },      { "xPercent": 22.1, "yPercent": 68.6 },      { "xPercent": 22.0, "yPercent": 68.1 },      { "xPercent": 21.6, "yPercent": 67.3 },
+      { "xPercent": 21.2, "yPercent": 65.9 },      { "xPercent": 21.0, "yPercent": 65.2 },      { "xPercent": 20.8, "yPercent": 64.3 },      { "xPercent": 21.5, "yPercent": 63.6 }
+  ], 
+  "color": "rgba(255, 140, 0, 0.3)", 
+  "strokeColor": "orange", 
+  "strokeWidth": 2, 
+  "info": "ශ්‍රී ලංකාවේ වාණිජ මධ්‍යස්ථානය. කොළඹ, ගම්පහ සහ කළුතර දිස්ත්‍රික්ක මෙයට අයත් වේ." 
+},
+
+{ "name": "දකුණු පළාත", 
+  "type": "region", 
+  "polygonPoints": [
+{ "xPercent": 76.6, "yPercent": 81.0 },{ "xPercent": 75.7, "yPercent": 81.9 },{ "xPercent": 74.3, "yPercent": 82.4 },
+{ "xPercent": 73.1, "yPercent": 83.0 },{ "xPercent": 72.7, "yPercent": 83.2 },{ "xPercent": 72.2, "yPercent": 83.7 },{ "xPercent": 70.5, "yPercent": 84.0 },{ "xPercent": 69.1, "yPercent": 84.9 },{ "xPercent": 68.4, "yPercent": 84.9 },
+{ "xPercent": 68.1, "yPercent": 85.2 },{ "xPercent": 67.4, "yPercent": 85.3 },{ "xPercent": 67.3, "yPercent": 85.8 },{ "xPercent": 64.7, "yPercent": 86.5 },{ "xPercent": 64.5, "yPercent": 87.2 },{ "xPercent": 60.7, "yPercent": 87.9 },
+{ "xPercent": 60.6, "yPercent": 87.4 },{ "xPercent": 60.4, "yPercent": 87.3 },{ "xPercent": 59.9, "yPercent": 87.6 },{ "xPercent": 60.0, "yPercent": 87.9 },{ "xPercent": 59.3, "yPercent": 88.1 },{ "xPercent": 58.6, "yPercent": 87.9 },
+{ "xPercent": 58.6, "yPercent": 88.4 },{ "xPercent": 57.1, "yPercent": 88.7 },{ "xPercent": 55.7, "yPercent": 88.5 },{ "xPercent": 53.6, "yPercent": 89.1 },{ "xPercent": 52.9, "yPercent": 89.0 },{ "xPercent": 52.8, "yPercent": 88.7 },
+{ "xPercent": 52.3, "yPercent": 88.7 },{ "xPercent": 52.4, "yPercent": 89.1 },{ "xPercent": 52.1, "yPercent": 89.3 },{ "xPercent": 51.9, "yPercent": 89.3 },{ "xPercent": 50.3, "yPercent": 89.8 },{ "xPercent": 48.9, "yPercent": 89.8 },
+{ "xPercent": 48.1, "yPercent": 90.6 },{ "xPercent": 47.3, "yPercent": 90.6 },{ "xPercent": 47.0, "yPercent": 91.0 },{ "xPercent": 45.5, "yPercent": 91.3 },{ "xPercent": 44.3, "yPercent": 91.3 },{ "xPercent": 42.0, "yPercent": 91.8 },
+{ "xPercent": 41.5, "yPercent": 91.6 },{ "xPercent": 40.3, "yPercent": 91.6 },{ "xPercent": 40.1, "yPercent": 91.5 },{ "xPercent": 39.1, "yPercent": 91.6 },{ "xPercent": 38.1, "yPercent": 91.3 },{ "xPercent": 37.6, "yPercent": 90.8 },
+{ "xPercent": 36.8, "yPercent": 91.2 },{ "xPercent": 36.0, "yPercent": 90.9 },{ "xPercent": 35.2, "yPercent": 90.9 },{ "xPercent": 33.3, "yPercent": 90.1 },
+{ "xPercent": 32.8, "yPercent": 90.1 },{ "xPercent": 32.2, "yPercent": 89.9 },{ "xPercent": 31.3, "yPercent": 89.5 },{ "xPercent": 31.3, "yPercent": 89.1 },{ "xPercent": 30.9, "yPercent": 89.2 },{ "xPercent": 29.4, "yPercent": 88.7 },
+{ "xPercent": 27.4, "yPercent": 86.8 },{ "xPercent": 27.4, "yPercent": 86.2 },{ "xPercent": 26.8, "yPercent": 85.9 },{ "xPercent": 25.8, "yPercent": 84.3 },{ "xPercent": 25.6, "yPercent": 83.0 },{ "xPercent": 24.9, "yPercent": 81.2 },
+{ "xPercent": 25.1, "yPercent": 81.0 },{ "xPercent": 26.6, "yPercent": 81.2 },{ "xPercent": 26.9, "yPercent": 81.5 },{ "xPercent": 27.7, "yPercent": 81.4 },{ "xPercent": 29.1, "yPercent": 82.2 },{ "xPercent": 30.8, "yPercent": 82.7 },
+{ "xPercent": 31.8, "yPercent": 82.2 },{ "xPercent": 32.7, "yPercent": 82.2 },{ "xPercent": 33.6, "yPercent": 82.8 },{ "xPercent": 34.5, "yPercent": 82.6 },{ "xPercent": 34.3, "yPercent": 81.9 },{ "xPercent": 34.7, "yPercent": 81.5 },
+{ "xPercent": 36.0, "yPercent": 81.4 },{ "xPercent": 36.4, "yPercent": 80.8 },{ "xPercent": 38.1, "yPercent": 81.8 },{ "xPercent": 39.3, "yPercent": 82.0 },{ "xPercent": 40.3, "yPercent": 82.5 },{ "xPercent": 42.8, "yPercent": 82.2 },
+{ "xPercent": 43.9, "yPercent": 82.3 },{ "xPercent": 43.8, "yPercent": 83.0 },{ "xPercent": 45.0, "yPercent": 82.9 },{ "xPercent": 45.4, "yPercent": 83.6 },{ "xPercent": 49.7, "yPercent": 84.8 },{ "xPercent": 50.3, "yPercent": 85.1 },
+{ "xPercent": 53.0, "yPercent": 85.7 },{ "xPercent": 52.4, "yPercent": 84.8 },{ "xPercent": 52.4, "yPercent": 84.1 },{ "xPercent": 55.2, "yPercent": 83.5 },{ "xPercent": 55.6, "yPercent": 82.2 },
+{ "xPercent": 56.9, "yPercent": 82.6 },{ "xPercent": 56.9, "yPercent": 82.0 },{ "xPercent": 58.5, "yPercent": 81.9 },{ "xPercent": 59.3, "yPercent": 82.6 },{ "xPercent": 60.2, "yPercent": 82.5 },
+{ "xPercent": 62.4, "yPercent": 83.9 },{ "xPercent": 63.8, "yPercent": 83.5 },{ "xPercent": 64.0, "yPercent": 83.0 },{ "xPercent": 65.2, "yPercent": 83.1 },{ "xPercent": 66.8, "yPercent": 82.4 },{ "xPercent": 68.1, "yPercent": 82.3 },
+{ "xPercent": 69.3, "yPercent": 82.1 },{ "xPercent": 69.7, "yPercent": 81.1 },{ "xPercent": 71.5, "yPercent": 79.9 },{ "xPercent": 73.9, "yPercent": 79.4 },{ "xPercent": 74.9, "yPercent": 80.3 },{ "xPercent": 76.8, "yPercent": 80.8 }
+  ], 
+  "color": "rgba(30, 144, 255, 0.3)", 
+  "strokeColor": "blue", 
+  "strokeWidth": 2, 
+  "info": "ගාල්ල, මාතර හා හම්බන්තොට දිස්ත්‍රික්ක වලින් සමන්විත වේ." 
+},
+
+{ "name": "සබරගමු පළාත", 
+  "type": "region", 
+  "polygonPoints": [
+      { "xPercent": 32.2, "yPercent": 63.2 },
+      { "xPercent": 40.1, "yPercent": 62.8 },
+      { "xPercent": 44.8, "yPercent": 62.5 },
+      { "xPercent": 47.2, "yPercent": 63.1 },
+      { "xPercent": 50.1, "yPercent": 62.8 },
+      { "xPercent": 52.8, "yPercent": 64.2 },
+      { "xPercent": 54.5, "yPercent": 66.8 },
+      { "xPercent": 53.2, "yPercent": 69.1 },
+      { "xPercent": 51.4, "yPercent": 71.2 },
+      { "xPercent": 48.9, "yPercent": 72.8 },
+      { "xPercent": 46.1, "yPercent": 73.5 },
+      { "xPercent": 43.2, "yPercent": 73.9 },
+      { "xPercent": 40.8, "yPercent": 73.2 },
+      { "xPercent": 38.5, "yPercent": 72.1 },
+      { "xPercent": 36.4, "yPercent": 70.5 },
+      { "xPercent": 34.7, "yPercent": 68.6 },
+      { "xPercent": 33.1, "yPercent": 66.1 },
+      { "xPercent": 32.0, "yPercent": 64.0 }
+  ], 
+  "color": "rgba(255, 20, 147, 0.3)", 
+  "strokeColor": "purple", 
+  "strokeWidth": 2, 
+  "info": "සබරගමු පළාත රත්නපුර සහ කෑගල්ල දිස්ත්‍රික්ක වලින් සමන්විත වේ." 	
+},
+                 ] },				
+	
+					
                 india_al: { url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/IND-with-MB_2019a-scaled.jpg", displayName: "උසස් පෙළ ඉන්දියා සිතියම", places: [ 
-					{ name: "බොම්බාය", xPercent: 30.8, yPercent: 61.3, info: "මුම්බායි නගරය ඉන්දියාවේ ප්‍රධාන වාණිජ හා මූල්‍ය මධ්‍යස්ථානය වෙයි. එය මුලින් පෘතුගීසීන් විසින් පාලනය කරන ලදි." }, 
-					{ name: "කල්කටා", xPercent: 74.1, yPercent: 52.3, info: " " }, 
-					{ name: "බරණැස්(වාරාණසි)", xPercent: 57.6, yPercent: 46.5, info: "ගංගා නදිය අසල පිහිටි මෙම ඓතිහාසික නගරය හින්දු ආගමික කටයුතු සඳහා වැදගත් මධ්‍යස්ථානයක් ලෙස පවතී." }, 
-					{ name: "පාටලිපුත්‍ර(පැට්නා)", xPercent: 63.5, yPercent: 44.9, info: "මෞර්ය අධිරාජ්‍යයේ අගනුවර වූ මෙම නගරය අශෝක අධිරාජයාගේ පාලන කාලයේදී විශේෂ වැදගත්කමක් දැරීය." }, 
-					] },
+					{ "name": "බොම්බාය", "type": "point", xPercent: 30.8, yPercent: 61.3, info: "මුම්බායි නගරය ඉන්දියාවේ ප්‍රධාන වාණිජ හා මූල්‍ය මධ්‍යස්ථානය වෙයි. එය මුලින් පෘතුගීසීන් විසින් පාලනය කරන ලදි." }, 
+					{ "name": "කල්කටා", "type": "point", xPercent: 74.1, yPercent: 52.3, info: " " }, 
+					{ "name": "බරණැස්(වාරාණසි)", "type": "point", xPercent: 57.6, yPercent: 46.5, info: "ගංගා නදිය අසල පිහිටි මෙම ඓතිහාසික නගරය හින්දු ආගමික කටයුතු සඳහා වැදගත් මධ්‍යස්ථානයක් ලෙස පවතී." }, 
+					{ "name": "පාටලිපුත්‍ර(පැට්නා)", "type": "point", xPercent: 63.5, yPercent: 44.9, info: "මෞර්ය අධිරාජ්‍යයේ අගනුවර වූ මෙම නගරය අශෝක අධිරාජයාගේ පාලන කාලයේදී විශේෂ වැදගත්කමක් දැරීය." }, 
+				] },
                
 			   europe_al: { url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web_Europe-01-scaled.jpg", displayName: "උසස් පෙළ යුරෝපා සිතියම", places: [ 
-					{ name: "ලන්ඩන්", xPercent: 26.3, yPercent: 46.2, info: "බ්‍රිතාන්‍ය අධිරාජ්‍යයේ අගනුවර ලෙස ලන්ඩනය ලෝක ඉතිහාසයේ වැදගත් වෙයි. එය තේම්ස් ගංඟාව අසල පිහිටා ඇත." }, 
-					{ name: "පැරිස්", xPercent: 26.5, yPercent: 53.0, info: "ප්‍රංශ අධිරාජ්‍යයේ අගනුවර ලෙස සහ යුරෝපීය නැවෝදයේ වැදගත් මධ්‍යස්ථානයක් වූ පැරිස් නගරය ලෝක ඉතිහාසයට බෙහෙවින් බලපෑවේය." }, 
-					{ name: "රෝමය", xPercent: 36.4, yPercent: 76.0, info: "රෝම අධිරාජ්‍යයේ අගනුවර වූ රෝමය ලෝක ඉතිහාසයේ වැදගත්ම නගරයක් ලෙස සැලකේ. පාප්වරුන්ගේ බලකොටුව ද මෙහි පිහිටා ඇත." }, 
-					{ name: "බර්ලින්", xPercent: 38.3, yPercent: 50.5, info: "ජර්මනියේ අගනුවර වන බර්ලින් නගරය දෙවන ලෝක යුද්ධය අවසානයේ සීතල යුද්ධයේ කේන්ද්‍රස්ථානයක් විය." },
-					] },
+					{ "name": "ලන්ඩන්", "type": "point", xPercent: 26.3, yPercent: 46.2, info: "බ්‍රිතාන්‍ය අධිරාජ්‍යයේ අගනුවර ලෙස ලන්ඩනය ලෝක ඉතිහාසයේ වැදගත් වෙයි. එය තේම්ස් ගංඟාව අසල පිහිටා ඇත." }, 
+					{ "name": "පැරිස්", "type": "point", xPercent: 26.5, yPercent: 53.0, info: "ප්‍රංශ අධිරාජ්‍යයේ අගනුවර ලෙස සහ යුරෝපීය නැවෝදයේ වැදගත් මධ්‍යස්ථානයක් වූ පැරිස් නගරය ලෝක ඉතිහාසයට බෙහෙවින් බලපෑවේය." }, 
+					{ "name": "රෝමය", "type": "point", xPercent: 36.4, yPercent: 76.0, info: "රෝම අධිරාජ්‍යයේ අගනුවර වූ රෝමය ලෝක ඉතිහාසයේ වැදගත්ම නගරයක් ලෙස සැලකේ. පාප්වරුන්ගේ බලකොටුව ද මෙහි පිහිටා ඇත." }, 
+					{ "name": "බර්ලින්", "type": "point", xPercent: 38.3, yPercent: 50.5, info: "ජර්මනියේ අගනුවර වන බර්ලින් නගරය දෙවන ලෝක යුද්ධය අවසානයේ සීතල යුද්ධයේ කේන්ද්‍රස්ථානයක් විය." },
+				] },
                 
 				sl_ol: { url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web-සා-පෙළ-ලංකා-01.jpg", displayName: "සාමාන්‍ය පෙළ ලංකා සිතියම", places: [ 
-					{ name: "අනුරාධපුරය", xPercent: 37.9, yPercent: 41.6, info: "ශ්‍රී ලංකාවේ පළමු අගනුවර. වසර 1400 කට වැඩි කාලයක් අගනුවර ලෙස පැවතුණි." }, 
-					{ name: "මහනුවර", xPercent: 45.5, yPercent: 67.0, info: "ශ්‍රී ලංකාවේ අවසාන ස්වාධීන රාජධානිය. 1815 දී බ්‍රිතාන්‍යයන්ට යටත් විය." }, 
-					{ name: "පොළොන්නරුව", xPercent: 57.3, yPercent: 52.3, info: "දෙවන මහා නගරය ලෙස වසර 250ක පමණ කාලයක් පැවතුණි." }, 
-					] },
-               
-			   eurasia_ol: { url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/web-Eurasia-map-01.jpg", displayName: "සාමාන්‍ය පෙළ යුරේසියා සිතියම", places: [ 
-					{ name: "රෝමය", xPercent: 19.7, yPercent: 49.2, info: "රෝම අධිරාජ්‍යයේ අගනුවර වූ රෝමය ලෝක ඉතිහාසයේ වැදගත්ම නගරයක් ලෙස සැලකේ. පාප්වරුන්ගේ බලකොටුව ද මෙහි පිහිටා ඇත." }, 
-					{ name: "මොස්කව්", xPercent: 31.8, yPercent: 34.1, info: "රුසියාවේ අගනුවර වන මොස්කව් නගරය, සෝවියට් සංගමයේ කේන්ද්‍රස්ථානය ලෙස තිබුණි." }, 
-					{ name: "බීජිං", xPercent: 68.4, yPercent: 50.6, info: "චීනයේ අගනුවර වන බීජිං නගරය, පැරණි චීන අධිරාජ්‍යයේ කේන්ද්‍රස්ථානයකි." }, 
-					{ name: "ටෝකියෝ", xPercent: 80.0, yPercent: 53.4, info: "ජපානයේ අගනුවර වන ටෝකියෝ නගරය, මෙයිජි යුගයේ සිට ජපානයේ ආර්ථික හා දේශපාලන කේන්ද්‍රස්ථානය වේ." },	 
-					] }
+					{ "name": "අනුරාධපුරය", "type": "point", xPercent: 37.9, yPercent: 41.6, info: "ශ්‍රී ලංකාවේ පළමු අගනුවර. වසර 1400 කට වැඩි කාලයක් අගනුවර ලෙස පැවතුණි." }, 
+					{ "name": "මහනුවර", "type": "point", xPercent: 45.5, yPercent: 67.0, info: "ශ්‍රී ලංකාවේ අවසාන ස්වාධීන රාජධානිය. 1815 දී බ්‍රිතාන්‍යයන්ට යටත් විය." }, 
+					{ "name": "පොළොන්නරුව", "type": "point", xPercent: 57.3, yPercent: 52.3, info: "දෙවන මහා නගරය ලෙස වසර 250ක පමණ කාලයක් පැවතුණි." }, 
+					{ "name": "දඹකොළපටුන", "type": "point", "xPercent": 25.4, "yPercent": 7.4, "info": "#" },
+					{ "name": "කන්දරෝඩය(කදුරුගොඩ)", "type": "point", "xPercent": 26.0, "yPercent": 8.7, "info": "#" },
+					{ "name": "හැමන්හිල්", "type": "point", "xPercent": 22.4, "yPercent": 9.1, "info": "#" },
+					{ "name": "නල්ලූර්", "type": "point", "xPercent": 28.5, "yPercent": 10.2, "info": "#" },
+					{ "name": "වල්ලිපුරම්", "type": "point", "xPercent": 33.9, "yPercent": 7.2, "info": "#" },
+					{ "name": "සූකරතිත්ථ", "type": "point", "xPercent": 23.4, "yPercent": 10.6, "info": "#" },
+					{ "name": "අලිමංකඩ", "type": "point", "xPercent": 38.3, "yPercent": 13.5, "info": "#" },
+				] },
             };
             
-            mapImage.src = maps[currentMapKey].url;
+           mapImage.src = maps[currentMapKey].url;
             populatePlacesList(maps[currentMapKey].places);
             createAlphabetButtons();
             
             mapImage.onload = function() {
+                // Set map wrapper dimensions to natural image size
                 mapWrapper.style.width = this.naturalWidth + 'px';
-                mapWrapper.style.height = this.naturalHeight + 'px'; // Ensure wrapper takes image height
+                mapWrapper.style.height = this.naturalHeight + 'px'; 
+                // Set SVG viewBox to natural image size for coordinate mapping
+                mapOverlaySVG.setAttribute('viewBox', `0 0 ${this.naturalWidth} ${this.naturalHeight}`);
                 centerMapInView();
             };
 
@@ -783,11 +947,47 @@
                     selectedListItem.classList.add('active');
                 }
                 
-                const xPos = (place.xPercent / 100) * mapImage.width;
-                const yPos = (place.yPercent / 100) * mapImage.height;
+                // Clear previous drawings on the map and hide point markers
+                clearMapOverlay();
+                hidePointMarkers();
+
+                // Draw ONLY the selected feature - this was the main bug fix
+                drawFeature(place);
                 
-                showMarker(xPos, yPos, place.name, place.info);
-                centerMapOnPoint(xPos, yPos);
+                // Update info bar and tooltip
+                infoContent.textContent = place.info;
+                tooltip.textContent = place.name;
+                
+                // Position tooltip relative to the main point of the feature (if applicable)
+                let tooltipX, tooltipY;
+                if (place.type === 'point') {
+                    tooltipX = (place.xPercent / 100) * mapImage.naturalWidth;
+                    tooltipY = (place.yPercent / 100) * mapImage.naturalHeight;
+                } else if (place.type === 'arrow' && place.points && place.points.length > 0) {
+                    // Use the last point of the arrow for tooltip positioning
+                    const lastPoint = place.points[place.points.length - 1];
+                    tooltipX = (lastPoint.xPercent / 100) * mapImage.naturalWidth;
+                    tooltipY = (lastPoint.yPercent / 100) * mapImage.naturalHeight;
+                } else if (place.type === 'region' && place.polygonPoints && place.polygonPoints.length > 0) {
+                    // Calculate centroid for better tooltip positioning
+                    let sumX = 0, sumY = 0;
+                    place.polygonPoints.forEach(point => {
+                        sumX += point.xPercent;
+                        sumY += point.yPercent;
+                    });
+                    tooltipX = (sumX / place.polygonPoints.length / 100) * mapImage.naturalWidth;
+                    tooltipY = (sumY / place.polygonPoints.length / 100) * mapImage.naturalHeight;
+                }
+
+                if (tooltipX !== undefined && tooltipY !== undefined) {
+                    tooltip.style.left = (tooltipX + 15) + 'px'; 
+                    tooltip.style.top = (tooltipY + 15) + 'px';  
+                    tooltip.style.display = 'block';
+                    centerMapOnPoint(tooltipX, tooltipY); // Center map on the feature's main point
+                } else {
+                    tooltip.style.display = 'none'; // Hide tooltip if no valid position
+                }
+
                 activePlace = place;
                 
                 // Hide alphabet/show all buttons and show back button
@@ -801,7 +1001,6 @@
                 listItem.classList.add('active'); // Add active class to the single selected item
                 placesListUL.appendChild(listItem);
 
-
                 // Clear search input and hide suggestions when a place is selected
                 placeSearchInput.value = '';
                 suggestionsList.innerHTML = '';
@@ -812,18 +1011,58 @@
                 mapDropdown.classList.remove('show'); 
             }
 
-            function showMarker(x, y, name, info) {
-                locationMarker.style.left = x + 'px';
-                locationMarker.style.top = y + 'px';
-                locationMarker.style.display = 'block';
-                locationRing.style.left = x + 'px';
-                locationRing.style.top = y + 'px';
-                locationRing.style.display = 'block';
-                infoContent.textContent = info;
-                tooltip.textContent = name;
-                tooltip.style.left = (x + 15) + 'px'; 
-                tooltip.style.top = (y + 15) + 'px';  
-                tooltip.style.display = 'block';
+            // Function to draw features on the SVG overlay - FIXED VERSION
+            function drawFeature(place) {
+                const mapWidth = mapImage.naturalWidth;
+                const mapHeight = mapImage.naturalHeight;
+
+                if (place.type === 'point') {
+                    const xPos = (place.xPercent / 100) * mapWidth;
+                    const yPos = (place.yPercent / 100) * mapHeight;
+                    locationMarker.style.left = xPos + 'px';
+                    locationMarker.style.top = yPos + 'px';
+                    locationMarker.style.display = 'block';
+                    locationRing.style.left = xPos + 'px';
+                    locationRing.style.top = yPos + 'px';
+                    locationRing.style.display = 'block';
+                } else if (place.type === 'arrow') {
+                    const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+                    let pointsString = place.points.map(p => 
+                        `${(p.xPercent / 100) * mapWidth},${(p.yPercent / 100) * mapHeight}`
+                    ).join(' ');
+                    polyline.setAttribute('points', pointsString);
+                    polyline.setAttribute('stroke', place.color || 'black');
+                    polyline.setAttribute('stroke-width', place.lineWidth || '3');
+                    polyline.setAttribute('fill', 'none');
+					polyline.setAttribute('opacity', place.opacity || '1');
+                    mapOverlaySVG.appendChild(polyline);
+                } else if (place.type === 'region') {
+                    const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                    let pointsString = place.polygonPoints.map(p => 
+                        `${(p.xPercent / 100) * mapWidth},${(p.yPercent / 100) * mapHeight}`
+                    ).join(' ');
+                    polygon.setAttribute('points', pointsString);
+                    polygon.setAttribute('fill', place.color || 'rgba(255, 0, 0, 0.3)');
+                    polygon.setAttribute('stroke', place.strokeColor || 'red');
+                    polygon.setAttribute('stroke-width', place.strokeWidth || '2');
+                    mapOverlaySVG.appendChild(polygon);
+                }
+            }
+
+            // Function to clear all dynamic SVG elements
+            function clearMapOverlay() {
+                // Clear all child elements except the <defs> element
+                const defsElement = mapOverlaySVG.querySelector('defs');
+                mapOverlaySVG.innerHTML = '';
+                if (defsElement) {
+                    mapOverlaySVG.appendChild(defsElement);
+                }
+            }
+
+            // Function to hide point markers
+            function hidePointMarkers() {
+                locationMarker.style.display = 'none';
+                locationRing.style.display = 'none';
             }
 
             function centerMapInView() {
@@ -902,8 +1141,8 @@
             }
 
             function resetView() {
-                locationMarker.style.display = 'none';
-                locationRing.style.display = 'none';
+                clearMapOverlay(); // Clear SVG drawings
+                hidePointMarkers(); // Hide point markers
                 tooltip.style.display = 'none';
                 infoContent.textContent = 'ස්ථානයක් තෝරන්න'; // Reset info bar text
                 centerMapInView();
@@ -985,7 +1224,6 @@
                     mapDropdown.classList.remove('show');
                 }
             });
-
 
             footerResetButton.addEventListener('click', resetView);
 
