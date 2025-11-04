@@ -23,8 +23,8 @@
             overflow: hidden;
         }
 
-        /* Tab Navigation */
-        .tabs-container {
+        /* Map Selector Dropdown */
+        .map-selector-container {
             position: fixed;
             top: 0;
             left: 0;
@@ -32,62 +32,34 @@
             z-index: 21;
             background-color: #114704;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            padding: 10px 15px;
         }
 
-        .tabs {
-            display: flex;
-            overflow-x: auto;
-            overflow-y: hidden;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            scroll-behavior: smooth;
-        }
-        .tabs::-webkit-scrollbar {
-            display: none;
-        }
-
-        .tab {
-            flex: 0 0 auto;
-            padding: 12px 20px;
-            background-color: #114704;
+        .map-selector-label {
             color: white;
-            border: none;
-            cursor: pointer;
-            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
-            font-size: 0.9em;
-            white-space: nowrap;
-            transition: background-color 0.3s;
-            border-bottom: 3px solid transparent;
-        }
-        .tab:hover {
-            background-color: #2c6809;
-        }
-        .tab.active {
-            background-color: #2c6809;
-            border-bottom-color: #77b708;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+            display: block;
             font-weight: bold;
         }
 
-        /* Scroll indicator for tabs */
-        .tabs-container::after {
-            content: '→';
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.2em;
-            pointer-events: none;
-            animation: slideHint 1.5s infinite;
+        #mapSelector {
+            width: 100%;
+            padding: 10px;
+            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
+            font-size: 0.95em;
+            border: 2px solid #77b708;
+            border-radius: 6px;
+            background-color: white;
+            color: #114704;
+            cursor: pointer;
+            font-weight: 500;
         }
-        
-        @keyframes slideHint {
-            0%, 100% { opacity: 0.7; transform: translateY(-50%) translateX(0); }
-            50% { opacity: 1; transform: translateY(-50%) translateX(3px); }
-        }
-        
-        .tabs-container.scrolled::after {
-            display: none;
+
+        #mapSelector:focus {
+            outline: none;
+            border-color: #77b708;
+            box-shadow: 0 0 5px rgba(119, 183, 8, 0.5);
         }
 
         /* Info Bar */
@@ -96,7 +68,7 @@
             color: #000000;
             padding: 8px 15px;
             position: fixed;
-            top: 46px;
+            top: 72px;
             left: 0;
             right: 0;
             z-index: 20;
@@ -131,9 +103,9 @@
             display: flex;
             flex-direction: column;
             width: 100%;
-            height: calc(100vh - 111px); /* tabs(46px) + info-bar(30px) + footer(35px) */
-            margin-top: 81px; /* tabs + info-bar */
-            margin-bottom: 35px; /* footer height */
+            height: calc(100vh - 142px);
+            margin-top: 107px;
+            margin-bottom: 35px;
         }
         
         /* Popup Styles */
@@ -436,32 +408,35 @@
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
-            .tabs-container {
-                overflow-x: auto;
+            .map-selector-container {
+                padding: 8px 10px;
             }
-            .tabs {
-                padding-bottom: 2px; /* Space for scroll indicator */
+            .map-selector-label {
+                font-size: 0.8em;
+                margin-bottom: 4px;
             }
-            .tab {
-                padding: 10px 16px;
-                font-size: 0.82em;
+            #mapSelector {
+                padding: 8px;
+                font-size: 0.9em;
             }
             .info-bar {
-                flex-direction: column;
+                flex-direction: row;
+                flex-wrap: wrap;
                 gap: 8px;
                 padding: 8px 10px;
-                top: 46px;
+                top: 64px;
             }
             .info-bar-content {
                 font-size: 0.85em;
+                flex: 1 1 100%;
             }
             #togglePlaceListButton {
                 padding: 6px 10px;
                 font-size: 0.8em;
             }
             .container {
-                margin-top: 110px; /* Adjusted for mobile */
-                height: calc(100vh - 155px); /* tabs(46px) + info-bar(80px mobile) + footer(29px) */
+                margin-top: 112px;
+                height: calc(100vh - 146px);
                 margin-bottom: 29px;
             }
             .footer {
@@ -487,14 +462,15 @@
     </style>
 </head>
 <body>
-    <div class="tabs-container">
-        <div class="tabs" id="mapTabs">
-            <button class="tab active" data-map="sl_al">උසස් පෙළ ලංකා සිතියම</button>
-            <button class="tab" data-map="india_al">උසස් පෙළ ඉන්දියා සිතියම</button>
-            <button class="tab" data-map="europe_al">උසස් පෙළ යුරෝපා සිතියම</button>
-            <button class="tab" data-map="sl_ol">සාමාන්‍ය පෙළ ලංකා සිතියම</button>
-			<button class="tab" data-map="eurasia_ol">සාමාන්‍ය පෙළ ලංකා සිතියම</button>
-        </div>
+    <div class="map-selector-container">
+        <label class="map-selector-label" for="mapSelector">සිතියම තෝරන්න:</label>
+        <select id="mapSelector">
+            <option value="sl_al" selected>උසස් පෙළ ලංකා සිතියම</option>
+            <option value="india_al">උසස් පෙළ ඉන්දියා සිතියම</option>
+            <option value="europe_al">උසස් පෙළ යුරෝපා සිතියම</option>
+            <option value="sl_ol">සාමාන්‍ය පෙළ ලංකා සිතියම</option>
+            <option value="eurasia_ol">සාමාන්‍ය පෙළ යුරේසියා සිතියම</option>
+        </select>
     </div>
 
     <div class="info-bar">
@@ -555,21 +531,11 @@
             const infoContent = document.getElementById('infoContent');
             const placeSearchInput = document.getElementById('placeSearchInput');
             const suggestionsList = document.getElementById('suggestionsList');
-            const mapTabs = document.getElementById('mapTabs');
-            const tabsContainer = document.querySelector('.tabs-container');
+            const mapSelector = document.getElementById('mapSelector');
 
             let activePlace = null;
             let activeLetterFilter = null;
             let currentMapKey = 'sl_al';
-            
-            // Tabs scroll indicator
-            mapTabs.addEventListener('scroll', function() {
-                if (this.scrollLeft > 10) {
-                    tabsContainer.classList.add('scrolled');
-                } else {
-                    tabsContainer.classList.remove('scrolled');
-                }
-            });
             
             // Touch handling
             document.addEventListener('touchmove', function(e) {
@@ -579,7 +545,7 @@
                 e.preventDefault();
             }, { passive: false });
 
-            // Map data (sample data only)
+            // Map data
             const maps = {
                 sl_al: { url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/AL-ලංකා-01-01-1.jpg",
                     displayName: "උසස් පෙළ ලංකා සිතියම",
@@ -2493,15 +2459,11 @@
  	
 			};
 
-            // Tab Navigation
-            mapTabs.addEventListener('click', function(e) {
-                if (e.target.classList.contains('tab')) {
-                    const mapKey = e.target.getAttribute('data-map');
-                    if (mapKey && maps[mapKey]) {
-                        switchMap(mapKey);
-                        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-                        e.target.classList.add('active');
-                    }
+            // Dropdown change event
+            mapSelector.addEventListener('change', function() {
+                const mapKey = this.value;
+                if (maps[mapKey]) {
+                    switchMap(mapKey);
                 }
             });
 
@@ -2878,4 +2840,3 @@
     </script>
 </body>
 </html>
-
