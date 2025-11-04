@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Smart සිතියම් පොත</title>
     <style>
-        /* pull-to-refresh වැළැක්වීමට වඩාත් කාර්යක්ෂම කේතය */
         html {
             height: 100%;
             width: 100%;
@@ -24,12 +23,56 @@
             overflow: hidden;
         }
 
+        /* Tab Navigation */
+        .tabs-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 21;
+            background-color: #114704;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            flex: 0 0 auto;
+            padding: 12px 20px;
+            background-color: #114704;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
+            font-size: 0.9em;
+            white-space: nowrap;
+            transition: background-color 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab:hover {
+            background-color: #2c6809;
+        }
+        .tab.active {
+            background-color: #2c6809;
+            border-bottom-color: #77b708;
+            font-weight: bold;
+        }
+
+        /* Info Bar */
         .info-bar {
             background-color: #d4edda;
             color: #000000;
-            padding: 8px 15px; /* Adjusted padding */
+            padding: 8px 15px;
             position: fixed;
-            top: 0;
+            top: 46px;
             left: 0;
             right: 0;
             z-index: 20;
@@ -43,7 +86,7 @@
             flex-grow: 1;
             font-size: 0.9em;
         }
-        
+
         #togglePlaceListButton {
             background-color: #114704;
             color: white;
@@ -52,41 +95,41 @@
             border-radius: 4px;
             cursor: pointer;
             font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
-            font-size: 0.9em;
-            margin-left: 10px;
+            font-size: 0.85em;
+            white-space: nowrap;
         }
         #togglePlaceListButton:hover {
             background-color: #2c6809;
         }
 
-
-        .container { /* This will now primarily hold the map */
+        /* Container */
+        .container {
             display: flex;
-            flex-direction: column; /* Map container will take full space */
+            flex-direction: column;
             width: 100%;
-            height: calc(100vh - 70px); /* Adjusted for new info-bar (approx 30px) and footer (40px) heights */
-            margin-top: 35px; /* Approximate height of info-bar */
-            margin-bottom: 40px; /* Space for footer */
+            height: calc(100vh - 116px);
+            margin-top: 81px;
+            margin-bottom: 40px;
         }
         
-        /* POPUP STYLES for .place-list */
+        /* Popup Styles */
         .place-list {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90vw;
-            max-width: 450px; /* Max width for the popup */
+            max-width: 450px;
             height: 85vh;
-            max-height: 600px; /* Max height for the popup */
+            max-height: 600px;
             background-color: #fff;
-            padding: 0; /* Padding will be on inner content */
+            padding: 0;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             border-radius: 8px;
             z-index: 100;
-            display: none; /* Hidden by default */
+            display: none;
             flex-direction: column;
-            overflow: hidden; /* Scroll will be on an inner div */
+            overflow: hidden;
         }
 
         .place-list.visible {
@@ -97,20 +140,18 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border-bottom: 1px solid #ddd;
             background-color: #f0f0f0;
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;
         }
-        .place-list-popup-header .place-list-header-text { /* Re-styling for popup context */
-             font-size: 1.2em;
+        
+        .place-list-popup-header .place-list-header-text {
+             font-size: 1.1em;
              font-weight: bold;
+             color: #114704;
         }
-         .place-list-popup-header .dropdown-arrow {
-            cursor: pointer;
-         }
-
 
         #closePopupButton {
             background: none;
@@ -125,55 +166,24 @@
             color: #000;
         }
 
-        .place-list-content-wrapper { /* New wrapper for scrolling content */
+        .place-list-content-wrapper {
             padding: 15px;
             overflow-y: auto;
-            flex-grow: 1; /* Takes remaining space in the flex column of .place-list */
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
         }
 
-
-        /* Modified header styling to include dropdown - now inside popup header */
-        .place-list-header { /* This will now be part of place-list-popup-header for map name */
-            color: #333;
-            /* border-bottom: 2px solid #8b4513; */ /* Handled by popup header border */
-            /* padding-bottom: 10px; */
-            margin-top: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between; /* For map name and arrow */
-            cursor: pointer;
-            user-select: none;
-            flex-grow: 1; /* Takes space next to close button */
-        }
-
-        /* Dropdown menu relative to the popup */
-        .dropdown-menu {
-            display: none;
-            position: absolute; /* Relative to .place-list or its header part */
-            background-color: white;
-            /* width: 100%; */ /* Adjust width as needed, maybe not full width of popup */
-            width: calc(100% - 30px); /* Match padding of content wrapper */
-            left: 15px; /* Align with content padding */
-            top: 50px; /* Position below the popup header */
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            z-index: 105; /* Above popup content but can be tricky */
-            border-radius: 4px;
-            margin-top: 0px;
-        }
-
-
-        .place-list ul { /* #placesList */
+        .place-list ul {
             list-style-type: none;
             padding: 0;
             margin: 0;
-            flex-grow: 1; /* To take space within .place-list-content-wrapper */
-            overflow-y: auto; /* If list itself is very long and other elements are fixed above it */
+            flex-grow: 1;
+            overflow-y: auto;
         }
 
         .place-list li {
-            padding: 8px 10px; /* Slightly reduced padding */
+            padding: 8px 10px;
             border-bottom: 1px solid #eee;
             cursor: pointer;
             transition: background-color 0.3s;
@@ -184,39 +194,42 @@
             background-color: #f0f0f0;
         }
 
-        .map-container { /* Will take full space of .container */
+        .place-list li.active {
+            background-color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        /* Map Container */
+        .map-container {
             flex-grow: 1;
             position: relative;
-            overflow: auto; /* Ensure scrolling is enabled for the container */
+            overflow: auto;
             background-color: #ffffff;
-            height: 100%; /* Ensure it fills the container */
-            -webkit-overflow-scrolling: touch; /* For smoother scrolling on iOS */
+            height: 100%;
+            -webkit-overflow-scrolling: touch;
         }
 
         .map-wrapper {
             position: relative;
-            /* Removed min-width and min-height here. JS will set exact dimensions. */
-            /* Dimensions will be set by JavaScript based on natural image size */
         }
 
         .map-image {
             display: block;
-            width: 100%; /* Ensure image fills the wrapper's width */
-            height: auto; /* Maintain aspect ratio */
+            width: 100%;
+            height: auto;
         }
 
-        /* SVG Overlay Styles */
         #mapOverlaySVG {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 5; /* Above map image, below markers/tooltips */
-            pointer-events: none; /* Allow clicks to pass through to the image */
+            z-index: 5;
+            pointer-events: none;
         }
 
-        /* Marker styles */
+        /* Markers */
         .location-marker { 
             position: absolute; 
             width: 10px; 
@@ -224,7 +237,7 @@
             background-color: red; 
             border-radius: 50%; 
             transform: translate(-50%, -50%); 
-            z-index: 6; /* Above SVG overlay */
+            z-index: 6;
             pointer-events: none; 
         }
         .location-ring { 
@@ -234,7 +247,7 @@
             border: 4px solid red; 
             border-radius: 50%; 
             transform: translate(-50%, -50%); 
-            z-index: 6; /* Above SVG overlay */
+            z-index: 6;
             pointer-events: none; 
             animation: pulse 1s infinite; 
         }
@@ -250,53 +263,46 @@
             border-radius: 4px; 
             font-size: 25px; 
             pointer-events: none; 
-            z-index: 7; /* Above markers */
+            z-index: 7;
             display: none; 
             transform: translateX(100px); 
         }
 
-
-        .place-list li.active {
-            background-color: #e0e0e0;
-            font-weight: bold;
-        }
-
-        /* Alphabet buttons and Show All button inside the popup content wrapper */
+        /* Alphabet Buttons */
         .alphabet-buttons {
             display: flex;
             flex-wrap: wrap;
-            gap: 1px; /* Adjusted gap */
-            padding: 2px 0; /* Adjusted padding */
+            gap: 1px;
+            padding: 2px 0;
             border-bottom: 1px solid #ddd;
-            margin-bottom: 8px; /* Adjusted margin */
+            margin-bottom: 8px;
         }
 
         .alphabet-button {
             background-color: #114704;
             color: white;
             border: none;
-            padding: 4px 8px; /* Adjusted padding */
+            padding: 4px 8px;
             border-radius: 2px;
             cursor: pointer;
             font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
-            font-size: 15px; /* Adjusted font size */
-            min-width: 28px; /* Adjusted min-width */
+            font-size: 15px;
+            min-width: 28px;
             text-align: center;
         }
         .alphabet-button:hover { background-color: #286b05; }
         .alphabet-button.active { background-color: #77b708; box-shadow: 0 0 3px rgba(0,0,0,0.3); }
 
-
-        .show-all-button, #backButton { /* Common styling for these buttons inside popup */
+        .show-all-button, #backButton {
             background-color: #28a745;
             color: white;
             border: none;
-            padding: 2px 5px; /* Adjusted padding */
+            padding: 2px 5px;
             border-radius: 3px;
             cursor: pointer;
             font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
-            font-size: 15px; /* Adjusted font size */
-            margin-bottom: 8px; /* Adjusted margin */
+            font-size: 15px;
+            margin-bottom: 8px;
             display: block;
             width: 100%;
         }
@@ -304,8 +310,8 @@
         #backButton { background-color: #8b4513; }
         #backButton:hover { background-color: #6b3209; }
 
-
-        .footer { /* Unchanged, but ensure z-index is lower than popup */
+        /* Footer */
+        .footer {
             position: fixed;
             bottom: 0;
             left: 0;
@@ -317,53 +323,32 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 19; /* Lower than popup's z-index */
+            z-index: 19;
             font-size: 14px;
             box-sizing: border-box;
         }
         .footer-brand { font-weight: bold; }
         .footer-brand a { color: #114704; text-decoration: none; }
         .footer-brand a:hover { text-decoration: underline; }
-        .footer-reset-button { background-color: #b71a09; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif; }
+        .footer-reset-button { 
+            background-color: #b71a09; 
+            color: white; 
+            border: none; 
+            padding: 5px 10px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif; 
+        }
         .footer-reset-button:hover { background-color: #6b3209; }
 
-        .dropdown-menu a { padding: 10px 15px; text-decoration: none; display: block; color: black; border-bottom: 1px solid #eee; }
-        .dropdown-menu a:hover { background-color: #f1f1f1; }
-        .dropdown-menu.show { display: block; }
-
-        /* Custom Scrollbar Styles for Webkit browsers (Chrome, Safari, Edge) */
-        /* Thin scrollbar for map-container and place-list-content-wrapper */
-        .map-container::-webkit-scrollbar,
-        .place-list-content-wrapper::-webkit-scrollbar {
-            width: 8px; /* Vertical scrollbar width */
-            height: 8px; /* Horizontal scrollbar height */
-        }
-
-        .map-container::-webkit-scrollbar-track,
-        .place-list-content-wrapper::-webkit-scrollbar-track {
-            background: #f1f1f1; /* Track color */
-            border-radius: 4px;
-        }
-
-        .map-container::-webkit-scrollbar-thumb,
-        .place-list-content-wrapper::-webkit-scrollbar-thumb {
-            background: #888; /* Scrollbar thumb color */
-            border-radius: 4px;
-        }
-
-        .map-container::-webkit-scrollbar-thumb:hover,
-        .place-list-content-wrapper::-webkit-scrollbar-thumb:hover {
-            background: #555; /* Scrollbar thumb color on hover */
-        }
-
-        /* Styles for Search Input and Suggestions */
+        /* Search Input */
         #placeSearchInput {
-            width: calc(100% - 20px); /* Full width minus padding */
+            width: calc(100% - 20px);
             padding: 8px 10px;
             margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            box-sizing: border-box; /* Include padding in width */
+            box-sizing: border-box;
             font-family: 'Arial Unicode MS', 'Iskoola Pota', Arial, sans-serif;
             font-size: 0.95em;
         }
@@ -371,15 +356,15 @@
         #suggestionsList {
             list-style-type: none;
             padding: 0;
-            margin: -5px 0 10px 0; /* Adjust margin to sit close to search input */
+            margin: -5px 0 10px 0;
             border: 1px solid #eee;
             border-top: none;
             border-radius: 0 0 4px 4px;
             background-color: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            max-height: 150px; /* Limit height of suggestions */
+            max-height: 150px;
             overflow-y: auto;
-            display: none; /* Hidden by default */
+            display: none;
         }
         #suggestionsList li {
             padding: 8px 10px;
@@ -396,45 +381,86 @@
             background-color: #f0f0f0;
         }
 
+        /* Scrollbar Styles */
+        .map-container::-webkit-scrollbar,
+        .place-list-content-wrapper::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
 
-        /* මීඩියා විමසුම් සඳහා - Popup is inherently mobile-friendly */
+        .map-container::-webkit-scrollbar-track,
+        .place-list-content-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .map-container::-webkit-scrollbar-thumb,
+        .place-list-content-wrapper::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .map-container::-webkit-scrollbar-thumb:hover,
+        .place-list-content-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .info-bar-content {
-                font-size: 0.8em; /* Smaller text on mobile info bar */
+            .tabs-container {
+                overflow-x: auto;
             }
-             #togglePlaceListButton {
-                padding: 5px 10px;
+            .tab {
+                padding: 10px 15px;
+                font-size: 0.85em;
+            }
+            .info-bar {
+                flex-direction: column;
+                gap: 8px;
+                padding: 8px 10px;
+                top: 46px;
+            }
+            .info-bar-content {
+                font-size: 0.85em;
+            }
+            #togglePlaceListButton {
+                padding: 6px 10px;
                 font-size: 0.8em;
             }
-
-            .place-list { /* Popup adjustments for smaller screens if needed */
+            .container {
+                margin-top: 110px;
+            }
+            .place-list {
                 width: 95vw;
                 height: 90vh;
             }
             .place-list-popup-header .place-list-header-text {
-                 font-size: 1.1em;
-            }
-            .dropdown-menu {
-                /* top: 45px; */ /* Adjust if header height changes on mobile */
+                 font-size: 1em;
             }
         }
     </style>
 </head>
 <body>
+    <div class="tabs-container">
+        <div class="tabs" id="mapTabs">
+            <button class="tab active" data-map="sl_al">උසස් පෙළ ලංකා සිතියම</button>
+            <button class="tab" data-map="india_al">උසස් පෙළ ඉන්දියා සිතියම</button>
+            <button class="tab" data-map="europe_al">උසස් පෙළ යුරෝපා සිතියම</button>
+            <button class="tab" data-map="sl_ol">සාමාන්‍ය පෙළ ලංකා සිතියම</button>
+			<button class="tab" data-map="eurasia_ol">සාමාන්‍ය පෙළ යුරේසියා සිතියම</button>
+        </div>
+    </div>
+
     <div class="info-bar">
         <div class="info-bar-content" id="infoContent">ස්ථානයක් තෝරන්න</div>
-        <button id="togglePlaceListButton">ස්ථාන නාමාවලිය හා වෙනත් සිතියම්</button>
+        <button id="togglePlaceListButton">ස්ථාන නාමාවලිය</button>
     </div>
 
     <div class="container">
         <div class="map-container" id="mapContainer">
             <div class="map-wrapper" id="mapWrapper">
                 <img src="https://www.eduhelp.lk/wp-content/uploads/2025/05/AL-ලංකා-01-01-1.jpg" alt="සිතියම" class="map-image" id="mapImage">
-                <svg id="mapOverlaySVG" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet">
-                    <defs>
-                       
-                    </defs>
-                </svg>
+                <svg id="mapOverlaySVG" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet"></svg>
                 <div id="locationMarker" class="location-marker" style="display: none;"></div>
                 <div id="locationRing" class="location-ring" style="display: none;"></div>
                 <div id="tooltip" class="tooltip"></div>
@@ -444,18 +470,8 @@
     
     <div class="place-list" id="placeListPopup">
         <div class="place-list-popup-header">
-            <div class="place-list-header" id="mapSelectorHeader">
-                <div class="place-list-header-text" id="currentMapName">උසස් පෙළ ලංකා සිතියම</div>
-                <div class="dropdown-arrow">▼</div>
-            </div>
+            <div class="place-list-header-text">ස්ථාන නාමාවලිය</div>
             <button id="closePopupButton" title="Close">&times;</button>
-        </div>
-        <div class="dropdown-menu" id="mapDropdown">
-            <a href="#" data-value="sl_al">උසස් පෙළ ලංකා සිතියම</a>
-            <a href="#" data-value="india_al">උසස් පෙළ ඉන්දියා සිතියම</a>
-            <a href="#" data-value="europe_al">උසස් පෙළ යුරෝපා සිතියම</a>
-            <a href="#" data-value="sl_ol">සාමාන්‍ය පෙළ ලංකා සිතියම</a>
-            <a href="#" data-value="eurasia_ol">සාමාන්‍ය පෙළ යුරේසියා සිතියම</a>
         </div>
 
         <div class="place-list-content-wrapper">
@@ -469,7 +485,7 @@
     
     <div class="footer">
         <div class="footer-brand">
-            <a href="https://www.eduhelp.lk/index.php/educational-services/" target="_blank">අමිල උඩවත්ත-eduhelp.lk<br>0701551279 </a>
+            <a href="https://www.eduhelp.lk/index.php/educational-services/" target="_blank">අමිල උඩවත්ත-eduhelp.lk<br>0701551279</a>
         </div>
         <button id="footerResetButton" class="footer-reset-button">Reset</button>
     </div>
@@ -479,14 +495,11 @@
             const mapContainer = document.getElementById('mapContainer');
             const mapWrapper = document.getElementById('mapWrapper');
             const mapImage = document.getElementById('mapImage');
-            const mapOverlaySVG = document.getElementById('mapOverlaySVG'); // New: SVG overlay
-
-            // Place List Popup elements
-            const placeListPopup = document.getElementById('placeListPopup'); // The main popup div
-            const placesListUL = document.getElementById('placesList'); // The UL for place names
+            const mapOverlaySVG = document.getElementById('mapOverlaySVG');
+            const placeListPopup = document.getElementById('placeListPopup');
+            const placesListUL = document.getElementById('placesList');
             const togglePlaceListButton = document.getElementById('togglePlaceListButton');
             const closePopupButton = document.getElementById('closePopupButton');
-
             const locationMarker = document.getElementById('locationMarker');
             const locationRing = document.getElementById('locationRing');
             const tooltip = document.getElementById('tooltip');
@@ -494,48 +507,23 @@
             const alphabetButtons = document.getElementById('alphabetButtons');
             const showAllButton = document.getElementById('showAllButton');
             const infoContent = document.getElementById('infoContent');
-            
-            const mapSelectorHeader = document.getElementById('mapSelectorHeader'); // Inside popup
-            const currentMapName = document.getElementById('currentMapName');     // Inside popup
-            const mapDropdown = document.getElementById('mapDropdown');           // Inside popup
-
-            // New search elements
             const placeSearchInput = document.getElementById('placeSearchInput');
             const suggestionsList = document.getElementById('suggestionsList');
+            const mapTabs = document.getElementById('mapTabs');
 
             let activePlace = null;
             let activeLetterFilter = null;
             let currentMapKey = 'sl_al';
             
-            // --- මෙම කේතය, pull-to-refresh වැළැක්වීමට සහ ස්ක්‍රෝල් කිරීමට ඉඩ දීමට ---
+            // Touch handling
             document.addEventListener('touchmove', function(e) {
-                // mapContainer හෝ place-list-content-wrapper තුළ ස්පර්ශයක් නම්, ස්ක්‍රෝල් කිරීමට ඉඩ දෙන්න
                 if (e.target.closest('#mapContainer') || e.target.closest('.place-list-content-wrapper')) {
-                    return; // Allow default touchmove behavior for these elements
+                    return;
                 }
-                // වෙනත් ඕනෑම තැනක touch-drag එක නවත්වන්න (pull-to-refresh වළක්වයි)
                 e.preventDefault();
             }, { passive: false });
 
-            // --- POPUP SCRIPT ---
-            togglePlaceListButton.addEventListener('click', function() {
-                placeListPopup.classList.toggle('visible');
-                // When opening the popup, reset search and filters
-                placeSearchInput.value = '';
-                suggestionsList.innerHTML = '';
-                suggestionsList.style.display = 'none';
-                populatePlacesList(maps[currentMapKey].places); // Ensure all places are shown when opening
-                activeLetterFilter = null;
-                updateAlphabetButtonsState();
-                resetPopupButtonsVisibility(true); // Show alphabet and show all buttons
-                removeBackButton(); // Ensure back button is removed when opening
-            });
-
-            closePopupButton.addEventListener('click', function() {
-                placeListPopup.classList.remove('visible');
-                mapDropdown.classList.remove('show'); // Also close dropdown if open
-            });
-            
+            // Map data (sample data only)
             const maps = {
                 sl_al: { url: "https://www.eduhelp.lk/wp-content/uploads/2025/05/AL-ලංකා-01-01-1.jpg",
                     displayName: "උසස් පෙළ ලංකා සිතියම",
@@ -2448,23 +2436,38 @@
 
  	
 			};
-            
-           mapImage.src = maps[currentMapKey].url;
-            populatePlacesList(maps[currentMapKey].places);
-            createAlphabetButtons();
-            
+
+            // Tab Navigation
+            mapTabs.addEventListener('click', function(e) {
+                if (e.target.classList.contains('tab')) {
+                    const mapKey = e.target.getAttribute('data-map');
+                    if (mapKey && maps[mapKey]) {
+                        switchMap(mapKey);
+                        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                        e.target.classList.add('active');
+                    }
+                }
+            });
+
+            function switchMap(mapKey) {
+                currentMapKey = mapKey;
+                mapImage.src = maps[mapKey].url;
+                resetView();
+                createAlphabetButtons();
+            }
+
+            // Image loading
             mapImage.onload = function() {
-                // Set map wrapper dimensions to natural image size
                 mapWrapper.style.width = this.naturalWidth + 'px';
                 mapWrapper.style.height = this.naturalHeight + 'px'; 
-                // Set SVG viewBox to natural image size for coordinate mapping
                 mapOverlaySVG.setAttribute('viewBox', `0 0 ${this.naturalWidth} ${this.naturalHeight}`);
                 centerMapInView();
             };
+            mapImage.src = maps[currentMapKey].url;
 
-            function displayPlaces(placesToDisplay) { // Renamed parameter for clarity
+            // Display places
+            function displayPlaces(placesToDisplay) {
                 placesListUL.innerHTML = '';
-                // Corrected sorting for name property
                 placesToDisplay.sort((a, b) => a.name.localeCompare(b.name, 'si')); 
                 
                 if (placesToDisplay.length === 0 && placeSearchInput.value !== '') {
@@ -2473,7 +2476,6 @@
                     noResultsItem.style.fontStyle = 'italic';
                     noResultsItem.style.color = '#777';
                     noResultsItem.style.cursor = 'default';
-                    noResultsItem.style.borderBottom = 'none';
                     placesListUL.appendChild(noResultsItem);
                 }
 
@@ -2491,35 +2493,27 @@
                 const allItems = placesListUL.querySelectorAll('li');
                 allItems.forEach(item => item.classList.remove('active'));
                 
-                // Find the specific list item for the selected place and make it active
                 const selectedListItem = Array.from(allItems).find(item => item.textContent === place.name);
                 if (selectedListItem) {
                     selectedListItem.classList.add('active');
                 }
                 
-                // Clear previous drawings on the map and hide point markers
                 clearMapOverlay();
                 hidePointMarkers();
-
-                // Draw ONLY the selected feature - this was the main bug fix
                 drawFeature(place);
                 
-                // Update info bar and tooltip
                 infoContent.textContent = place.info;
                 tooltip.textContent = place.name;
                 
-                // Position tooltip relative to the main point of the feature (if applicable)
                 let tooltipX, tooltipY;
                 if (place.type === 'point') {
                     tooltipX = (place.xPercent / 100) * mapImage.naturalWidth;
                     tooltipY = (place.yPercent / 100) * mapImage.naturalHeight;
                 } else if (place.type === 'arrow' && place.points && place.points.length > 0) {
-                    // Use the last point of the arrow for tooltip positioning
                     const lastPoint = place.points[place.points.length - 1];
                     tooltipX = (lastPoint.xPercent / 100) * mapImage.naturalWidth;
                     tooltipY = (lastPoint.yPercent / 100) * mapImage.naturalHeight;
                 } else if (place.type === 'region' && place.polygonPoints && place.polygonPoints.length > 0) {
-                    // Calculate centroid for better tooltip positioning
                     let sumX = 0, sumY = 0;
                     place.polygonPoints.forEach(point => {
                         sumX += point.xPercent;
@@ -2533,35 +2527,28 @@
                     tooltip.style.left = (tooltipX + 15) + 'px'; 
                     tooltip.style.top = (tooltipY + 15) + 'px';  
                     tooltip.style.display = 'block';
-                    centerMapOnPoint(tooltipX, tooltipY); // Center map on the feature's main point
+                    centerMapOnPoint(tooltipX, tooltipY);
                 } else {
-                    tooltip.style.display = 'none'; // Hide tooltip if no valid position
+                    tooltip.style.display = 'none';
                 }
 
                 activePlace = place;
-                
-                // Hide alphabet/show all buttons and show back button
-                resetPopupButtonsVisibility(false); // Hide
-                addBackButton(); // Add back button
+                resetPopupButtonsVisibility(false);
+                addBackButton();
 
-                // Filter visible places in the list to only show the selected one
-                placesListUL.innerHTML = ''; // Clear main list first
+                placesListUL.innerHTML = '';
                 const listItem = document.createElement('li');
                 listItem.textContent = place.name;
-                listItem.classList.add('active'); // Add active class to the single selected item
+                listItem.classList.add('active');
                 placesListUL.appendChild(listItem);
 
-                // Clear search input and hide suggestions when a place is selected
                 placeSearchInput.value = '';
                 suggestionsList.innerHTML = '';
                 suggestionsList.style.display = 'none';
 
-                // Auto-close popup after selecting a place
                 placeListPopup.classList.remove('visible');
-                mapDropdown.classList.remove('show'); 
             }
 
-            // Function to draw features on the SVG overlay - FIXED VERSION
             function drawFeature(place) {
                 const mapWidth = mapImage.naturalWidth;
                 const mapHeight = mapImage.naturalHeight;
@@ -2584,7 +2571,7 @@
                     polyline.setAttribute('stroke', place.color || 'black');
                     polyline.setAttribute('stroke-width', place.lineWidth || '3');
                     polyline.setAttribute('fill', 'none');
-					polyline.setAttribute('opacity', place.opacity || '1');
+                    polyline.setAttribute('opacity', place.opacity || '1');
                     mapOverlaySVG.appendChild(polyline);
                 } else if (place.type === 'region') {
                     const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
@@ -2599,9 +2586,7 @@
                 }
             }
 
-            // Function to clear all dynamic SVG elements
             function clearMapOverlay() {
-                // Clear all child elements except the <defs> element
                 const defsElement = mapOverlaySVG.querySelector('defs');
                 mapOverlaySVG.innerHTML = '';
                 if (defsElement) {
@@ -2609,7 +2594,6 @@
                 }
             }
 
-            // Function to hide point markers
             function hidePointMarkers() {
                 locationMarker.style.display = 'none';
                 locationRing.style.display = 'none';
@@ -2636,9 +2620,8 @@
 
             function populatePlacesList(places) {
                 displayPlaces(places);
-                 // Ensure buttons are visible if no filter/selection is active
-                resetPopupButtonsVisibility(true); // Show alphabet and show all buttons
-                removeBackButton(); // Remove back button if present
+                resetPopupButtonsVisibility(true);
+                removeBackButton();
             }
             
             function resetPopupButtonsVisibility(show) {
@@ -2654,7 +2637,7 @@
                 if (!placeListContentWrapper.querySelector('#backButton')) {
                     const backButton = document.createElement('button');
                     backButton.id = 'backButton';
-                    backButton.className = 'show-all-button'; // Reusing class for styling
+                    backButton.className = 'show-all-button';
                     backButton.textContent = 'අකාරාදිය අනුව තෝරන්න';
                     backButton.addEventListener('click', function() {
                         resetPopupState();
@@ -2672,51 +2655,44 @@
             }
 
             function resetPopupState() {
-                // Reset search and filters
                 placeSearchInput.value = '';
                 suggestionsList.innerHTML = '';
                 suggestionsList.style.display = 'none';
                 activeLetterFilter = null;
-                updateAlphabetButtonsState(); // Clear active alphabet button
-                populatePlacesList(maps[currentMapKey].places); // Re-display all places
-                resetPopupButtonsVisibility(true); // Show alphabet and show all buttons
-                removeBackButton(); // Ensure back button is removed
+                updateAlphabetButtonsState();
+                populatePlacesList(maps[currentMapKey].places);
+                resetPopupButtonsVisibility(true);
+                removeBackButton();
                 
-                // Clear active class from all list items
                 const allItems = placesListUL.querySelectorAll('li');
                 allItems.forEach(item => {
                     item.classList.remove('active');
-                    item.style.display = 'block'; // Ensure all are visible
+                    item.style.display = 'block';
                 });
             }
 
             function resetView() {
-                clearMapOverlay(); // Clear SVG drawings
-                hidePointMarkers(); // Hide point markers
+                clearMapOverlay();
+                hidePointMarkers();
                 tooltip.style.display = 'none';
-                infoContent.textContent = 'ස්ථානයක් තෝරන්න'; // Reset info bar text
+                infoContent.textContent = 'ස්ථානයක් තෝරන්න';
                 centerMapInView();
                 activePlace = null;
-                
-                resetPopupState(); // This will handle list and button visibility
-                // Optionally close popup on reset, or leave it as is
-                // placeListPopup.classList.remove('visible');
-                // mapDropdown.classList.remove('show');
+                resetPopupState();
             }
 
             function createAlphabetButtons() {
                 alphabetButtons.innerHTML = '';
-                const sinhalaAlphabet = [ 'අ', 'ආ', 'ඇ', 'ඈ', 'ඉ', 'ඊ', 'උ', 'ඌ', 'එ', 'ඒ', 'ඔ', 'ඕ', 'ක', 'ඛ', 'ග', 'ඝ', 'ඞ', 'ච', 'ඡ', 'ජ', 'ඣ', 'ඤ', 'ට', 'ඩ', 'ණ', 'ත', 'ථ', 'ද', 'ධ', 'න', 'ප', 'ඵ', 'බ', 'භ', 'ම', 'ය', 'ර', 'ල', 'ව', 'ශ', 'ෂ', 'ස', 'හ', 'ළ' ];
+                const sinhalaAlphabet = ['අ', 'ආ', 'ඇ', 'ඈ', 'ඉ', 'ඊ', 'උ', 'ඌ', 'එ', 'ඒ', 'ඔ', 'ඕ', 'ක', 'ඛ', 'ග', 'ඝ', 'ඞ', 'ච', 'ඡ', 'ජ', 'ඣ', 'ඤ', 'ට', 'ඩ', 'ණ', 'ත', 'ථ', 'ද', 'ධ', 'න', 'ප', 'ඵ', 'බ', 'භ', 'ම', 'ය', 'ර', 'ල', 'ව', 'ශ', 'ෂ', 'ස', 'හ', 'ළ'];
                 const places = maps[currentMapKey].places;
-                const firstLetters = new Set(places.map(place => place.name.charAt(0))); // Use Set for unique letters
+                const firstLetters = new Set(places.map(place => place.name.charAt(0)));
                 
                 sinhalaAlphabet.forEach(letter => {
-                    if (firstLetters.has(letter)) { // Check if any place starts with this letter
+                    if (firstLetters.has(letter)) {
                         const button = document.createElement('button');
                         button.className = 'alphabet-button';
                         button.textContent = letter;
                         button.addEventListener('click', function() {
-                            // Clear search input and hide suggestions when an alphabet button is clicked
                             placeSearchInput.value = '';
                             suggestionsList.innerHTML = '';
                             suggestionsList.style.display = 'none';
@@ -2732,8 +2708,8 @@
                                 displayPlaces(filteredPlaces);
                             }
                             updateAlphabetButtonsState();
-                            resetPopupButtonsVisibility(true); // Always show these buttons when alphabet filter is active
-                            removeBackButton(); // Remove back button if alphabet filtering
+                            resetPopupButtonsVisibility(true);
+                            removeBackButton();
                         });
                         alphabetButtons.appendChild(button);
                     }
@@ -2751,57 +2727,11 @@
                 });
             }
 
-            mapSelectorHeader.addEventListener('click', function() { // For the dropdown inside popup
-                mapDropdown.classList.toggle('show');
-            });
-            
-            mapDropdown.querySelectorAll('a').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const mapKey = this.getAttribute('data-value');
-                    currentMapKey = mapKey;
-                    currentMapName.textContent = maps[mapKey].displayName;
-                    mapImage.src = maps[mapKey].url;
-                    resetView(); // This will repopulate the list for the new map and reset state
-                    createAlphabetButtons(); // Recreate alphabet buttons for new map
-                    mapDropdown.classList.remove('show');
-                });
-            });
-            
-            // Close map type dropdown when clicking outside of it (if it's open)
-            document.addEventListener('click', function(e) {
-                 if (mapDropdown.classList.contains('show') && !mapSelectorHeader.contains(e.target) && !mapDropdown.contains(e.target)) {
-                    mapDropdown.classList.remove('show');
-                }
-            });
-
-            footerResetButton.addEventListener('click', resetView);
-
-            showAllButton.addEventListener('click', function() { // This button is inside the popup
-                // Clear search input and hide suggestions when 'Show All' is clicked
-                placeSearchInput.value = '';
-                suggestionsList.innerHTML = '';
-                suggestionsList.style.display = 'none';
-
-                activeLetterFilter = null;
-                updateAlphabetButtonsState();
-                populatePlacesList(maps[currentMapKey].places); // Repopulate within popup
-                resetPopupButtonsVisibility(true); // Always show these buttons when showing all
-                removeBackButton(); // Ensure back button is removed
-            });
-
-            mapContainer.addEventListener('mouseleave', function() {
-                if (!activePlace) {
-                    tooltip.style.display = 'none';
-                }
-            });
-
-            // --- Search Functionality ---
+            // Search functionality
             placeSearchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
                 const allPlaces = maps[currentMapKey].places;
                 
-                // Clear active alphabet filter when typing in search
                 activeLetterFilter = null;
                 updateAlphabetButtonsState();
 
@@ -2810,21 +2740,15 @@
                         place.name.toLowerCase().includes(searchTerm)
                     );
                     
-                    // Only show suggestions in the suggestions list
                     displaySuggestions(filteredPlaces.slice(0, 5));
-                    
-                    // Clear the main places list when search input is active
                     placesListUL.innerHTML = '';
-
-                    // Hide alphabet buttons and show all button
                     resetPopupButtonsVisibility(false);
-                    removeBackButton(); // Ensure back button is removed when searching
+                    removeBackButton();
                 } else {
-                    // If search input is empty, hide suggestions and show all places in the main list
                     suggestionsList.innerHTML = '';
                     suggestionsList.style.display = 'none';
-                    populatePlacesList(allPlaces); // Show all places in main list
-                    resetPopupButtonsVisibility(true); // Show alphabet and show all buttons
+                    populatePlacesList(allPlaces);
+                    resetPopupButtonsVisibility(true);
                 }
             });
 
@@ -2835,11 +2759,10 @@
                         const li = document.createElement('li');
                         li.textContent = place.name;
                         li.addEventListener('click', function() {
-                            placeSearchInput.value = place.name; // Fill search box with selected suggestion
-                            suggestionsList.innerHTML = ''; // Clear suggestions
+                            placeSearchInput.value = place.name;
+                            suggestionsList.innerHTML = '';
                             suggestionsList.style.display = 'none';
-                            selectPlace(place); // Select the place on the map
-                            // Since selectPlace auto-closes popup, no need to manually clear/hide
+                            selectPlace(place);
                         });
                         suggestionsList.appendChild(li);
                     });
@@ -2849,15 +2772,52 @@
                 }
             }
 
-            // Hide suggestions if clicking outside search input or suggestions
+            // Event listeners
+            togglePlaceListButton.addEventListener('click', function() {
+                placeListPopup.classList.toggle('visible');
+                placeSearchInput.value = '';
+                suggestionsList.innerHTML = '';
+                suggestionsList.style.display = 'none';
+                populatePlacesList(maps[currentMapKey].places);
+                activeLetterFilter = null;
+                updateAlphabetButtonsState();
+                resetPopupButtonsVisibility(true);
+                removeBackButton();
+            });
+
+            closePopupButton.addEventListener('click', function() {
+                placeListPopup.classList.remove('visible');
+            });
+
+            footerResetButton.addEventListener('click', resetView);
+
+            showAllButton.addEventListener('click', function() {
+                placeSearchInput.value = '';
+                suggestionsList.innerHTML = '';
+                suggestionsList.style.display = 'none';
+                activeLetterFilter = null;
+                updateAlphabetButtonsState();
+                populatePlacesList(maps[currentMapKey].places);
+                resetPopupButtonsVisibility(true);
+                removeBackButton();
+            });
+
+            mapContainer.addEventListener('mouseleave', function() {
+                if (!activePlace) {
+                    tooltip.style.display = 'none';
+                }
+            });
+
             document.addEventListener('click', function(e) {
                 if (!placeSearchInput.contains(e.target) && !suggestionsList.contains(e.target)) {
                     suggestionsList.style.display = 'none';
                 }
             });
 
+            // Initialize
+            populatePlacesList(maps[currentMapKey].places);
+            createAlphabetButtons();
             resetView();
-            currentMapName.textContent = maps[currentMapKey].displayName;
         });
     </script>
 </body>
