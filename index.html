@@ -523,14 +523,14 @@
    Nothing in the UI or search logic should need to change.
    ===================================================================== */
 
-// Local map source: images are loaded from a folder called "images"
-// sitting right next to this HTML file (e.g. images/sin_ol_srl.jpg).
-// Using a local relative path avoids the cross-origin/hotlink
-// restrictions that remote hosts like admin.eduhelp.lk enforce, and it
-// works whether this file is opened directly or served from a local
-// web server. Replace with a real CDN/base URL later if needed — every
-// other part of the app is unaffected either way.
-const MAP_BASE_URL = "images/";
+// Map source: images are served from the "smart-map" GitHub repo's raw
+// content endpoint. Filenames still follow the [language]_[level]_[map].jpg
+// convention (e.g. sin_ol_srl.jpg), so every place/level/language
+// combination resolves automatically — nothing else needs to change
+// when new map images are added to the repo. Note this uses
+// raw.githubusercontent.com, NOT github.com/.../blob/..., because the
+// "blob" URL is GitHub's HTML viewer page, not the actual image file.
+const MAP_BASE_URL = "https://raw.githubusercontent.com/Amilaeduhelp/smart-map/main/";
 
 // Map group -> filename code, per the naming system in the spec.
 const MAP_GROUP_CODE = {
@@ -627,7 +627,7 @@ const historicalPlaces = [
     color: CATEGORY_COLORS["Prehistoric Site"],
     mapGroup: "SL",
     // Placeholder — exact region not yet supplied.
-    region: "sl3"
+    region: "slX"
   },
   {
     id: "polonnaruwa",
@@ -984,9 +984,9 @@ function renderMapCard() {
         <p class="note">There's no ${LEVEL_LABEL[level]} map for the <b style="font-family:var(--font-mono)">${mapGroup}</b> map group in the current configuration. Try switching A/L ⇄ O/L, or pick a different place.</p>
       </div>`;
   } else {
-    // Try the local image first (images/${filename}); the schematic
-    // fallback stays hidden behind it and only appears if that file
-    // isn't present yet — see the onerror handler below.
+    // Try the map image first; the schematic fallback stays hidden
+    // behind it and only appears if that file can't be loaded — see
+    // the onerror handler below.
     bodyHtml = `
       <div class="map-image-wrap">
         <img class="map-image" src="${mapUrl}" alt="${place.names.en} educational map" />
@@ -1021,8 +1021,9 @@ function renderMapCard() {
     </div>
   `;
 
-  // If the local image file (images/${filename}) doesn't exist yet,
-  // fall back to the schematic/placeholder instead of a broken icon.
+  // If the map image can't be loaded (file not in the repo yet, wrong
+  // filename, offline, etc.), fall back to the schematic/placeholder
+  // instead of a broken icon.
   const img = els.stageInner.querySelector(".map-image");
   if (img) {
     img.addEventListener("error", () => {
@@ -1034,7 +1035,7 @@ function renderMapCard() {
         const fbImg = fallback.querySelector(".map-image");
         if (fbImg) fbImg.remove();
       }
-      showToast(`Couldn't find images/${filename} — showing the schematic instead.`, true);
+      showToast(`Couldn't load ${filename} — showing the schematic instead.`, true);
       focusOnHighlightedRegion();
     });
   }
