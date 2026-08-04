@@ -115,7 +115,7 @@
     background: var(--paper);
     border: 1px solid rgba(255,255,255,0.15);
     border-radius: 8px;
-    padding: 0 40px 0 14px;
+    padding: 0 68px 0 14px;
     font-family: var(--font-body);
     font-size: 15px;
     color: var(--ink-text);
@@ -128,6 +128,18 @@
     position:absolute; right: 12px; top: 50%; transform: translateY(-50%);
     width: 18px; height:18px; color: var(--muted); pointer-events:none;
   }
+  .search-clear{
+    position:absolute; right: 36px; top: 50%; transform: translateY(-50%);
+    width: 22px; height: 22px;
+    display: none; align-items:center; justify-content:center;
+    border: none; border-radius: 50%;
+    background: var(--paper-3); color: var(--muted);
+    cursor: pointer; padding: 0;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  .search-clear.visible{ display:flex; }
+  .search-clear:hover{ background: var(--gold); color: #241C05; }
+  .search-clear:focus-visible{ outline: 2px solid var(--gold); outline-offset: 2px; }
 
   .suggestions{
     position:absolute; top: calc(100% + 6px); left:0; right:0;
@@ -456,8 +468,8 @@
     animation: splash-pop 0.5s ease;
   }
   .splash-image{
-    width: 65vw;
-    max-width: 760px;
+    width: 50vw;
+    max-width: 560px;
     height: auto;
     max-height: 75vh;
     display: block;
@@ -526,6 +538,11 @@
           autocomplete="off"
           placeholder="Search (Sinhala/English/Singlish/Tamil)"
         />
+        <button type="button" class="search-clear" id="searchClearBtn" aria-label="Clear search" tabindex="-1">
+          <svg viewBox="0 0 24 24" fill="none" width="13" height="13" aria-hidden="true">
+            <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </button>
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
           <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -581,7 +598,7 @@
 
 // Map source: images are served from the "smart-map" GitHub repo's raw
 // content endpoint. Filenames still follow the [language]_[level]_[map].jpg
-// convention (e.g. sin_ol_srl1.jpg), so every place/level/language
+// convention (e.g. sin_ol_srl.jpg), so every place/level/language
 // combination resolves automatically — nothing else needs to change
 // when new map images are added to the repo. Note this uses
 // raw.githubusercontent.com, NOT github.com/.../blob/..., because the
@@ -767,7 +784,7 @@ function getMapFilename(language, level, mapGroup) {
 }
 
 // Resolves the local image path for a given language/level/mapGroup
-// combination, e.g. images/sin_ol_srl1.jpg.
+// combination, e.g. images/sin_ol_srl.jpg.
 function getMapUrl(language, level, mapGroup) {
   const filename = getMapFilename(language, level, mapGroup);
   if (!filename) return null;
@@ -852,6 +869,7 @@ const state = {
 
 const els = {
   searchInput: document.getElementById("searchInput"),
+  searchClearBtn: document.getElementById("searchClearBtn"),
   suggestionsList: document.getElementById("suggestionsList"),
   catIndicator: document.getElementById("catIndicator"),
   levelButtons: document.querySelectorAll("[data-level]"),
@@ -1156,6 +1174,7 @@ function selectPlace(place) {
   }
 
   els.searchInput.value = place.names.en;
+  updateSearchClearVisibility();
   closeSuggestions();
   renderAll();
 }
@@ -1235,12 +1254,27 @@ function updateActiveSuggestion() {
    EVENT WIRING
    ===================================================================== */
 
+function updateSearchClearVisibility() {
+  if (!els.searchClearBtn) return;
+  els.searchClearBtn.classList.toggle("visible", els.searchInput.value.trim().length > 0);
+}
+
 els.searchInput.addEventListener("input", () => {
   const query = els.searchInput.value;
+  updateSearchClearVisibility();
   if (!query.trim()) { closeSuggestions(); return; }
   const results = searchPlaces(query);
   renderSuggestions(results);
 });
+
+if (els.searchClearBtn) {
+  els.searchClearBtn.addEventListener("click", () => {
+    els.searchInput.value = "";
+    updateSearchClearVisibility();
+    closeSuggestions();
+    els.searchInput.focus();
+  });
+}
 
 els.searchInput.addEventListener("keydown", (e) => {
   const isOpen = els.suggestionsList.classList.contains("open");
@@ -1318,6 +1352,7 @@ document.addEventListener("click", (e) => {
    ===================================================================== */
 
 renderAll();
+updateSearchClearVisibility();
 </script>
 </body>
 </html>
