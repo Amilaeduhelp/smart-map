@@ -296,6 +296,7 @@
     min-height: 340px;
     display:flex; align-items:center; justify-content:center;
     overflow: hidden;
+    cursor: crosshair;
   }
   .map-image{ max-width:100%; display:block; }
 
@@ -400,6 +401,47 @@
   }
   .msg-toast.show{ display:flex; }
   .msg-toast.error{ background: var(--danger); }
+
+  /* ============ EARTHQUAKE RIPPLE ============ */
+  /* Marks the last-clicked spot on the map with expanding, fading red
+     rings — like tremors radiating out from an epicenter. Only one
+     ripple is ever active: a new click removes the old one first. */
+  .eq-ripple{
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 6;
+  }
+  .eq-ripple .eq-core{
+    position:absolute;
+    top:0; left:0;
+    width:8px; height:8px;
+    margin:-4px 0 0 -4px;
+    border-radius:50%;
+    background: var(--danger);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.65), 0 2px 6px rgba(0,0,0,0.35);
+  }
+  .eq-ripple .eq-ring{
+    position:absolute;
+    top:0; left:0;
+    width:0; height:0;
+    border-radius:50%;
+    border: 3px solid var(--danger);
+    transform: translate(-50%,-50%);
+    opacity:0;
+    animation: eq-ring-expand 2.2s ease-out infinite;
+  }
+  .eq-ripple .eq-ring:nth-child(2){ animation-delay: 0.7s; }
+  .eq-ripple .eq-ring:nth-child(3){ animation-delay: 1.4s; }
+  @keyframes eq-ring-expand{
+    0%{ width:0; height:0; opacity:0.8; border-width:5px; }
+    65%{ opacity:0.28; }
+    100%{ width:220px; height:220px; opacity:0; border-width:1px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .eq-ripple .eq-ring{ animation: none; display:none; }
+  }
 
   footer.status{
     flex: 0 0 auto;
@@ -874,6 +916,7 @@ const els = {
   catIndicator: document.getElementById("catIndicator"),
   levelButtons: document.querySelectorAll("[data-level]"),
   langButtons: document.querySelectorAll("[data-lang]"),
+  stage: document.getElementById("stage"),
   stageInner: document.getElementById("stageInner"),
   emptyState: document.getElementById("emptyState"),
   toast: document.getElementById("toast"),
@@ -1152,6 +1195,43 @@ function renderAll() {
   renderStatusBar();
   renderMapCard();
 }
+
+/* =====================================================================
+   EARTHQUAKE RIPPLE — click-to-mark effect on the map
+   Clicking anywhere on the currently displayed map drops a marker and
+   plays expanding, fading red rings from that exact spot — like
+   tremors radiating out from an epicenter. Clicking a new spot removes
+   the old ripple first, so only one location is ever animating.
+   ===================================================================== */
+
+function spawnEarthquakeRipple(viewport, x, y) {
+  const old = viewport.querySelector(".eq-ripple");
+  if (old) old.remove();
+
+  const ripple = document.createElement("div");
+  ripple.className = "eq-ripple";
+  ripple.style.left = x + "px";
+  ripple.style.top = y + "px";
+  ripple.innerHTML = `
+    <div class="eq-ring"></div>
+    <div class="eq-ring"></div>
+    <div class="eq-ring"></div>
+    <div class="eq-core"></div>
+  `;
+  viewport.appendChild(ripple);
+}
+
+// Delegated on the stage (not the viewport itself) because the map
+// card is fully re-rendered whenever the place/level/language changes
+// — a direct listener on .map-viewport would be destroyed each time.
+els.stage.addEventListener("click", (e) => {
+  const viewport = e.target.closest(".map-viewport");
+  if (!viewport) return;
+  const rect = viewport.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  spawnEarthquakeRipple(viewport, x, y);
+});
 
 /* =====================================================================
    SELECTION LOGIC
