@@ -581,7 +581,7 @@
 
 // Map source: images are served from the "smart-map" GitHub repo's raw
 // content endpoint. Filenames still follow the [language]_[level]_[map].jpg
-// convention (e.g. sin_ol_srl.jpg), so every place/level/language
+// convention (e.g. sin_ol_srl1.jpg), so every place/level/language
 // combination resolves automatically — nothing else needs to change
 // when new map images are added to the repo. Note this uses
 // raw.githubusercontent.com, NOT github.com/.../blob/..., because the
@@ -767,7 +767,7 @@ function getMapFilename(language, level, mapGroup) {
 }
 
 // Resolves the local image path for a given language/level/mapGroup
-// combination, e.g. images/sin_ol_srl.jpg.
+// combination, e.g. images/sin_ol_srl1.jpg.
 function getMapUrl(language, level, mapGroup) {
   const filename = getMapFilename(language, level, mapGroup);
   if (!filename) return null;
