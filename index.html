@@ -256,8 +256,8 @@
     border-radius: 12px;
     box-shadow: 0 20px 50px rgba(15,22,38,0.28), 0 1px 0 rgba(255,255,255,0.6) inset;
     border: 1px solid var(--paper-3);
-    width: 85%;
-    max-width: 1600px;
+    width: 95%;
+    max-width: 2000px;
     overflow: hidden;
   }
   .map-card-head{
@@ -276,6 +276,57 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.25);
   }
   .place-badge .dot{ width:6px; height:6px; border-radius:50%; background: rgba(255,255,255,0.85); }
+
+  .cat-badge-wrap{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+    flex: 0 0 auto;
+  }
+  .color-guide-toggle{
+    appearance: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 2px 3px;
+    text-decoration: underline dotted;
+    text-underline-offset: 3px;
+  }
+  .color-guide-toggle:hover{ color: var(--gold-dark); }
+  .color-guide-toggle:focus-visible{ outline: 2px solid var(--gold); outline-offset: 2px; }
+  .color-guide-panel{
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background: #FFFDF6;
+    border: 1px solid var(--paper-3);
+    border-radius: 8px;
+    box-shadow: 0 14px 32px rgba(15,22,38,0.22);
+    padding: 8px 12px;
+    z-index: 15;
+    min-width: 180px;
+  }
+  .color-guide-panel[hidden]{ display: none; }
+  .color-guide-row{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--ink-text);
+    padding: 4px 0;
+    white-space: nowrap;
+  }
+  .color-guide-swatch{
+    width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.12);
+  }
 
   .tech-card{
     font-family: var(--font-mono);
@@ -688,29 +739,91 @@ const mapRegions = {
     sl6: { from: 37.5, to: 62.5, label: "sl6 · mid(sl2)–mid(sl3)" },
     sl7: { from: 62.5, to: 87.5, label: "sl7 · mid(sl3)–mid(sl4)" }
   },
-  // Placeholder IDs only — exact geographic boundaries are supplied later.
+  // Nine equal ~11.11% vertical bands, top to bottom — an approximate
+  // placeholder grid (not real geographic boundaries) so every place
+  // on the World map still gets a working highlight/dim/focus, the
+  // same way SL's bands do. Adjust these numbers once real boundaries
+  // for each wl-id are available; nothing else needs to change.
   WORLD: {
-    wl1: null, wl2: null, wl3: null, wl4: null, wl5: null,
-    wl6: null, wl7: null, wl8: null, wl9: null
+    wl1: { from: 0,      to: 11.11, label: "wl1 · 0–11.11%" },
+    wl2: { from: 11.11,  to: 22.22, label: "wl2 · 11.11–22.22%" },
+    wl3: { from: 22.22,  to: 33.33, label: "wl3 · 22.22–33.33%" },
+    wl4: { from: 33.33,  to: 44.44, label: "wl4 · 33.33–44.44%" },
+    wl5: { from: 44.44,  to: 55.56, label: "wl5 · 44.44–55.56%" },
+    wl6: { from: 55.56,  to: 66.67, label: "wl6 · 55.56–66.67%" },
+    wl7: { from: 66.67,  to: 77.78, label: "wl7 · 66.67–77.78%" },
+    wl8: { from: 77.78,  to: 88.89, label: "wl8 · 77.78–88.89%" },
+    wl9: { from: 88.89,  to: 100,   label: "wl9 · 88.89–100%" }
   },
+  // Same approach as WORLD — nine equal placeholder bands until real
+  // boundaries for the India map are supplied.
   INDIA: {
-    in1: null, in2: null, in3: null, in4: null, in5: null,
-    in6: null, in7: null, in8: null, in9: null
+    in1: { from: 0,      to: 11.11, label: "in1 · 0–11.11%" },
+    in2: { from: 11.11,  to: 22.22, label: "in2 · 11.11–22.22%" },
+    in3: { from: 22.22,  to: 33.33, label: "in3 · 22.22–33.33%" },
+    in4: { from: 33.33,  to: 44.44, label: "in4 · 33.33–44.44%" },
+    in5: { from: 44.44,  to: 55.56, label: "in5 · 44.44–55.56%" },
+    in6: { from: 55.56,  to: 66.67, label: "in6 · 55.56–66.67%" },
+    in7: { from: 66.67,  to: 77.78, label: "in7 · 66.67–77.78%" },
+    in8: { from: 77.78,  to: 88.89, label: "in8 · 77.78–88.89%" },
+    in9: { from: 88.89,  to: 100,   label: "in9 · 88.89–100%" }
   },
-  // No region system defined yet for Europe.
-  EUROPE: {}
+  // Four equal ~25% vertical bands, same scheme as SL's primary bands
+  // — placeholder boundaries until the real Europe map geography is
+  // supplied.
+  EUROPE: {
+    eu1: { from: 0,   to: 25,  label: "eu1 · 0–25%" },
+    eu2: { from: 25,  to: 50,  label: "eu2 · 25–50%" },
+    eu3: { from: 50,  to: 75,  label: "eu3 · 50–75%" },
+    eu4: { from: 75,  to: 100, label: "eu4 · 75–100%" }
+  }
 };
 
 // Category reference (colors also live directly on each place record,
 // per the spec — this table is only used to keep sample-data colors
 // consistent, never referenced by the search/selection logic itself).
 const CATEGORY_COLORS = {
-  "Kingdom": "#B23A2E",
+ "Kingdom": "#B23A2E",
   "Prehistoric Site": "#1E7A46",
   "Port": "#1F6FB2",
   "Ancient City": "#7A4FA0",
-  "Archaeological Site": "#C07A1E"
+  "Archaeological Site": "#C07A1E",
+  "Religious Centers": "#AF0AE5",
+  "River": "#63025E",
+  "Proto Historic Site": "#6B8E23",
+  "Sea": "#00A6A6",
+  "Ocean": "#0057B8",
+  "Straits": "#008B8B",
+  "Islands": "#000000",
+  "Province": "#8B5A2B",
+  "District or Area": "#A0522D",
+  "Mountains": "#4B5563",
+  "Pass": "#795548",
+  "Artificial Canal": "#20A4A8",
+  "Plateau": "#9A7B4F",
+  "Peninsula": "#D35400",
+  "Continent": "#556B2F",
+  "War Field": "#8B1E3F",
+  "Economic Centers": "#D4A017",
+  "Research Centers": "#3F51B5",
+  "Tanks or Reservoirs": "#007C91",
+  "Forest": "#145A32"
 };
+
+// Each map group (SL / WORLD / INDIA / EUROPE) ships as 5 separate
+// image files per language+level — one "base" file with no number,
+// plus 4 numbered variants (e.g. sin_ol_srl.jpg, sin_ol_srl1.jpg,
+// sin_ol_srl2.jpg, sin_ol_srl3.jpg, sin_ol_srl4.jpg).
+//
+// IMPORTANT: which of the 5 files a place appears on is NOT decided
+// by its category. The 5 files are geographic slices of the same map
+// group (e.g. North India / East India / South India ...), so places
+// with completely different categories can share the same file, and
+// places with the same category can be split across different files.
+// That's why each place record below carries its own explicit
+// `mapVariant` number (0–4): 0 = the base file, 1–4 = the numbered
+// files. Set it to whichever file that place actually appears on in
+// the real artwork.
 
 // Sample historical-place database. Minimum required records
 // (Anuradhapura, Pahiyangala) are included, plus a few more to
@@ -728,7 +841,24 @@ const historicalPlaces = [
     category: "Kingdom",
     color: CATEGORY_COLORS["Kingdom"],
     mapGroup: "SL",
+    // Which of the 5 SL map files this place is on (0 = base file).
+    // Set independently of category — see note above.
+    mapVariant: 0,
     region: "sl2"
+  },
+    {
+    id: "nallur",
+    names: {
+      si: "නල්ලූර්",
+      en: "Nallur",
+      ta: "நல்லூர்",
+      singlish: "Nallur"
+    },
+    category: "Religious Centers",
+    color: CATEGORY_COLORS["Religious Centers"],
+    mapGroup: "SL",
+    mapVariant: 0,
+    region: "sl1"
   },
   {
     id: "pahiyangala",
@@ -741,6 +871,7 @@ const historicalPlaces = [
     category: "Prehistoric Site",
     color: CATEGORY_COLORS["Prehistoric Site"],
     mapGroup: "SL",
+    mapVariant: 0,
     // Placeholder — exact region not yet supplied.
     region: "slX"
   },
@@ -755,6 +886,9 @@ const historicalPlaces = [
     category: "Ancient City",
     color: CATEGORY_COLORS["Ancient City"],
     mapGroup: "SL",
+    // On a different SL map slice than Anuradhapura/Pahiyangala, purely
+    // as an example — this is independent of its category.
+    mapVariant: 1,
     region: "sl6"
   },
   {
@@ -768,19 +902,21 @@ const historicalPlaces = [
     category: "Archaeological Site",
     color: CATEGORY_COLORS["Archaeological Site"],
     mapGroup: "SL",
+    mapVariant: 0,
     region: "sl2"
   },
-  {
-    id: "galle_fort",
+    {
+    id: "galle",
     names: {
-      si: "ගාල්ල කොටුව",
-      en: "Galle Fort",
-      ta: "காலி கோட்டை",
-      singlish: "Galla Kotuwa"
+      si: "ගාල්ල",
+      en: "Galle",
+      ta: "காலி",
+      singlish: "Galle"
     },
     category: "Port",
     color: CATEGORY_COLORS["Port"],
     mapGroup: "SL",
+	mapVariant: 0,
     region: "sl4"
   },
   {
@@ -794,7 +930,164 @@ const historicalPlaces = [
     category: "Port",
     color: CATEGORY_COLORS["Port"],
     mapGroup: "SL",
+    // Same map slice as Polonnaruwa (an Ancient City) even though the
+    // category differs — this is exactly the decoupling described above.
+    mapVariant: 1,
     region: "sl3"
+  },
+    {
+    id: "urathota",
+    names: {
+      si: "ඌරාතොට",
+      en: "Urathota",
+      ta: "ஊர்தோட்டம்",
+      singlish: "Urathota"
+    },
+    category: "Port",
+    color: CATEGORY_COLORS["Port"],
+    mapGroup: "SL",
+	mapVariant: 0,
+    region: "sl1"
+  },
+  {
+    id: "mannar",
+    names: {
+      si: "මන්නාරම",
+      en: "Mannar",
+      ta: "மன்னார்",
+      singlish: "mannarama"
+    },
+    category: "Port",
+    color: CATEGORY_COLORS["Port"],
+    mapGroup: "SL",
+	mapVariant: 0,
+    region: "sl1"
+  },
+  {
+    id: "kalpitiya",
+    names: {
+      si: "කල්පිටිය",
+      en: "Kalpitiya",
+      ta: "கற்பிட்டி",
+      singlish: "Kalpitiya"
+    },
+    category: "Port",
+    color: CATEGORY_COLORS["Port"],
+    mapGroup: "SL",
+	mapVariant: 0,
+    region: "sl2"
+  },
+  {
+    id: "yapahuwa",
+    names: {
+      si: "යාපහුව",
+      en: "yapahuwa",
+      ta: "யாபஹுவா",
+      singlish: "yapahuwa"
+    },
+    category: "Kingdom",
+    color: CATEGORY_COLORS["Kingdom"],
+    mapGroup: "SL",
+	mapVariant: 0,
+    region: "sl6"
+  },
+    {
+    id: "kandarodaya",
+    names: {
+      si: "කන්දරෝඩය",
+      en: "Kandarodaya",
+      ta: "கந்தரோடை",
+      singlish: "Kandarodaya"
+    },
+    category: "Religious Centers",
+    color: CATEGORY_COLORS["Religious Centers"],
+    mapGroup: "SL",
+    mapVariant: 0,
+    region: "sl1"
+  },
+    {
+    id: "dambakolapatuna",
+    names: {
+      si: "දඹකොළපටුන",
+      en: "Dambakolapatuna",
+      ta: "தம்பகோல பத்துன",
+      singlish: "Dambakolapatuna"
+    },
+    category: "Port",
+    color: CATEGORY_COLORS["Port"],
+    mapGroup: "SL",
+    mapVariant: 0,
+    region: "sl1"
+  },
+  {
+    id: "hammenhiel",
+    names: {
+      si: "හැමන්හෛල්",
+      en: "Hammenhiel",
+      ta: "ஹம்மன்ஹியல்",
+      singlish: "Hammenhiel"
+    },
+    category: "Archaeological Site",
+    color: CATEGORY_COLORS["Archaeological Site"],
+    mapGroup: "SL",
+    mapVariant: 0,
+    region: "sl1"
+  },
+  {
+    id: "kayts_island",
+    names: {
+      si: "කයිටිස් දූපත",
+      en: "Kayts  Island",
+      ta: "கயட்ஸ் தீவு",
+      singlish: "Kayts  Island"
+    },
+    category: "Islands",
+    color: CATEGORY_COLORS["Islands"],
+    mapGroup: "SL",
+    mapVariant: 0,
+    region: "sl1"
+  },
+    {
+    id: "jaffna",
+    names: {
+      si: "යාපනය",
+      en: "Jaffna",
+      ta: "யாழ்ப்பாணம்",
+      singlish: "Jaffna"
+    },
+    category: "Kingdom",
+    color: CATEGORY_COLORS["Kingdom"],
+    mapGroup: "SL",
+    mapVariant: 0,
+    region: "sl1"
+  },
+  {
+    id: "iranamadu",
+    names: {
+      si: "ඉරණමඩු",
+      en: "Iranamadu",
+      ta: "இரணைமடு",
+      singlish: "Iranamadu"
+    },
+    category: "Prehistoric Site",
+    color: CATEGORY_COLORS["Prehistoric Site"],
+    mapGroup: "SL",
+    mapVariant: 3,
+    region: "sl1"
+  },
+  {
+    id: "thiruketheeshwaram",
+    names: {
+      si: "තිරුකේතීශ්වරම්",
+      en: "Thiruketheeshwaram",
+      ta: "",
+      singlish: "Thiruketheeshwaram"
+    },
+    category: "Religious Centers",
+    color: CATEGORY_COLORS["Religious Centers"],
+    mapGroup: "SL",
+    mapVariant: 0,
+    region: "sl5"
   },
   {
     id: "kandy",
@@ -807,7 +1100,121 @@ const historicalPlaces = [
     category: "Kingdom",
     color: CATEGORY_COLORS["Kingdom"],
     mapGroup: "SL",
+    mapVariant: 0,
     region: "sl3"
+  },
+
+  // --- WORLD (O/L only) samples ---
+  {
+    id: "giza_pyramids",
+    names: {
+      si: "ගීසා පිරමීඩ",
+      en: "Pyramids of Giza",
+      ta: "கிசா பிரமிடுகள்",
+      singlish: "Gisa Pirameeda"
+    },
+    category: "Archaeological Site",
+    color: CATEGORY_COLORS["Archaeological Site"],
+    mapGroup: "WORLD",
+    mapVariant: 0,
+    // Placeholder — exact World map region boundaries not yet supplied.
+    region: "wl1"
+  },
+  {
+    id: "colosseum",
+    names: {
+      si: "කොලොසියම්",
+      en: "Colosseum",
+      ta: "கொலோசியம்",
+      singlish: "Kolosiyam"
+    },
+    category: "Ancient City",
+    color: CATEGORY_COLORS["Ancient City"],
+    mapGroup: "WORLD",
+    // Same World map file as Giza (different category) — decoupled.
+    mapVariant: 0,
+    region: "wl2"
+  },
+
+  // --- INDIA (A/L only) samples ---
+  {
+    id: "taj_mahal",
+    names: {
+      si: "තාජ් මහල්",
+      en: "Taj Mahal",
+      ta: "தாஜ் மஹால்",
+      singlish: "Thaj Mahal"
+    },
+    category: "Archaeological Site",
+    color: CATEGORY_COLORS["Archaeological Site"],
+    mapGroup: "INDIA",
+    mapVariant: 0,
+    // Placeholder — exact India map region boundaries not yet supplied.
+    region: "in1"
+  },
+  {
+    id: "red_fort",
+    names: {
+      si: "රතු බලකොටුව",
+      en: "Red Fort",
+      ta: "செங்கோட்டை",
+      singlish: "Rathu Balakotuwa"
+    },
+    category: "Kingdom",
+    color: CATEGORY_COLORS["Kingdom"],
+    mapGroup: "INDIA",
+    // Same India map file as Taj Mahal, even though the category
+    // differs — exactly the "Taj Mahal + Nagapattinam on the same
+    // map" scenario you described.
+    mapVariant: 0,
+    region: "in2"
+  },
+  {
+    id: "mohenjo_daro",
+    names: {
+      si: "මොහෙන්ජෝදාරෝ",
+      en: "Mohenjo-daro",
+      ta: "மொஹஞ்சதாரோ",
+      singlish: "Mohenjodaro"
+    },
+    category: "Ancient City",
+    color: CATEGORY_COLORS["Ancient City"],
+    mapGroup: "INDIA",
+    // A different geographic slice of the India map than Taj Mahal/Red
+    // Fort — set to whichever numbered file it really appears on.
+    mapVariant: 1,
+    region: "in3"
+  },
+
+  // --- EUROPE (A/L only) samples ---
+  {
+    id: "acropolis_athens",
+    names: {
+      si: "ඇතන්ස් අක්‍රොපොලිස්",
+      en: "Acropolis of Athens",
+      ta: "ஏதென்ஸ் அக்ரோபொலிஸ்",
+      singlish: "Athens Acropolis"
+    },
+    category: "Ancient City",
+    color: CATEGORY_COLORS["Ancient City"],
+    mapGroup: "EUROPE",
+    mapVariant: 0,
+    // No region system defined yet for Europe (matches mapRegions.EUROPE = {}).
+    region: "eu1"
+  },
+  {
+    id: "stonehenge",
+    names: {
+      si: "ස්ටෝන්හෙන්ජ්",
+      en: "Stonehenge",
+      ta: "ஸ்டோன்ஹெஞ்ச்",
+      singlish: "Stonehenge"
+    },
+    category: "Prehistoric Site",
+    color: CATEGORY_COLORS["Prehistoric Site"],
+    mapGroup: "EUROPE",
+    mapVariant: 1,
+    region: "eu2"
   }
 ];
 
@@ -815,20 +1222,26 @@ const historicalPlaces = [
    UTILS — /utils/mapFilename
    ===================================================================== */
 
-// Builds [language]_[level]_[map].jpg from the reusable configuration
-// above. New map groups/languages only require new table entries.
-function getMapFilename(language, level, mapGroup) {
+// Builds [language]_[level]_[map][variant].jpg from the reusable
+// configuration above. New map groups/languages only require new
+// table entries. `mapVariant` (0–4, set explicitly on each place
+// record — see the note above historicalPlaces) picks which of the 5
+// files to use: 0 = the base file, 1–4 = the numbered files. Anything
+// missing/invalid falls back to the base file.
+function getMapFilename(language, level, mapGroup, mapVariant) {
   const prefix = LANGUAGE_PREFIX[language];
   const lvl = level === "AL" ? "al" : "ol";
   const group = MAP_GROUP_CODE[mapGroup];
   if (!prefix || !group) return null;
-  return `${prefix}_${lvl}_${group}.jpg`;
+  const variantIndex = Number.isInteger(mapVariant) && mapVariant >= 0 && mapVariant <= 4 ? mapVariant : 0;
+  const variantSuffix = variantIndex === 0 ? "" : String(variantIndex);
+  return `${prefix}_${lvl}_${group}${variantSuffix}.jpg`;
 }
 
-// Resolves the local image path for a given language/level/mapGroup
-// combination, e.g. images/sin_ol_srl.jpg.
-function getMapUrl(language, level, mapGroup) {
-  const filename = getMapFilename(language, level, mapGroup);
+// Resolves the local image path for a given language/level/mapGroup/
+// mapVariant combination, e.g. images/sin_ol_srl2.jpg.
+function getMapUrl(language, level, mapGroup, mapVariant) {
+  const filename = getMapFilename(language, level, mapGroup, mapVariant);
   if (!filename) return null;
   return MAP_BASE_URL.replace(/\/?$/, "/") + filename;
 }
@@ -965,7 +1378,12 @@ function renderStatusBar() {
   els.statGroup.textContent = state.selectedMapGroup || "—";
   els.statRegion.textContent = state.selectedRegion || "—";
   const filename = state.selectedMapGroup
-    ? getMapFilename(state.selectedLanguage, state.selectedLevel, state.selectedMapGroup)
+    ? getMapFilename(
+        state.selectedLanguage,
+        state.selectedLevel,
+        state.selectedMapGroup,
+        state.selectedPlace ? state.selectedPlace.mapVariant : undefined
+      )
     : null;
   els.statFile.textContent = filename || "—";
 }
@@ -1018,9 +1436,12 @@ function buildRegionTagForImage(place) {
     </div>`;
 }
 
-function buildSlSchematic(place) {
-  const bands = ["sl1", "sl2", "sl3", "sl4"];
-  const regionInfo = getRegionInfo("SL", place.region);
+// Generic vertical-band schematic used as the fallback view when a
+// map image fails to load. Works for any map group whose mapRegions
+// table has real {from, to} bounds — currently SL (7 bands, 4 shown)
+// and EUROPE (4 bands) — so both get a working highlight, not just SL.
+function buildBandSchematic(mapGroup, bandIds, place) {
+  const regionInfo = getRegionInfo(mapGroup, place.region);
   let highlightHtml = "";
 
   if (regionInfo.exists && regionInfo.configured) {
@@ -1031,8 +1452,8 @@ function buildSlSchematic(place) {
       <div class="region-focus-anchor" style="top:${b.from}%; height:${b.to - b.from}%;"></div>`;
   }
 
-  const bandHtml = bands.map(id => {
-    const r = mapRegions.SL[id];
+  const bandHtml = bandIds.map(id => {
+    const r = mapRegions[mapGroup][id];
     return `<div class="sl-band" style="top:${r.from}%; height:${r.to - r.from}%;">${id}</div>`;
   }).join("");
 
@@ -1058,7 +1479,7 @@ function buildPlaceholderGrid(mapGroup, regionId) {
   }).join("");
   return `
     <div class="placeholder-grid" aria-hidden="true">${cells}</div>
-    <p class="note">Exact ${mapGroup === "WORLD" ? "World" : "India"} map region boundaries haven't been supplied yet — only the region IDs exist so far. <b style="font-family:var(--font-mono)">${regionId}</b> is marked as a placeholder above.</p>
+    <p class="note">Exact ${mapGroup === "WORLD" ? "World" : "India"} map region boundaries are still an approximate placeholder grid, not real geography — only the region IDs and rough bands exist so far. <b style="font-family:var(--font-mono)">${regionId}</b> is marked above.</p>
   `;
 }
 
@@ -1073,13 +1494,25 @@ function renderMapCard() {
   // If the current A/L·O/L + map-group combination doesn't exist,
   // fall back gracefully rather than guessing.
   const combinationValid = isValidCombination(level, mapGroup);
-  const filename = combinationValid ? getMapFilename(language, level, mapGroup) : null;
-  const mapUrl = filename ? getMapUrl(language, level, mapGroup) : null;
+  const filename = combinationValid ? getMapFilename(language, level, mapGroup, place.mapVariant) : null;
+  const mapUrl = filename ? getMapUrl(language, level, mapGroup, place.mapVariant) : null;
+
+  const colorGuideRows = Object.entries(CATEGORY_COLORS).map(([cat, color]) => `
+      <div class="color-guide-row">
+        <span class="color-guide-swatch" style="background:${color}"></span>
+        <span>${cat}</span>
+      </div>`).join("");
 
   const catBadge = `
-    <span class="place-badge" style="background:${place.color}">
-      <span class="dot"></span>${place.category}
-    </span>`;
+    <div class="cat-badge-wrap">
+      <span class="place-badge" style="background:${place.color}">
+        <span class="dot"></span>${place.category}
+      </span>
+      <button type="button" class="color-guide-toggle" id="colorGuideToggle" aria-expanded="false" aria-controls="colorGuidePanel">Color Guide</button>
+      <div class="color-guide-panel" id="colorGuidePanel" hidden>
+        ${colorGuideRows}
+      </div>
+    </div>`;
 
   const techInfo = `
     <div class="tech-card">
@@ -1108,7 +1541,8 @@ function renderMapCard() {
       </div>
       <div class="map-fallback" style="display:none;">
         <div class="fname">${filename}</div>
-        ${mapGroup === "SL" ? buildSlSchematic(place)
+        ${mapGroup === "SL" ? buildBandSchematic("SL", ["sl1", "sl2", "sl3", "sl4"], place)
+          : mapGroup === "EUROPE" ? buildBandSchematic("EUROPE", ["eu1", "eu2", "eu3", "eu4"], place)
           : (mapGroup === "WORLD" || mapGroup === "INDIA") ? buildPlaceholderGrid(mapGroup, place.region)
           : `<p class="note">Region system for <b style="font-family:var(--font-mono)">${mapGroup}</b> hasn't been defined yet.</p>`}
       </div>`;
@@ -1225,12 +1659,36 @@ function spawnEarthquakeRipple(viewport, x, y) {
 // card is fully re-rendered whenever the place/level/language changes
 // — a direct listener on .map-viewport would be destroyed each time.
 els.stage.addEventListener("click", (e) => {
+  // "Color Guide" toggle under the category badge — open/close the
+  // legend panel instead of treating this as an earthquake-ripple click.
+  const guideToggle = e.target.closest("#colorGuideToggle");
+  if (guideToggle) {
+    const panel = document.getElementById("colorGuidePanel");
+    if (panel) {
+      panel.hidden = !panel.hidden;
+      guideToggle.setAttribute("aria-expanded", String(!panel.hidden));
+    }
+    return;
+  }
+
   const viewport = e.target.closest(".map-viewport");
   if (!viewport) return;
   const rect = viewport.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
   spawnEarthquakeRipple(viewport, x, y);
+});
+
+// Close the Color Guide legend on any click outside it, from anywhere
+// in the document (not just inside the stage).
+document.addEventListener("click", (e) => {
+  const panel = document.getElementById("colorGuidePanel");
+  if (!panel || panel.hidden) return;
+  if (!e.target.closest(".cat-badge-wrap")) {
+    panel.hidden = true;
+    const toggle = document.getElementById("colorGuideToggle");
+    if (toggle) toggle.setAttribute("aria-expanded", "false");
+  }
 });
 
 /* =====================================================================
