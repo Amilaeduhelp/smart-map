@@ -435,6 +435,9 @@
     display:flex; align-items:center; justify-content:center;
     font-family: var(--font-mono); font-size: 11px; color: var(--muted);
     background: rgba(255,255,255,0.4);
+    opacity: 1;
+    filter: none;
+    transition: opacity 0.3s ease, filter 0.3s ease;
   }
   .placeholder-cell.active{
     border-style: solid;
@@ -442,6 +445,14 @@
     color: inherit;
     background: color-mix(in srgb, currentColor 14%, transparent);
     font-weight:600;
+  }
+  /* Mirrors the .region-mask dimming used on real map images and the
+     SL/EUROPE band schematic: every cell that ISN'T the searched
+     region is faded and desaturated, so the active cell reads as the
+     one place still "in focus" — same visual language, grid form. */
+  .placeholder-cell.dimmed{
+    opacity: 0.32;
+    filter: grayscale(0.55);
   }
 
   .msg-toast{
@@ -510,6 +521,25 @@
   .footer-credit{ margin-left: auto; }
   .footer-credit a{ color: var(--gold); text-decoration: none; font-weight: 600; }
   .footer-credit a:hover{ text-decoration: underline; }
+
+  .whatsapp-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.03em;
+    color: #F3EEE0;
+    background: #1F8A55;
+    padding: 5px 10px 5px 8px;
+    border-radius: 20px;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    transition: background-color 0.18s ease, transform 0.18s ease;
+    flex: 0 0 auto;
+  }
+  .whatsapp-btn:hover{ background: #24A566; transform: translateY(-1px); }
+  .whatsapp-btn:focus-visible{ outline: 2px solid var(--gold); outline-offset: 2px; }
+  .whatsapp-btn svg{ width:13px; height:13px; flex:0 0 auto; }
 
   @media (max-width: 720px){
     header.topbar{ padding: 10px 12px 12px; }
@@ -678,6 +708,19 @@
     <span>Map group: <b id="statGroup">—</b></span>
     <span>Region: <b id="statRegion">—</b></span>
     <span>File: <b id="statFile">—</b></span>
+    <a
+      class="whatsapp-btn"
+      href="https://wa.me/94716637804?text=Smart%20map%20%E0%B6%91%E0%B6%9A%20%E0%B7%83%E0%B6%B8%E0%B7%8A%E0%B6%B6%E0%B6%B1%E0%B7%8A%E0%B6%B0%E0%B6%BA%E0%B7%99%E0%B6%B1%E0%B7%92/about%20smart%20map"
+      target="_blank"
+      rel="noopener"
+      aria-label="අඩුපාඩු-ගුණදොස්-යෝජනා WhatsApp හරහා එවන්න"
+    >
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M17.47 14.38c-.29-.15-1.7-.84-1.96-.93-.26-.1-.46-.15-.65.15-.2.29-.75.93-.92 1.12-.17.2-.34.22-.63.08-.29-.15-1.22-.45-2.33-1.44-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.15-.17.2-.29.29-.49.1-.2.05-.37-.02-.51-.08-.15-.65-1.57-.89-2.15-.23-.56-.47-.48-.65-.49-.17-.01-.36-.01-.56-.01s-.51.08-.78.37c-.26.29-1.02 1-1.02 2.43 0 1.43 1.04 2.82 1.19 3.01.15.2 2.05 3.13 4.97 4.39.69.3 1.24.48 1.66.61.7.22 1.34.19 1.84.12.56-.08 1.7-.7 1.94-1.37.24-.68.24-1.26.17-1.37-.07-.12-.26-.19-.55-.34z"/>
+        <path d="M12.02 2C6.5 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.06-1.33A9.95 9.95 0 0 0 12.02 22C17.53 22 22 17.52 22 12S17.53 2 12.02 2zm0 18.1c-1.7 0-3.28-.5-4.61-1.36l-.33-.2-3 .79.8-2.92-.22-.3A8.1 8.1 0 0 1 3.9 12c0-4.48 3.65-8.1 8.12-8.1 4.48 0 8.12 3.62 8.12 8.1 0 4.48-3.64 8.1-8.12 8.1z"/>
+      </svg>
+      අඩුපාඩු-ගුණදොස්-යෝජනා එවන්න
+    </a>
     <span class="footer-credit"><a href="https://www.eduhelp.lk" target="_blank" rel="noopener">www.eduhelp.lk</a> — Amila Udawattha</span>
   </footer>
 
@@ -873,2316 +916,1483 @@ const historicalPlaces = [
   mapVariant: 1,
   region: "sl2"
 },
+
+  // --- WORLD (O/L only) samples ---
+  // ============================================================
+// රටවල් / රාජ්‍යයන් / කලාප
+// Colour "Kingdom": "#B23A2E"
+// ============================================================
+
 {
-  id: "pachinapassa",
+  id: "united_kingdom",
   names: {
-    si: "පාචීනපස්ස",
-    en: "Pachinapassa",
-    ta: "பாசீனபஸ்ஸ",
-    singlish: "Pachinapassa"
+    si: "මහා බ්‍රිතාන්‍යය / එක්සත් රාජධානිය",
+    en: "United Kingdom",
+    ta: "ஐக்கிய இராச்சியம்",
+    singlish: "United Kingdom"
   },
-  category: "Province",
-  color: CATEGORY_COLORS["Province"],
-  mapGroup: "SL",
-  mapVariant: 1,
-  region: "sl2"
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl3"
 },
 {
-  id: "rajarata",
+  id: "ireland",
   names: {
-    si: "රජරට",
-    en: "Rajarata",
-    ta: "ரஜரட்ட",
-    singlish: "Rajarata"
+    si: "අයර්ලන්තය",
+    en: "Ireland",
+    ta: "அயர்லாந்து",
+    singlish: "Ireland"
   },
-  category: "Province",
-  color: CATEGORY_COLORS["Province"],
-  mapGroup: "SL",
-  mapVariant: 1,
-  region: "sl2"
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl3"
 },
 {
-  id: "malayadesha",
+  id: "norway",
   names: {
-    si: "මළයදේශ",
-    en: "Malaya Desha",
-    ta: "மலயதேசம்",
-    singlish: "Malayadesha"
+    si: "නෝර්වේ",
+    en: "Norway",
+    ta: "நோர்வே",
+    singlish: "Norway"
   },
-  category: "Province",
-  color: CATEGORY_COLORS["Province"],
-  mapGroup: "SL",
-  mapVariant: 1,
-  region: "sl3"
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl2"
 },
 {
-  id: "dakkhina_desha",
+  id: "sweden",
   names: {
-    si: "දක්ඛිණ දේශ",
-    en: "Dakkhina Desha",
-    ta: "தக்கிண தேசம்",
-    singlish: "Dakkhina Desha"
+    si: "ස්වීඩනය",
+    en: "Sweden",
+    ta: "சுவீடன்",
+    singlish: "Sweden"
   },
-  category: "Province",
-  color: CATEGORY_COLORS["Province"],
-  mapGroup: "SL",
-  mapVariant: 1,
-  region: "sl6"
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl2"
 },
 {
-  id: "pas_yodun_rata",
+  id: "finland",
   names: {
-    si: "පස්යොඳුන්රට",
-    en: "Pas Yodun Rata",
-    ta: "பஸ்யோதுன் ரட்ட",
-    singlish: "Pas Yodun Rata"
+    si: "ෆින්ලන්තය",
+    en: "Finland",
+    ta: "பின்லாந்து",
+    singlish: "Finland"
   },
-  category: "Province",
-  color: CATEGORY_COLORS["Province"],
-  mapGroup: "SL",
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl2"
+},
+{
+  id: "denmark",
+  names: {
+    si: "ඩෙන්මාර්කය",
+    en: "Denmark",
+    ta: "டென்மார்க்",
+    singlish: "Denmark"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl3"
+},
+{
+  id: "belgium",
+  names: {
+    si: "බෙල්ජියම",
+    en: "Belgium",
+    ta: "பெல்ஜியம்",
+    singlish: "Belgium"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "france",
+  names: {
+    si: "ප්‍රංශය",
+    en: "France",
+    ta: "பிரான்ஸ்",
+    singlish: "France"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "portugal",
+  names: {
+    si: "පෘතුගාලය",
+    en: "Portugal",
+    ta: "போர்த்துக்கல்",
+    singlish: "Portugal"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl5"
+},
+{
+  id: "spain",
+  names: {
+    si: "ස්පාඤ්ඤය",
+    en: "Spain",
+    ta: "ஸ்பெயின்",
+    singlish: "Spain"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl5"
+},
+{
+  id: "germany",
+  names: {
+    si: "ජර්මනිය",
+    en: "Germany",
+    ta: "ஜெர்மனி",
+    singlish: "Germany"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "austria",
+  names: {
+    si: "ඔස්ට්‍රියාව",
+    en: "Austria",
+    ta: "ஆஸ்திரியா",
+    singlish: "Austria"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "italy",
+  names: {
+    si: "ඉතාලිය",
+    en: "Italy",
+    ta: "இத்தாலி",
+    singlish: "Italy"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "greece",
+  names: {
+    si: "ග්‍රීසිය",
+    en: "Greece",
+    ta: "கிரேக்கம்",
+    singlish: "Greece"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl5"
+},
+{
+  id: "turkey",
+  names: {
+    si: "තුර්කිය",
+    en: "Turkey",
+    ta: "துருக்கி",
+    singlish: "Turkey"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl5"
+},
+{
+  id: "russia",
+  names: {
+    si: "රුසියාව(බටහිර කොටස)",
+    en: "Russia(West)",
+    ta: "ரஷ்யா",
+    singlish: "Russia"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl3"
+},
+{
+  id: "russia",
+  names: {
+    si: "රුසියාව(මධ්‍යම කොටස)",
+    en: "Russia(Middle)",
+    ta: "ரஷ்யா",
+    singlish: "Russia"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
   mapVariant: 1,
-  region: "sl7"
+  region: "wl3"
+},
+{
+  id: "russia",
+  names: {
+    si: "රුසියාව(නැගෙනහිර කොටස)",
+    en: "Russia(East)",
+    ta: "ரஷ்யா",
+    singlish: "Russia"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl3"
+},
+{
+  id: "arabia",
+  names: {
+    si: "අරාබිය",
+    en: "Arabia",
+    ta: "அரேபியா",
+    singlish: "Arabia"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl6"
+},
+{
+  id: "persia_iran",
+  names: {
+    si: "පර්සියාව / ඉරානය",
+    en: "Persia / Iran",
+    ta: "பாரசீகம் / ஈரான்",
+    singlish: "Persia / Iran"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl5"
+},
+{
+  id: "india",
+  names: {
+    si: "ඉන්දියාව(උතුරු ඉන්දියාව)",
+    en: "India(North)",
+    ta: "இந்தியா",
+    singlish: "India"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl6"
+},
+{
+  id: "india",
+  names: {
+    si: "ඉන්දියාව(දකුණු ඉන්දියාව)",
+    en: "India(South)",
+    ta: "இந்தியா",
+    singlish: "India"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl7"
+},
+{
+  id: "kashmir",
+  names: {
+    si: "කාශ්මීරය",
+    en: "Kashmir",
+    ta: "காஷ்மீர்",
+    singlish: "Kashmir"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl5"
+},
+{
+  id: "nepal",
+  names: {
+    si: "නේපාලය",
+    en: "Nepal",
+    ta: "நேபாளம்",
+    singlish: "Nepal"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl6"
+},
+{
+  id: "bhutan",
+  names: {
+    si: "භූතානය",
+    en: "Bhutan",
+    ta: "பூட்டான்",
+    singlish: "Bhutan"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl6"
+},
+{
+  id: "bangladesh",
+  names: {
+    si: "බංග්ලාදේශය",
+    en: "Bangladesh",
+    ta: "வங்காளதேசம்",
+    singlish: "Bangladesh"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl6"
+},
+{
+  id: "burma_myanmar",
+  names: {
+    si: "බුරුමය / මියන්මාරය",
+    en: "Burma / Myanmar",
+    ta: "பர்மா / மியான்மர்",
+    singlish: "Burma / Myanmar"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl7"
+},
+{
+  id: "thailand",
+  names: {
+    si: "තායිලන්තය",
+    en: "Thailand",
+    ta: "தாய்லாந்து",
+    singlish: "Thailand"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl7"
+},
+{
+  id: "china",
+  names: {
+    si: "චීනය",
+    en: "China",
+    ta: "சீனா",
+    singlish: "China"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl5"
+},
+{
+  id: "cambodia",
+  names: {
+    si: "කාම්බෝජය",
+    en: "Cambodia",
+    ta: "கம்போடியா",
+    singlish: "Cambodia"
+  },
+  category: "Kingdom",
+  color: CATEGORY_COLORS["Kingdom"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl7"
 },
 
 
-{
-  id: "Dolosdahas rata",
-  names: {
-    si: "දොළොස්දහස් රට",
-    en: " Dolosdahas rata ",
-    ta: " டோலோஸ்டஹஸ் ரட்ட ",
-    singlish: " Dolosdahas rata "
-  },
-  category: "Province",
-  color: CATEGORY_COLORS["Province"],
-  mapGroup: "SL",
-  mapVariant: 1,
-  region: "sl4"
-},
-
+// ============================================================
+// නගර / අගනුවරවල් / වරාය නගර
+// Colour "Islands": "#000000"
+// ============================================================
 
 {
-  id: "Atadahas rata",
-  names: {
-    si: "අටදහස් රට",
-    en: " Atadahas rata ",
-    ta: " எண்ணாயிரம் நாடு",
-    singlish: " Atadahas rata "
-  },
-  category: "Province",
-  color: CATEGORY_COLORS["Province"],
-  mapGroup: "SL",
-  mapVariant: 1,
-  region: "sl7"
-},
-{
-  id: "Nagadeepa/Nakadiwa",
-  names: {
-    si: "නාගදීප/නකදිව",
-    en: " Nagadeepa/Nakadiwa ",
-    ta: "நாகதீப / நாகதீவா ",
-    singlish: " Nagadeepa/Nakadiwa "
-  },
-  category: "Province",
-  color: CATEGORY_COLORS["Province"],
-  mapGroup: "SL",
-  mapVariant: 1,
-  region: "sl1"
-},
-{
-  id: "Uwa-wellassa",
-  names: {
-    si: "ඌව-වෙල්ලස්ස",
-    en: " Uwa-wellassa ",
-    ta: " ஊவா வெல்லஸ்ஸ",
-    singlish: " Uwa-wellassa "
-  },
-  category: "Province",
-  color: CATEGORY_COLORS["Province"],
-  mapGroup: "SL",
-  mapVariant: 1,
-  region: "sl7"
-},
-
-{
-  id: "polonnaruwa",
-  names: {
-    si: "පොළොන්නරුව",
-    en: "Polonnaruwa",
-    ta: "பொலன்னறுவை",
-    singlish: "Polonnaruwa"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "iranamadu",
-  names: {
-    si: "ඉරණමඩුව",
-    en: "Iranamadu",
-    ta: "இரணைமடு",
-    singlish: "Iranamadu"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl1"
-},
-{
-  id: "thonigala",
-  names: {
-    si: "තෝණිගල",
-    en: "Thonigala",
-    ta: "தோணிகல",
-    singlish: "Thonigala"
-  },
-  category: " Archaeological Site",
-  color: CATEGORY_COLORS["Archaeological Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl5"
-},
-{
-  id: "thanthirimale",
-  names: {
-    si: "තන්තිරිමලේ",
-    en: "Thanthirimale",
-    ta: "தந்திரிமலை",
-    singlish: "Thanthirimale"
-  },
-  category: " Ancient City",
-  color: CATEGORY_COLORS["Ancient City"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl2"
-},
-{
-  id: "pomparippu",
-  names: {
-    si: "පොම්පරිප්පුව",
-    en: "Pomparippu",
-    ta: "பொம்பரிப்பு",
-    singlish: "Pomparippu"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl2"
-},
-{
-  id: "mihintale",
-  names: {
-    si: "මිහින්තලේ",
-    en: "Mihintale",
-    ta: "மிஹிந்தலை",
-    singlish: "Mihintale"
-  },
-  category: " Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl2"
-},
-{
-  id: "ritigala",
-  names: {
-    si: "රිටිගල",
-    en: "Ritigala",
-    ta: "ரிட்டிகல",
-    singlish: "Ritigala"
-  },
-  category: " Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl2"
-},
-{
-  id: "aligala",
-  names: {
-    si: "අලිගල",
-    en: "Aligala",
-    ta: "அலிகல",
-    singlish: "Aligala"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl6"
-},
-{
-  id: "pothana",
-  names: {
-    si: "පොතාන",
-    en: "Pothana",
-    ta: "பொத்தான",
-    singlish: "Pothana"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl6"
-},
-{
-  id: "mapagala",
-  names: {
-    si: "මාපාගල",
-    en: "Mapagala",
-    ta: "மாபாகல",
-    singlish: "Mapagala"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl6"
-},
-{
-  id: "pidurangala",
-  names: {
-    si: "පිදුරංගල",
-    en: "Pidurangala",
-    ta: "பிதுரங்கல",
-    singlish: "Pidurangala"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl6"
-},
-{
-  id: "ibbankatuwa",
-  names: {
-    si: "ඉබ්බන්කටුව",
-    en: "Ibbankatuwa",
-    ta: "இப்பன்கட்டுவ",
-    singlish: "Ibbankatuwa"
-  },
-  category: " Proto Historic Site",
-  color: CATEGORY_COLORS["Proto Historic Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl6"
-},
-{
-  id: "dambulla",
-  names: {
-    si: "දඹුල්ල",
-    en: "Dambulla",
-    ta: "தம்புள்ளை",
-    singlish: "Dambulla"
-  },
-  category: " Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl6"
-},
-{
-  id: "thiriyaya",
-  names: {
-    si: "තිරියාය",
-    en: "Thiriyaya",
-    ta: "திரியாய்",
-    singlish: "Thiriyaya"
-  },
-  category: " Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl5"
-},
-{
-  id: "kasathota",
-  names: {
-    si: "කසාතොට",
-    en: "Kasathota",
-    ta: "கசாத்தோட்டை",
-    singlish: "Kasathota"
-  },
-  category: " Archaeological Site",
-  color: CATEGORY_COLORS["Archaeological Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl6"
-},
-{
-  id: "dasthota",
-  names: {
-    si: "දාස්තොට",
-    en: "Dasthota",
-    ta: "தாஸ்தோட்டை",
-    singlish: "Dasthota"
-  },
-  category: " Archaeological Site",
-  color: CATEGORY_COLORS["Archaeological Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl6"
-},
-{
-  id: "lunuwila",
-  names: {
-    si: "ලූණුවිල",
-    en: "Lunuwila",
-    ta: "லுணுவில",
-    singlish: "Lunuwila"
-  },
-  category: " Research Centers",
-  color: CATEGORY_COLORS["Research Centers"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl3"
-},
-{
-  id: "beligala",
-  names: {
-    si: "බෙලිගල",
-    en: "Beligala",
-    ta: "பெலிகல",
-    singlish: "Beligala"
-  },
-  category: " Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl3"
-},
-{
-  id: "danture",
-  names: {
-    si: "දන්තුරේ",
-    en: "Danture",
-    ta: "தந்துரை",
-    singlish: "Danture"
-  },
-  category: " War Field",
-  color: CATEGORY_COLORS["War Field"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl3"
-},
-{
-  id: "ganoruwa",
-  names: {
-    si: "ගන්නෝරුව",
-    en: "Gannoruwa",
-    ta: "கன்னோருவ",
-    singlish: "Gannoruwa"
-  },
-  category: " War Field",
-  color: CATEGORY_COLORS["War Field"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl3"
-},
-{
-  id: "balana",
-  names: {
-    si: "බලන",
-    en: "Balana",
-    ta: "பலான",
-    singlish: "Balana"
-  },
-  category: " War Field",
-  color: CATEGORY_COLORS["War Field"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl3"
-},
-{
-  id: "mahiyangana",
-  names: {
-    si: "මහියංගණය",
-    en: "Mahiyangana",
-    ta: "மகியங்கனை",
-    singlish: "Mahiyangana"
-  },
-  category: " Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl3"
-},
-{
-  id: "peradeniya",
-  names: {
-    si: "පේරාදෙණිය",
-    en: "Peradeniya",
-    ta: "பேராதனை",
-    singlish: "Peradeniya"
-  },
-  category: " Archaeological Site",
-  color: CATEGORY_COLORS["Archaeological Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl3"
-},
-{
-  id: "muthurajawela",
-  names: {
-    si: "මුතුරාජවෙල",
-    en: "Muthurajawela",
-    ta: "முத்துராஜவெல",
-    singlish: "Muthurajawela"
-  },
-  category: " Archaeological Site",
-  color: CATEGORY_COLORS["Archaeological Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl3"
-},
-{
-  id: "ekala",
-  names: {
-    si: "ඒකල",
-    en: "Ekala",
-    ta: "ஏகல",
-    singlish: "Ekala"
-  },
-  category: " Economic Centers",
-  color: CATEGORY_COLORS["Economic Centers"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl3"
-},
-{
-  id: "malwana",
-  names: {
-    si: "මල්වාන",
-    en: "Malwana",
-    ta: "மல்வான",
-    singlish: "Malwana"
-  },
-  category: " Archaeological Site",
-  color: CATEGORY_COLORS["Archaeological Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl7"
-},
-{
-  id: "mulleriyawa",
-  names: {
-    si: "මුල්ලේරියාව",
-    en: "Mulleriyawa",
-    ta: "முல்லேரியாவ",
-    singlish: "Mulleriyawa"
-  },
-  category: " War Field",
-  color: CATEGORY_COLORS["War Field"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl7"
-},
-{
-  id: "belilena",
-  names: {
-    si: "බෙලිලෙන",
-    en: "Beli Lena",
-    ta: "பெலி லென",
-    singlish: "Beli Lena"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl3"
-},
-{
-  id: "kotmale",
-  names: {
-    si: "කොත්මලේ",
-    en: "Kotmale",
-    ta: "கொத்மலை",
-    singlish: "Kotmale"
-  },
-  category: " Archaeological Site",
-  color: CATEGORY_COLORS["Archaeological Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl7"
-},
-{
-  id: "talawakele",
-  names: {
-    si: "තලවකැලේ",
-    en: "Talawakele",
-    ta: "தலவாக்கலை",
-    singlish: "Talawakele"
-  },
-  category: " Research Centers",
-  color: CATEGORY_COLORS["Research Centers"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl7"
-},
-{
-  id: "badulla",
-  names: {
-    si: "බදුල්ල",
-    en: "Badulla",
-    ta: "பதுளை",
-    singlish: "Badulla"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl7"
-},
-{
-  id: "randeniwela",
-  names: {
-    si: "රන්දෙනිවෙල",
-    en: "Randeniwela",
-    ta: "ரந்தெனிவெல",
-    singlish: "Randeniwela"
-  },
-  category: " War Field",
-  color: CATEGORY_COLORS["War Field"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl7"
-},
-{
-  id: "buttala",
-  names: {
-    si: "බුත්තල",
-    en: "Buttala",
-    ta: "புத்தல",
-    singlish: "Buttala"
-  },
-  category: " Ancient City",
-  color: CATEGORY_COLORS["Ancient City"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl7"
-},
-{
-  id: "sri_pada",
-  names: {
-    si: "ශ්‍රී පාද",
-    en: "Sri Pada",
-    ta: "ஸ்ரீ பாதம்",
-    singlish: "Sri Pada"
-  },
-  category: " Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl7"
-},
-{
-  id: "horton_plains",
-  names: {
-    si: "හෝර්ටන් තැන්න",
-    en: "Horton Plains",
-    ta: "ஹோர்டன் சமவெளி",
-    singlish: "Horton Thanna"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl7"
-},
-{
-  id: "pahiyangala_cave",
-  names: {
-    si: "පාහියන් ලෙන",
-    en: "Pahiyangala Cave",
-    ta: "பாஹியங்கல குகை",
-    singlish: "Pahiyangala Lena"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl7"
-},
-{
-  id: "batadombalena",
-  names: {
-    si: "බටදොඹලෙන",
-    en: "Batadombalena",
-    ta: "படதொம்பலென",
-    singlish: "Batadombalena"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl7"
-},
-{
-  id: "agalawatta",
-  names: {
-    si: "අගලවත්ත",
-    en: "Agalawatta",
-    ta: "அகலவத்த",
-    singlish: "Agalawatta"
-  },
-  category: " Research Centers",
-  color: CATEGORY_COLORS["Research Centers"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl4"
-},
-{
-  id: "ranchamadama",
-  names: {
-    si: "රංචාමඩම",
-    en: "Ranchamadama",
-    ta: "ரஞ்சாமடம",
-    singlish: "Ranchamadama"
-  },
-  category: " Proto Historic Site",
-  color: CATEGORY_COLORS["Proto Historic Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl4"
-},
-{
-  id: "kataragama",
-  names: {
-    si: "කතරගම",
-    en: "Kataragama",
-    ta: "கதிர்காமம்",
-    singlish: "Kataragama"
-  },
-  category: " Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl4"
-},
-{
-  id: "situlpawwa",
-  names: {
-    si: "සිතුල්පවුව",
-    en: "Sithulpawwa",
-    ta: "சித்துல்பவ்வ",
-    singlish: "Sithulpawwa"
-  },
-  category: " Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl4"
-},
-{
-  id: "minihagalkanda",
-  names: {
-    si: "මිනිහාගල්කන්ද",
-    en: "Minihagalkanda",
-    ta: "மினிஹாகல்கந்த",
-    singlish: "Minihagalkanda"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl4"
-},
-{
-  id: "bundala",
-  names: {
-    si: "බූන්දල",
-    en: "Bundala",
-    ta: "புந்தல",
-    singlish: "Bundala"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl4"
-},
-{
-  id: "pathirajawela",
-  names: {
-    si: "පතිරාජවෙල",
-    en: "Pathirajawela",
-    ta: "பதிராஜவெல",
-    singlish: "Pathirajawela"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl4"
-},
-{
-  id: "alimankada",
-  names: {
-    si: "අලිමංකඩ",
-    en: "Elephant Pass",
-    ta: "யானைப்பாதை",
-    singlish: "Alimankada"
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl1"
-},
-
-{
-  id: "matale",
-  names: {
-    si: "මාතලේ",
-    en: "Matale",
-    ta: "மாத்தளை",
-    singlish: "Matale"
-  },
-  category: "Ancient City",
-  color: CATEGORY_COLORS["Ancient City"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl3"
-},
-{
-  id: "digamadulla",
-  names: {
-    si: "දිගාමඩුල්ල",
-    en: "Digamadulla",
-    ta: "திகாமடுல்ல",
-    singlish: "Digamadulla"
-  },
-  category: "Ancient City",
-  color: CATEGORY_COLORS["Ancient City"],
-  mapGroup: "SL",
-  mapVariant: 2,
-  region: "sl3"
-},
-{
-  id: "modaragam_aru",
-  names: {
-    si: "මෝදරගම් ආරු",
-    en: "Moderagam Aru",
-    ta: "மோதரகம் ஆறு",
-    singlish: "Modaragam Aru"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
-},
-{
-  id: "kala_oya",
-  names: {
-    si: "කලා ඔය",
-    en: "Kala Oya",
-    ta: "கலா ஓயா",
-    singlish: "Kala Oya"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
-},
-{
-  id: "deduru_oya",
-  names: {
-    si: "දැදුරු ඔය",
-    en: "Deduru Oya",
-    ta: "தெதுரு ஓயா",
-    singlish: "Deduru Oya"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "ma_oya",
-  names: {
-    si: "මා ඔය",
-    en: "Ma Oya",
-    ta: "மா ஓயா",
-    singlish: "Ma Oya"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "kelani_ganga",
-  names: {
-    si: "කැලණි ගඟ",
-    en: "Kelani River",
-    ta: "களனி ஆறு",
-    singlish: "Kelani Ganga"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "kalu_ganga",
-  names: {
-    si: "කළු ගඟ",
-    en: "Kalu River",
-    ta: "களு கங்கை",
-    singlish: "Kalu Ganga"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl7"
-},
-{
-  id: "gin_ganga",
-  names: {
-    si: "ගිං ගඟ",
-    en: "Gin River",
-    ta: "கிங் கங்கை",
-    singlish: "Gin Ganga"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
-},
-{
-  id: "nilwala_ganga",
-  names: {
-    si: "නිල්වලා ගඟ",
-    en: "Nilwala River",
-    ta: "நில்வளா கங்கை",
-    singlish: "Nilwala Ganga"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
-},
-{
-  id: "walawe_ganga",
-  names: {
-    si: "වලවේ ගඟ",
-    en: "Walawe River",
-    ta: "வளவை கங்கை",
-    singlish: "Walawe Ganga"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
-},
-{
-  id: "kirindi_oya",
-  names: {
-    si: "කිරිඳි ඔය",
-    en: "Kirindi Oya",
-    ta: "கிரிந்தி ஓயா",
-    singlish: "Kirindi Oya"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
-},
-{
-  id: "menik_ganga",
-  names: {
-    si: "මැණික් ගඟ",
-    en: "Menik Ganga",
-    ta: "மாணிக்க கங்கை",
-    singlish: "Menik Ganga"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
-},
-{
-  id: "kumbukkan_oya",
-  names: {
-    si: "කුඹුක්කන් ඔය",
-    en: "Kumbukkan Oya",
-    ta: "கும்புக்கன் ஓயா",
-    singlish: "Kumbukkan Oya"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl7"
-},
-{
-  id: "gal_oya",
-  names: {
-    si: "ගල් ඔය",
-    en: "Gal Oya",
-    ta: "கல் ஓயா",
-    singlish: "Gal Oya"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "maduru_oya",
-  names: {
-    si: "මාදුරු ඔය",
-    en: "Maduru Oya",
-    ta: "மாதுறு ஓயா",
-    singlish: "Maduru Oya"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "mahaweli_ganga",
-  names: {
-    si: "මහවැලි ගඟ",
-    en: "Mahaweli River",
-    ta: "மகாவலி கங்கை",
-    singlish: "Mahaweli Ganga"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "amban_ganga",
-  names: {
-    si: "අඹන් ගඟ",
-    en: "Amban Ganga",
-    ta: "அம்பன் கங்கை",
-    singlish: "Amban Ganga"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "yan_oya",
-  names: {
-    si: "යාන් ඔය",
-    en: "Yan Oya",
-    ta: "யான் ஓயா",
-    singlish: "Yan Oya"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
-},
-{
-  id: "maha_oya",
-  names: {
-    si: "මහ ඔය",
-    en: "Maha Oya",
-    ta: "மகா ஓயா",
-    singlish: "Maha Oya"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl5"
-},
-{
-  id: "yodha_ela",
-  names: {
-    si: "යෝධ ඇළ",
-    en: "Yoda Ela",
-    ta: "யோத எல",
-    singlish: "Yodha Ela"
-  },
-  category: "Artificial Canal",
-  color: CATEGORY_COLORS["Artificial Canal"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
-},
-{
-  id: "elahara_ela",
-  names: {
-    si: "ඇළහැර ඇළ",
-    en: "Elahera Canal",
-    ta: "எலஹெர கால்வாய்",
-    singlish: "Elahera Ela"
-  },
-  category: "Artificial Canal",
-  color: CATEGORY_COLORS["Artificial Canal"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "minipe_ela",
-  names: {
-    si: "මිණිපේ ඇළ",
-    en: "Minipe Canal",
-    ta: "மினிப்பே கால்வாய்",
-    singlish: "Minipe Ela"
-  },
-  category: "Artificial Canal",
-  color: CATEGORY_COLORS["Artificial Canal"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-
-{
-  id: "iranamadu",
-  names: {
-    si: "ඉරණමඩු ජලාශය",
-    en: "Iranamadu Reservoir",
-    ta: "இரணைமடு நீர்த்தேக்கம்",
-    singlish: "Iranamadu"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl1"
-},
-{
-  id: "yoda_wewa",
-  names: {
-    si: "යෝධ වැව්",
-    en: "Yoda Wewa",
-    ta: "யோத வேவ",
-    singlish: "Yoda Wewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl5"
-},
-{
-  id: "padaviya_wewa",
-  names: {
-    si: "පදවිය වැව",
-    en: "Padaviya Wewa",
-    ta: "பதவிய குளம்",
-    singlish: "Padaviya Wewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl5"
-},
-{
-  id: "mahakanadarawa_wewa",
-  names: {
-    si: "මහකනදරා වැව",
-    en: "Mahakanadarawa Wewa",
-    ta: "மகாகந்தராவ குளம்",
-    singlish: "Mahakanadarawa Wewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
-},
-{
-  id: "mahavilachchiya_wewa",
-  names: {
-    si: "මහවිලච්චිය වැව",
-    en: "Mahavilachchiya Wewa",
-    ta: "மகாவிலச்சிய குளம்",
-    singlish: "Mahavilachchiya Wewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
-},
-{
-  id: "tissa_wewa",
-  names: {
-    si: "තිසා වැව",
-    en: "Tissa Wewa",
-    ta: "திஸ்ஸ குளம்",
-    singlish: "Tissa Wewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
-},
-{
-  id: "nuwara_wewa",
-  names: {
-    si: "නුවර වැව",
-    en: "Nuwara Wewa",
-    ta: "நுவர குளம்",
-    singlish: "Nuwara Wewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
-},
-{
-  id: "nachchaduwa_wewa",
-  names: {
-    si: "නාච්චදූව වැව",
-    en: "Nachchaduwa Wewa",
-    ta: "நாச்சதூவ குளம்",
-    singlish: "Nachchaduwa Wewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
-},
-{
-  id: "Kala_wewa",
-  names: {
-    si: "කලා වැව",
-    en: "Kala Wewa",
-    ta: "தலா குளம்",
-    singlish: "Kala Wewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "kantale_wewa",
-  names: {
-    si: "කන්තලේ වැව",
-    en: "Kantale Wewa",
-    ta: "கந்தளாய் குளம்",
-    singlish: "Kantale Wewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
-},
-{
-  id: "hurulu_wewa",
-  names: {
-    si: "හුරුළු වැව",
-    en: "Hurulu Wewa",
-    ta: "ஹுருலு குளம்",
-    singlish: "Hurulu Wewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
-},
-{
-  id: "kaudulla_wewa",
-  names: {
-    si: "කවුඩුල්ල වැව",
-    en: "Kaudulla Wewa",
-    ta: "கவுடுல்ல குளம்",
-    singlish: "Kaudulla Wewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
-},
-{
-  id: "minneriya_wewa",
-  names: {
-    si: "මින්නේරිය වැව",
-    en: "Minneriya Wewa",
-    ta: "மின்னேரியா குளம்",
-    singlish: "Minneriya Wewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "parakrama_samudraya",
-  names: {
-    si: "පරාක්‍රම සමුද්‍රය",
-    en: "Parakrama Samudraya",
-    ta: "பராக்கிரம சமுத்திரம்",
-    singlish: "Parakrama Samudraya"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "elahara_amuna",
-  names: {
-    si: "ඇළහැර අමුණ",
-    en: "Elahera Anicut",
-    ta: "எலஹெர அணைக்கட்டு",
-    singlish: "Elahera Amuna"
-  },
-  category: "Artificial Canal",
-  color: CATEGORY_COLORS["Artificial Canal"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "angamedilla_amuna",
-  names: {
-    si: "අංගමැඬිල්ල අමුණ",
-    en: "Angamedilla Anicut",
-    ta: "அங்கமெடில்ல அணைக்கட்டு",
-    singlish: "Angamedilla Amuna"
-  },
-  category: "Artificial Canal",
-  color: CATEGORY_COLORS["Artificial Canal"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "maduru_oya_reservoir",
-  names: {
-    si: "මාදුරුඔය ජලාශය",
-    en: "Maduru Oya Reservoir",
-    ta: "மாதுறு ஓயா நீர்த்தேக்கம்",
-    singlish: "Maduru Oya"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "ulhitiya_reservoir",
-  names: {
-    si: "උල්හිටිය ජලාශය",
-    en: "Ulhitiya Reservoir",
-    ta: "உல்ஹிட்டிய நீர்த்தேக்கம்",
-    singlish: "Ulhitiya"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "polgolla_amuna",
-  names: {
-    si: "පොල්ගොල්ල අමුණ",
-    en: "Polgolla Anicut",
-    ta: "பொல்கொல்ல அணைக்கட்டு",
-    singlish: "Polgolla Amuna"
-  },
-  category: "Artificial Canal",
-  color: CATEGORY_COLORS["Artificial Canal"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "victoria",
-  names: {
-    si: "වික්ටෝරියා",
-    en: "Victoria Reservoir",
-    ta: "விக்டோரியா நீர்த்தேக்கம்",
-    singlish: "Victoria"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "randenigala",
-  names: {
-    si: "රන්දෙනිගල",
-    en: "Randenigala Reservoir",
-    ta: "ரந்தெனிகல நீர்த்தேக்கம்",
-    singlish: "Randenigala"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "rantembe",
-  names: {
-    si: "රන්ටැඹේ",
-    en: "Rantembe Reservoir",
-    ta: "ரந்தெம்பே நீர்த்தேக்கம்",
-    singlish: "Rantembe"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "kotmale",
-  names: {
-    si: "කොත්මලේ",
-    en: "Kotmale Reservoir",
-    ta: "கொத்மலை நீர்த்தேக்கம்",
-    singlish: "Kotmale"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "samanalawewa",
-  names: {
-    si: "සමනලවැව",
-    en: "Samanalawewa",
-    ta: "சமனலவெவ",
-    singlish: "Samanalawewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl7"
-},
-{
-  id: "udawalawe",
-  names: {
-    si: "උඩවලවේ",
-    en: "Udawalawe Reservoir",
-    ta: "உடவளவை நீர்த்தேக்கம்",
-    singlish: "Udawalawe"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
-},
-{
-  id: "chandrika_wewa",
-  names: {
-    si: "චන්ද්‍රිකා වැව",
-    en: "Chandrika Wewa",
-    ta: "சந்திரிகா குளம்",
-    singlish: "Chandrika Wewa"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
-},
-{
-  id: "malala_ara",
-  names: {
-    si: "මලල අර",
-    en: "Malala Ara",
-    ta: "மலல ஆறு",
-    singlish: "Malala Ara"
-  },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
-},
-{
-  id: "bundala",
-  names: {
-    si: "බුන්දල",
-    en: "Bundala ",
-    ta: "புந்தல / லுணுகம்வெஹெர",
-    singlish: "Bundala "
-  },
-  category: "Prehistoric Site",
-  color: CATEGORY_COLORS["Prehistoric Site"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
-},
-{
-  id: "gal_oya_reservoir",
-  names: {
-    si: "ගල්ඔය ජලාශය",
-    en: "Gal Oya Reservoir",
-    ta: "கல் ஓயா நீர்த்தேக்கம்",
-    singlish: "Gal Oya"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "batticaloa",
-  names: {
-    si: "මඩකලපුව",
-    en: "Batticaloa",
-    ta: "மட்டக்களப்பு",
-    singlish: "Madakalapuwa"
-  },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "sigiriya",
-  names: {
-    si: "සිගිරිය",
-    en: "Sigiriya",
-    ta: "சிகிரியா",
-    singlish: "Sigiriya"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "yapahuwa",
-  names: {
-    si: "යාපහුව",
-    en: "Yapahuwa",
-    ta: "யாப்பஹுவ",
-    singlish: "Yapahuwa"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "kurunegala",
-  names: {
-    si: "කුරුණෑගල",
-    en: "Kurunegala",
-    ta: "குருநாகல்",
-    singlish: "Kurunegala"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "dambadeniya",
-  names: {
-    si: "දඹදෙනිය",
-    en: "Dambadeniya",
-    ta: "தம்பதெனிய",
-    singlish: "Dambadeniya"
-  },
-  category: " Kingdom ",
-  color: CATEGORY_COLORS["Kingdom "],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "panduwasnuwara",
-  names: {
-    si: "පඬුවස්නුවර",
-    en: "Panduwasnuwara",
-    ta: "பண்டுவஸ்நுவர",
-    singlish: "Panduwasnuwara"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "gampola",
-  names: {
-    si: "ගම්පොළ",
-    en: "Gampola",
-    ta: "கம்பளை",
-    singlish: "Gampola"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "kandy",
-  names: {
-    si: "මහනුවර",
-    en: "Kandy",
-    ta: "கண்டி",
-    singlish: "Mahanuwara"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "kotte",
-  names: {
-    si: "කෝට්ටේ",
-    en: "Kotte",
-    ta: "கோட்டை",
-    singlish: "Kotte"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl7"
-},
-{
-  id: "seethawaka",
-  names: {
-    si: "සීතාවක",
-    en: "Seethawaka",
-    ta: "சீதாவாக்கை",
-    singlish: "Seethawaka"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl7"
-},
-{
-  id: "raigama",
-  names: {
-    si: "රයිගම",
-    en: "Raigama",
-    ta: "ரைගම",
-    singlish: "Raigama"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl7"
-},
-{
-  id: "mahanagahula",
-  names: {
-    si: "මහානාගහුල",
-    en: "Mahanagahula",
-    ta: "மகாநாகஹுல",
-    singlish: "Mahanagahula"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
-},
-{
-  id: "magama",
-  names: {
-    si: "මාගම",
-    en: "Magama",
-    ta: "மாகாமம்",
-    singlish: "Magama"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
-},
-{
-  id: "Minipe",
-  names: {
-    si: "මිණිපේ",
-    en: " Minipe",
-    ta: "மினிபே",
-    singlish: " Minipe"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
-{
-  id: "Lunugamwehera",
-  names: {
-    si:"ලුණුගම්වෙහෙර",
-    en: "Lunugamwehera",
-    ta: "மினிபே",
-    singlish: "Lunugamwehera"
-  },
-  category: "Tanks or Reservoirs",
-  color: CATEGORY_COLORS["Tanks or Reservoirs"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
-},
-{
-  id: "govindamalaya",
-  names: {
-    si: "ගෝවින්දමලය",
-    en: "Govindamalaya",
-    ta: "கோவிந்தஹெல",
-    singlish: "Govindamalaya"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl7"
-},
-
-{
-  id: "dambakolapatuna",
-  names: {
-    si: "දඹකොළපටුන",
-    en: "Dambakolapatuna",
-    ta: "தம்பகொலபட்டுன",
-    singlish: "Dambakolapatuna"
-  },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl1"
-},
-{
-  id: "nallur",
-  names: {
-    si: "නල්ලූර්",
-    en: "Nallur",
-    ta: "நல்லூர்",
-    singlish: "Nallur"
-  },
-  category: "Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl1"
-},
-{
-  id: "kandarodaya",
-  names: {
-    si: "කන්දරෝඩය",
-    en: "Kandarodaya",
-    ta: "கந்தரோடை",
-    singlish: "Kandarodaya"
-  },
-  category: "Archaeological Site",
-  color: CATEGORY_COLORS["Archaeological Site"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl1"
-},
-{
-  id: "vallipuram",
-  names: {
-    si: "වල්ලීපුරම්",
-    en: "Vallipuram",
-    ta: "வல்லிபுரம்",
-    singlish: "Vallipuram"
-  },
-  category: "Archaeological Site",
-  color: CATEGORY_COLORS["Archaeological Site"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl1"
-},
-{
-  id: "hammenheil",
-  names: {
-    si: "හැමන්හිල්",
-    en: " Hammenheil",
-    ta: "ஹம்மென்ஹீல்",
-    singlish: " Hammenheil"
-  },
-  category: "Archaeological Site",
-  color: CATEGORY_COLORS["Archaeological Site"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl1"
-},
-{
-  id: "urathota",
-  names: {
-    si: "ඌරාතොට",
-    en: "Urathota",
-    ta: "ஊராத்தோட்டை",
-    singlish: "Urathota"
-  },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl1"
-},
-{
-  id: "jaffna",
-  names: {
-    si: "යාපනය",
-    en: "Jaffna",
-    ta: "யாழ்ப்பாணம்",
-    singlish: "Yapanaya"
-  },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl1"
-},
-{
-  id: "kayts_island",
-  names: {
-    si: "කයිට්ස් දූපත",
-    en: "Kayts Island",
-    ta: "காய்ட்ஸ் தீவு",
-    singlish: "Kayts Island"
+  id: "athens",
+  names: {
+    si: "ඇතන්ස්",
+    en: "Athens",
+    ta: "ஏதென்ஸ்",
+    singlish: "Athens"
   },
   category: "Islands",
   color: CATEGORY_COLORS["Islands"],
-  mapGroup: "SL",
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl1"
+  region: "wl5"
 },
 {
-  id: "mahathittha",
+  id: "ankara",
   names: {
-    si: "මහාතිත්ථ",
-    en: "Mahathittha",
-    ta: "மாந்தோட்டம்",
-    singlish: "Mahathittha"
+    si: "ඇන්කාරා",
+    en: "Ankara",
+    ta: "அங்காரா",
+    singlish: "Ankara"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl5"
+  region: "wl5"
 },
 {
-  id: "mannar",
+  id: "amsterdam",
   names: {
-    si: "මන්නාරම",
-    en: "Mannar",
-    ta: "மன்னார்",
-    singlish: "Mannar"
+    si: "ඇමස්ටර්ඩෑම්",
+    en: "Amsterdam",
+    ta: "ஆம்ஸ்டர்டாம்",
+    singlish: "Amsterdam"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl5"
+  region: "wl4"
 },
 {
-  id: "uruwela",
+  id: "alexandria",
   names: {
-    si: "ඌරුවෙල",
-    en: "Uruwela",
-    ta: "உருவெல",
-    singlish: "Uruwela"
+    si: "ඇලෙක්සැන්ඩ්‍රියාව",
+    en: "Alexandria",
+    ta: "அலெக்சாந்திரியா",
+    singlish: "Alexandria"
   },
-  category: "Archaeological Site",
-  color: CATEGORY_COLORS["Archaeological Site"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl2"
+  region: "wl6"
 },
 {
-  id: "kalpitiya",
+  id: "oslo",
   names: {
-    si: "කල්පිටිය",
-    en: "Kalpitiya",
-    ta: "கற்பிட்டி",
-    singlish: "Kalpitiya"
+    si: "ඔස්ලෝ",
+    en: "Oslo",
+    ta: "ஒஸ்லோ",
+    singlish: "Oslo"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl2"
+  region: "wl3"
 },
 {
-  id: "puttalam",
+  id: "cairo",
   names: {
-    si: "පුත්තලම",
-    en: "Puttalam",
-    ta: "புத்தளம்",
-    singlish: "Puttalam"
+    si: "කයිරෝ",
+    en: "Cairo",
+    ta: "கெய்ரோ",
+    singlish: "Cairo"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl2"
+  region: "wl6"
 },
 {
-  id: "chilaw",
+  id: "karachi",
   names: {
-    si: "හලාවත",
-    en: "Chilaw",
-    ta: "சிலாபம்",
-    singlish: "Halawatha"
+    si: "කරච්චි",
+    en: "Karachi",
+    ta: "கராச்சி",
+    singlish: "Karachi"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl6"
 },
 {
-  id: "negombo",
+  id: "karaikal",
   names: {
-    si: "මීගමුව",
-    en: "Negombo",
-    ta: "நீர்கொழும்பு",
-    singlish: "Meegamuwa"
+    si: "කරිකාල්",
+    en: "Karaikal",
+    ta: "காரைக்கால்",
+    singlish: "Karaikal"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl8"
 },
 {
-  id: "wattala",
+  id: "kolkata",
   names: {
-    si: "වත්තල",
-    en: "Wattala",
-    ta: "வத்தளை",
-    singlish: "Wattala"
+    si: "කල්කටා",
+    en: "Kolkata",
+    ta: "கொல்கத்தா",
+    singlish: "Kolkata"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl6"
 },
 {
-  id: "colombo",
+  id: "calicut",
   names: {
-    si: "කොළඹ",
-    en: "Colombo",
-    ta: "கொழும்பு",
-    singlish: "Kolamba"
+    si: "කැලිකට්",
+    en: "Calicut",
+    ta: "கள்ளிக்கோட்டை",
+    singlish: "Calicut"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl8"
 },
 {
-  id: "kalutara",
+  id: "constantinople_istanbul",
   names: {
-    si: "කළුතර",
-    en: "Kalutara",
-    ta: "களுத்துறை",
-    singlish: "Kalutara"
+    si: "කොන්ස්තන්තිනෝපල් / ඉස්තාන්බුල්",
+    en: "Constantinople / Istanbul",
+    ta: "கான்ஸ்டான்டினோபிள் / இஸ்தான்புல்",
+    singlish: "Constantinople / Istanbul"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl7"
+  region: "wl5"
 },
 {
-  id: "beruwala",
+  id: "copenhagen",
   names: {
-    si: "බේරුවල",
-    en: "Beruwala",
-    ta: "பேருவளை",
-    singlish: "Beruwala"
+    si: "කොපන්හේගන්",
+    en: "Copenhagen",
+    ta: "கோபன்ஹேகன்",
+    singlish: "Copenhagen"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl7"
+  region: "wl3"
 },
 {
-  id: "bentota",
+  id: "goa",
   names: {
-    si: "බෙන්තර",
-    en: "Bentota",
-    ta: "பெந்தோட்டை",
-    singlish: "Bentara"
+    si: "ගෝව",
+    en: "Goa",
+    ta: "கோவா",
+    singlish: "Goa"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl7"
 },
 {
-  id: "totagamuwa",
+  id: "chandannagar",
   names: {
-    si: "තොටගමුව",
-    en: "Totagamuwa",
-    ta: "தொட்டகமுவ",
-    singlish: "Totagamuwa"
+    si: "චන්ද්‍රනගර්",
+    en: "Chandannagar",
+    ta: "சந்திரநகர்",
+    singlish: "Chandannagar"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl6"
 },
 {
-  id: "galle",
+  id: "chennai",
   names: {
-    si: "ගාල්ල",
-    en: "Galle",
-    ta: "காலி",
-    singlish: "Galla"
+    si: "චෙන්නායි",
+    en: "Chennai",
+    ta: "சென்னை",
+    singlish: "Chennai"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl7"
 },
 {
-  id: "matara",
+  id: "geneva",
   names: {
-    si: "මාතර",
-    en: "Matara",
-    ta: "மாத்தறை",
-    singlish: "Matara"
+    si: "ජිනීවා",
+    en: "Geneva",
+    ta: "ஜெனீவா",
+    singlish: "Geneva"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl4"
+  region: "wl4"
 },
 {
-  id: "devinuwara",
+  id: "genoa",
   names: {
-    si: "දෙවිනුවර",
-    en: "Dondra",
-    ta: "தேவிநுவர",
-    singlish: "Devinuwara"
+    si: "ජිනෝවා",
+    en: "Genoa",
+    ta: "ஜெனோவா",
+    singlish: "Genoa"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl4"
+  region: "wl4"
 },
 {
-  id: "godavaya",
+  id: "jerusalem",
   names: {
-    si: "ගොඩවාය",
-    en: "Godavaya",
-    ta: "கோதாவய",
-    singlish: "Godawaya"
+    si: "ජෙරුසලම්",
+    en: "Jerusalem",
+    ta: "ஜெருசலேம்",
+    singlish: "Jerusalem"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl4"
+  region: "wl6"
 },
 {
-  id: "hambantota",
+  id: "tokyo",
   names: {
-    si: "හම්බන්තොට",
-    en: "Hambantota",
-    ta: "அம்பாந்தோட்டை",
-    singlish: "Hambantota"
+    si: "ටෝකියෝ",
+    en: "Tokyo",
+    ta: "டோக்கியோ",
+    singlish: "Tokyo"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl5"
 },
 {
-  id: "thotaluthota",
+  id: "new_delhi",
   names: {
-    si: "තොටළුතොට",
-    en: " thotaluthota ",
-    ta: "தொட்டவுபொட்ட",
-    singlish: " thotaluthota "
+    si: "නවදිල්ලිය",
+    en: "New Delhi",
+    ta: "புது தில்லி",
+    singlish: "New Delhi"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl4"
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl6"
 },
 {
-  id: "lankapatuna",
+  id: "nagasaki",
   names: {
-    si: "ලංකා පටුන",
-    en: "Lankapatuna",
-    ta: "லங்காபட்டுன",
-    singlish: "Lankapatuna"
+    si: "නාගසාකි",
+    en: "Nagasaki",
+    ta: "நாகசாகி",
+    singlish: "Nagasaki"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl5"
 },
 {
-  id: "kottiyarama",
+  id: "naples",
   names: {
-    si: "කොට්ටියාරම",
-    en: "Kottiyarama",
-    ta: "கொட்டியாரம்",
-    singlish: "Kottiyarama"
+    si: "නේපල්ස්",
+    en: "Naples",
+    ta: "நேபிள்ஸ்",
+    singlish: "Naples"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl2"
+  region: "wl5"
 },
 {
-  id: "gokanna_vihara",
+  id: "paris",
   names: {
-    si: "ගෝකණ්ණ විහාරය",
-    en: "Gokanna Vihara",
-    ta: "கோகண்ண விகாரை",
-    singlish: "Gokanna Viharaya"
+    si: "පැරිස්",
+    en: "Paris",
+    ta: "பாரிஸ்",
+    singlish: "Paris"
   },
-  category: "Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl2"
+  region: "wl4"
 },
 {
-  id: "Frederick Fort",
+  id: "pondicherry",
   names: {
-    si: "ෆෙඩ්රික් කොටුව",
-    en: " Frederick Fort ",
-    ta: "ஒஸ்டன்பெர்க் கோட்டை",
-    singlish: "Fedrik Kotuwa"
+    si: "පෝන්ඩිචේරි",
+    en: "Pondicherry",
+    ta: "புதுச்சேரி",
+    singlish: "Pondicherry"
   },
-  category: "Archaeological Site",
-  color: CATEGORY_COLORS["Archaeological Site"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl2"
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl7"
 },
 {
-  id: "trincomalee",
+  id: "batavia_jakarta",
   names: {
-    si: "ත්‍රිකුණාමලය",
-    en: "Trincomalee",
-    ta: "திருகோணமலை",
-    singlish: "Trikunamalaya"
+    si: "බතාවිය / ජකර්තා",
+    en: "Batavia / Jakarta",
+    ta: "படாவியா / ஜகார்த்தா",
+    singlish: "Batavia / Jakarta"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl5"
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl9"
 },
 {
-  id: "pallavanka",
+  id: "berlin",
   names: {
-    si: "පල්ලවංක",
-    en: "Pallavanka",
-    ta: "பல்லவங்க",
-    singlish: "Pallavanka"
+    si: "බර්ලින්",
+    en: "Berlin",
+    ta: "பெர்லின்",
+    singlish: "Berlin"
   },
-  category: "Port",
-  color: CATEGORY_COLORS["Port"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl5"
+  region: "wl4"
 },
 {
-  id: "dedigama",
+  id: "baghdad",
   names: {
-    si: "දැදිගම",
-    en: "Dedigama",
-    ta: "தெதிகம",
-    singlish: "Dedigama"
+    si: "බැග්ඩෑඩ්",
+    en: "Baghdad",
+    ta: "பாக்தாத்",
+    singlish: "Baghdad"
   },
-  category: "Kingdom",
-  color: CATEGORY_COLORS["Kingdom"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl3"
+  region: "wl6"
+},
+{
+  id: "beijing",
+  names: {
+    si: "බීජිං",
+    en: "Beijing",
+    ta: "பெய்ஜிங்",
+    singlish: "Beijing"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl5"
+},
+{
+  id: "brussels",
+  names: {
+    si: "බ්‍රසල්ස්",
+    en: "Brussels",
+    ta: "பிரஸ்ஸல்ஸ்",
+    singlish: "Brussels"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "madrid",
+  names: {
+    si: "මැඩ්රිඩ්",
+    en: "Madrid",
+    ta: "மாட்ரிட்",
+    singlish: "Madrid"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl5"
+},
+{
+  id: "manila",
+  names: {
+    si: "මැනිලා",
+    en: "Manila",
+    ta: "மணிலா",
+    singlish: "Manila"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl7"
+},
+{
+  id: "mumbai",
+  names: {
+    si: "මුම්බායි",
+    en: "Mumbai",
+    ta: "மும்பை",
+    singlish: "Mumbai"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl7"
+},
+{
+  id: "moscow",
+  names: {
+    si: "මොස්කව්",
+    en: "Moscow",
+    ta: "மாஸ்கோ",
+    singlish: "Moscow"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl3"
+},
+{
+  id: "rome",
+  names: {
+    si: "රෝමය",
+    en: "Rome",
+    ta: "ரோம்",
+    singlish: "Rome"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl5"
+},
+{
+  id: "london",
+  names: {
+    si: "ලන්ඩන්",
+    en: "London",
+    ta: "லண்டன்",
+    singlish: "London"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "lisbon",
+  names: {
+    si: "ලිස්බන්",
+    en: "Lisbon",
+    ta: "லிஸ்பன்",
+    singlish: "Lisbon"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl5"
+},
+{
+  id: "vatican_city",
+  names: {
+    si: "වතිකානුව",
+    en: "Vatican City",
+    ta: "வத்திக்கான் நகரம்",
+    singlish: "Vatican City"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl5"
+},
+{
+  id: "versailles",
+  names: {
+    si: "වර්සෙල්ස්",
+    en: "Versailles",
+    ta: "வெர்செய்ல்ஸ்",
+    singlish: "Versailles"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "venice",
+  names: {
+    si: "වැනීසිය",
+    en: "Venice",
+    ta: "வெனிஸ்",
+    singlish: "Venice"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "vienna",
+  names: {
+    si: "වියානා",
+    en: "Vienna",
+    ta: "வியன்னா",
+    singlish: "Vienna"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "wuhan",
+  names: {
+    si: "වූහාන්",
+    en: "Wuhan",
+    ta: "வுஹான்",
+    singlish: "Wuhan"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl6"
+},
+{
+  id: "vellore",
+  names: {
+    si: "වෙල්ලෝර්",
+    en: "Vellore",
+    ta: "வேலூர்",
+    singlish: "Vellore"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl7"
+},
+{
+  id: "warsaw",
+  names: {
+    si: "වෝර්සෝ",
+    en: "Warsaw",
+    ta: "வார்சா",
+    singlish: "Warsaw"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl3"
+},
+{
+  id: "sarajevo",
+  names: {
+    si: "සරයේවෝ",
+    en: "Sarajevo",
+    ta: "சரயேவோ",
+    singlish: "Sarajevo"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "stockholm",
+  names: {
+    si: "ස්ටොක්හෝම්",
+    en: "Stockholm",
+    ta: "ஸ்டாக்ஹோம்",
+    singlish: "Stockholm"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl3"
+},
+{
+  id: "florence",
+  names: {
+    si: "ෆ්ලොරන්ස්",
+    en: "Florence",
+    ta: "புளோரன்ஸ்",
+    singlish: "Florence"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "hiroshima",
+  names: {
+    si: "හිරෝෂිමා",
+    en: "Hiroshima",
+    ta: "ஹிரோஷிமா",
+    singlish: "Hiroshima"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 3,
+  region: "wl5"
 },
 
-{
-  id: "thiruketheeswaram",
-  names: {
-    si: "තිරුකේතීශ්වරම්",
-    en: "Thiruketheeswaram",
-    ta: "திருக்கேதீஸ்வரம்",
-    singlish: "Thiruketheeswaram"
-  },
-  category: "Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl5"
-},
-{
-  id: "koneswaram",
-  names: {
-    si: "කෝණේශ්වරම් (තිරුකෝණේශ්වරම්)",
-    en: "Koneswaram (Thirukoneswaram)",
-    ta: "கோணேஸ்வரம் (திருக்கோணேஸ்வரம்)",
-    singlish: "Koneswaram"
-  },
-  category: "Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl5"
-},
-{
-  id: "munneswaram",
-  names: {
-    si: "මුන්නේශ්වරම්",
-    en: "Munneswaram",
-    ta: "முன்னேஸ்வரம்",
-    singlish: "Munneswaram"
-  },
-  category: "Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl6"
-},
-{
-  id: "kelaniya",
-  names: {
-    si: "කැලණිය",
-    en: "Kelaniya",
-    ta: "களனி",
-    singlish: "Kelaniya"
-  },
-  category: "Religious Centers",
-  color: CATEGORY_COLORS["Religious Centers"],
-  mapGroup: "SL",
-  mapVariant: 0,
-  region: "sl3"
-},
+
+// ============================================================
+// මුහුදු / සාගර / බොක්ක
+// Colour "Islands": "#FFFFFF"
+// ============================================================
 
 {
-  id: "kanakarayan_aru",
+  id: "baltic_sea",
   names: {
-    si: "කනගරායන් ආරු",
-    en: "Kanakarayan Aru",
-    ta: "கனகராயன் ஆறு",
-    singlish: "Kanakarayan Aru"
+    si: "බෝල්ටික් මුහුද",
+    en: "Baltic Sea",
+    ta: "பால்டிக் கடல்",
+    singlish: "Baltic Sea"
   },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl1"
+  region: "wl3"
 },
 {
-  id: "malwathu_oya",
+  id: "mediterranean_sea",
   names: {
-    si: "මල්වතු ඔය",
-    en: "Malwathu Oya",
-    ta: "மல்வத்து ஆறு",
-    singlish: "Malwathu Oya"
+    si: "මධ්‍යධරණී මුහුද",
+    en: "Mediterranean Sea",
+    ta: "மத்தியதரைக் கடல்",
+    singlish: "Mediterranean Sea"
   },
-  category: "River",
-  color: CATEGORY_COLORS["River"],
-  mapGroup: "SL",
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
   mapVariant: 0,
-  region: "sl5"
+  region: "wl5"
+},
+{
+  id: "black_sea",
+  names: {
+    si: "කළු මුහුද",
+    en: "Black Sea",
+    ta: "கருங்கடல்",
+    singlish: "Black Sea"
+  },
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "red_sea",
+  names: {
+    si: "රතු මුහුද",
+    en: "Red Sea",
+    ta: "செங்கடல்",
+    singlish: "Red Sea"
+  },
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl7"
+},
+{
+  id: "persian_gulf",
+  names: {
+    si: "පර්සියන් බොක්ක",
+    en: "Persian Gulf",
+    ta: "பாரசீக வளைகுடா",
+    singlish: "Persian Gulf"
+  },
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl6"
+},
+{
+  id: "gulf_of_oman",
+  names: {
+    si: "ඕමාන බොක්ක",
+    en: "Gulf of Oman",
+    ta: "ஓமன் வளைகுடா",
+    singlish: "Gulf of Oman"
+  },
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl6"
+},
+{
+  id: "arabian_sea",
+  names: {
+    si: "අරාබි මුහුද",
+    en: "Arabian Sea",
+    ta: "அரபிக்கடல்",
+    singlish: "Arabian Sea"
+  },
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl7"
+},
+{
+  id: "bay_of_bengal",
+  names: {
+    si: "බෙංගාල බොක්ක",
+    en: "Bay of Bengal",
+    ta: "வங்காள விரிகுடா",
+    singlish: "Bay of Bengal"
+  },
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl7"
+},
+{
+  id: "caspian_sea",
+  names: {
+    si: "කැස්පියන් මුහුද",
+    en: "Caspian Sea",
+    ta: "காஸ்பியன் கடல்",
+    singlish: "Caspian Sea"
+  },
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl5"
+},
+{
+  id: "aral_sea",
+  names: {
+    si: "එරල් මුහුද",
+    en: "Aral Sea",
+    ta: "ஆரல் கடல்",
+    singlish: "Aral Sea"
+  },
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
+},
+{
+  id: "bay_of_biscay",
+  names: {
+    si: "බිස්කේ බොක්ක",
+    en: "Bay of Biscay",
+    ta: "பிஸ்கே விரிகுடா",
+    singlish: "Bay of Biscay"
+  },
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl4"
 },
 
-  // --- WORLD (O/L only) samples ---
-  {
-    id: "giza_pyramids",
-    names: {
-      si: "ගීසා පිරමීඩ",
-      en: "Pyramids of Giza",
-      ta: "கிசா பிரமிடுகள்",
-      singlish: "Gisa Pirameeda"
-    },
-    category: "Archaeological Site",
-    color: CATEGORY_COLORS["Archaeological Site"],
-    mapGroup: "WORLD",
-    mapVariant: 0,
-    // Placeholder — exact World map region boundaries not yet supplied.
-    region: "wl1"
+
+// ============================================================
+// දූපත් / දූපත් සමූහ / අර්ධද්වීප
+// Colour "Islands": "#000000"
+// ============================================================
+
+{
+  id: "korean_peninsula",
+  names: {
+    si: "කොරියානු අර්ධද්වීපය",
+    en: "Korean Peninsula",
+    ta: "கொரிய தீபகற்பம்",
+    singlish: "Korean Peninsula"
   },
-  {
-    id: "colosseum",
-    names: {
-      si: "කොලොසියම්",
-      en: "Colosseum",
-      ta: "கொலோசியம்",
-      singlish: "Kolosiyam"
-    },
-    category: "Ancient City",
-    color: CATEGORY_COLORS["Ancient City"],
-    mapGroup: "WORLD",
-    // Same World map file as Giza (different category) — decoupled.
-    mapVariant: 0,
-    region: "wl2"
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl5"
+},
+{
+  id: "malay_peninsula",
+  names: {
+    si: "මලය අර්ධද්වීපය",
+    en: "Malay Peninsula",
+    ta: "மலாய் தீபகற்பம்",
+    singlish: "Malay Peninsula"
   },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl8"
+},
+{
+  id: "japanese_archipelago",
+  names: {
+    si: "ජපන් දූපත්",
+    en: "Japanese Archipelago",
+    ta: "ஜப்பானிய தீவுக்கூட்டம்",
+    singlish: "Japanese Archipelago"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl5"
+},
+{
+  id: "taiwan",
+  names: {
+    si: "තායිවාන්",
+    en: "Taiwan",
+    ta: "தைவான்",
+    singlish: "Taiwan"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl6"
+},
+{
+  id: "philippine_islands",
+  names: {
+    si: "පිලිපීන දූපත්",
+    en: "Philippine Islands",
+    ta: "பிலிப்பைன் தீவுகள்",
+    singlish: "Philippine Islands"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl7"
+},
+{
+  id: "amboyna",
+  names: {
+    si: "ඇම්බොයිනා",
+    en: "Amboyna",
+    ta: "அம்போய்னா",
+    singlish: "Amboyna"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl9"
+},
+{
+  id: "sumatra",
+  names: {
+    si: "සුමාත්‍රා",
+    en: "Sumatra",
+    ta: "சுமாத்திரா",
+    singlish: "Sumatra"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl9"
+},
+{
+  id: "java",
+  names: {
+    si: "ජාවා දූපත",
+    en: "Java",
+    ta: "ஜாவா தீவு",
+    singlish: "Java"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl9"
+},
+{
+  id: "borneo",
+  names: {
+    si: "බෝර්නියෝ",
+    en: "Borneo",
+    ta: "போர்னியோ",
+    singlish: "Borneo"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl8"
+},
+{
+  id: "socotra",
+  names: {
+    si: "සොකොත්‍රා",
+    en: "Socotra",
+    ta: "சொகோத்திரா",
+    singlish: "Socotra"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl7"
+},
+{
+  id: "spice_islands",
+  names: {
+    si: "කුලුබඩු දූපත්",
+    en: "Spice Islands",
+    ta: "மசாலா தீவுகள்",
+    singlish: "Spice Islands"
+  },
+  category: "Islands",
+  color: CATEGORY_COLORS["Islands"],
+  mapGroup: "WORLD",
+  mapVariant: 2,
+  region: "wl8"
+},
+
+
+// ============================================================
+// ඇළ මාර්ග / සමුද්‍ර සන්ධි
+// Colour "Islands": "#FFFFFF"
+// ============================================================
+
+{
+  id: "kiel_canal",
+  names: {
+    si: "කීල් ඇළ",
+    en: "Kiel Canal",
+    ta: "கீல் கால்வாய்",
+    singlish: "Kiel Canal"
+  },
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl3"
+},
+{
+  id: "suez_canal",
+  names: {
+    si: "සූවස් ඇළ",
+    en: "Suez Canal",
+    ta: "சூயஸ் கால்வாய்",
+    singlish: "Suez Canal"
+  },
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
+  mapVariant: 0,
+  region: "wl6"
+},
+{
+  id: "strait_of_malacca",
+  names: {
+    si: "මලක්කා සමුද්‍ර සන්ධිය",
+    en: "Strait of Malacca",
+    ta: "மலாக்கா நீரிணை",
+    singlish: "Strait of Malacca"
+  },
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl8"
+},
+{
+  id: "palk_strait",
+  names: {
+    si: "පෝක් සමුද්‍ර සන්ධිය",
+    en: "Palk Strait",
+    ta: "பாக் நீரிணை",
+    singlish: "Palk Strait"
+  },
+  category: "Islands",
+  color: "#FFFFFF",
+  mapGroup: "WORLD",
+  mapVariant: 1,
+  region: "wl8"
+}, 
 
   // --- INDIA (A/L only) samples ---
   {
@@ -3523,7 +2733,13 @@ function buildPlaceholderGrid(mapGroup, regionId) {
   const ids = Array.from({ length: 9 }, (_, i) => `${prefix}${i + 1}`);
   const cells = ids.map(id => {
     const isActive = id === regionId;
-    return `<div class="placeholder-cell${isActive ? " active" : ""}" ${isActive ? `style="color:${state.selectedPlace.color}"` : ""}>${id}</div>`;
+    // Same "dim everything except the searched region" language used
+    // by the real map overlay (.region-mask) and the SL/EUROPE band
+    // schematic — here it's per-cell instead of a positioned mask,
+    // since a 3x3 placeholder grid has no real vertical geometry to
+    // mask against.
+    const cellClass = `placeholder-cell${isActive ? " active" : " dimmed"}`;
+    return `<div class="${cellClass}" ${isActive ? `style="color:${state.selectedPlace.color}"` : ""}>${id}</div>`;
   }).join("");
   return `
     <div class="placeholder-grid" aria-hidden="true">${cells}</div>
