@@ -49,7 +49,8 @@
     border-bottom: 1px solid rgba(201,162,39,0.35);
     padding: 10px 18px 12px;
     flex: 0 0 auto;
-    position: relative;
+    position: sticky;
+    top: 0;
     z-index: 20;
   }
   .brandrow{
@@ -810,18 +811,18 @@ const CATEGORY_COLORS = {
   "Forest": "#145A32"
 };
 
-// Each map group (SL / WORLD / INDIA / EUROPE) ships as 5 separate
+// Each map group (SL / WORLD / INDIA / EUROPE) ships as up to 25 separate
 // image files per language+level — one "base" file with no number,
-// plus 4 numbered variants (e.g. sin_ol_srl.jpg, sin_ol_srl1.jpg,
-// sin_ol_srl2.jpg, sin_ol_srl3.jpg, sin_ol_srl4.jpg).
+// plus 24 numbered variants (e.g. sin_ol_srl.jpg, sin_ol_srl1.jpg,
+// sin_ol_srl2.jpg ... sin_ol_srl24.jpg).
 //
-// IMPORTANT: which of the 5 files a place appears on is NOT decided
-// by its category. The 5 files are geographic slices of the same map
+// IMPORTANT: which of the 25 files a place appears on is NOT decided
+// by its category. The 25 files are geographic slices of the same map
 // group (e.g. North India / East India / South India ...), so places
 // with completely different categories can share the same file, and
 // places with the same category can be split across different files.
 // That's why each place record below carries its own explicit
-// `mapVariant` number (0–4): 0 = the base file, 1–4 = the numbered
+// `mapVariant` number (0–24): 0 = the base file, 1–24 = the numbered
 // files. Set it to whichever file that place actually appears on in
 // the real artwork.
 
@@ -3151,8 +3152,6 @@ const historicalPlaces = [
   region: "sl5"
 },
 
-
-
   // --- WORLD (O/L only) samples ---
   {
     id: "giza_pyramids",
@@ -3273,16 +3272,16 @@ const historicalPlaces = [
 
 // Builds [language]_[level]_[map][variant].jpg from the reusable
 // configuration above. New map groups/languages only require new
-// table entries. `mapVariant` (0–4, set explicitly on each place
-// record — see the note above historicalPlaces) picks which of the 5
-// files to use: 0 = the base file, 1–4 = the numbered files. Anything
+// table entries. `mapVariant` (0–24, set explicitly on each place
+// record — see the note above historicalPlaces) picks which of the 25
+// files to use: 0 = the base file, 1–24 = the numbered files. Anything
 // missing/invalid falls back to the base file.
 function getMapFilename(language, level, mapGroup, mapVariant) {
   const prefix = LANGUAGE_PREFIX[language];
   const lvl = level === "AL" ? "al" : "ol";
   const group = MAP_GROUP_CODE[mapGroup];
   if (!prefix || !group) return null;
-  const variantIndex = Number.isInteger(mapVariant) && mapVariant >= 0 && mapVariant <= 4 ? mapVariant : 0;
+  const variantIndex = Number.isInteger(mapVariant) && mapVariant >= 0 && mapVariant <= 24 ? mapVariant : 0;
   const variantSuffix = variantIndex === 0 ? "" : String(variantIndex);
   return `${prefix}_${lvl}_${group}${variantSuffix}.jpg`;
 }
