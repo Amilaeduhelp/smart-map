@@ -59,69 +59,32 @@
   }
   .brand-mark{ width:26px; height:26px; flex:0 0 auto; opacity:0.92; }
   .brand-title{
-    font-family: var(--font-display);
-    color: var(--paper-text);
-    font-weight: 600;
-    font-size: 19px;
-    letter-spacing: 0.02em;
+    font-family: var(--font-display);    color: var(--paper-text);    font-weight: 600;    font-size: 19px;    letter-spacing: 0.02em;
   }
   .brand-sub{
-    font-family: var(--font-mono);
-    color: var(--muted-cool);
-    font-size: 10.5px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    margin-left: 6px;
-    padding-left: 8px;
-    border-left: 1px solid var(--line);
+    font-family: var(--font-mono);    color: var(--muted-cool);    font-size: 10.5px;    letter-spacing: 0.14em;    text-transform: uppercase;    margin-left: 6px;    padding-left: 8px;    border-left: 1px solid var(--line);
   }
 
   .controlbar{
-    display:flex;
-    align-items: stretch;
-    gap: 10px;
-    flex-wrap: wrap;
+    display:flex;    align-items: stretch;    gap: 10px;    flex-wrap: wrap;
   }
 
   /* Category color indicator */
   .cat-indicator{
-    width: 46px;
-    height: 46px;
-    border-radius: 8px;
-    flex: 0 0 auto;
-    background: var(--paper-3);
-    border: 1px solid rgba(255,255,255,0.18);
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15), var(--shadow);
-    position: relative;
-    transition: background-color 0.35s ease;
+    width: 46px;    height: 46px;    border-radius: 8px;    flex: 0 0 auto;    background: var(--paper-3);    border: 1px solid rgba(255,255,255,0.18);    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15), var(--shadow);    position: relative;    transition: background-color 0.35s ease;
   }
   .cat-indicator::after{
     content: '';
-    position: absolute; inset: 6px;
-    border-radius: 5px;
-    border: 1px dashed rgba(255,255,255,0.55);
-    opacity: 0.55;
+    position: absolute; inset: 6px;    border-radius: 5px;    border: 1px dashed rgba(255,255,255,0.55);    opacity: 0.55;
   }
   .cat-indicator[data-empty="true"]{ background: var(--paper-3); }
 
   /* Search */
   .search-wrap{
-    position: relative;
-    flex: 1 1 260px;
-    min-width: 180px;
+    position: relative;    flex: 1 1 260px;    min-width: 180px;
   }
   .search-box{
-    width: 100%;
-    height: 46px;
-    background: var(--paper);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px;
-    padding: 0 68px 0 14px;
-    font-family: var(--font-body);
-    font-size: 15px;
-    color: var(--ink-text);
-    outline: none;
-    box-shadow: var(--shadow);
+    width: 100%;    height: 46px;    background: var(--paper);    border: 1px solid rgba(255,255,255,0.15);    border-radius: 8px;    padding: 0 68px 0 14px;    font-family: var(--font-body);    font-size: 15px;    color: var(--ink-text);    outline: none;    box-shadow: var(--shadow);
   }
   .search-box::placeholder{ color: var(--muted); }
   .search-box:focus{ box-shadow: 0 0 0 3px rgba(201,162,39,0.45), var(--shadow); }
@@ -179,32 +142,15 @@
 
   /* Segmented controls */
   .segment{
-    display:flex; align-items:stretch;
-    background: var(--ink-2);
-    border-radius: 8px;
-    padding: 3px;
-    gap: 3px;
-    border: 1px solid var(--line);
-    flex: 0 0 auto;
+    display:flex; align-items:stretch;    background: var(--ink-2);    border-radius: 8px;    padding: 3px;    gap: 3px;    border: 1px solid var(--line);    flex: 0 0 auto;
   }
   .segment button{
-    appearance:none; border:none; cursor:pointer;
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 13.5px;
-    color: var(--muted-cool);
-    background: transparent;
-    padding: 0 14px;
-    height: 40px;
-    border-radius: 6px;
-    min-width: 48px;
-    transition: background-color 0.18s ease, color 0.18s ease;
+    appearance:none; border:none; cursor:pointer;    font-family: var(--font-body);    font-weight: 700;    font-size: 13.5px;    color: var(--muted-cool);    background: transparent;    padding: 0 14px;
+    height: 40px;    border-radius: 6px;    min-width: 48px;    transition: background-color 0.18s ease, color 0.18s ease;
   }
   .segment button:hover{ color: var(--paper-text); }
   .segment button.active{
-    background: var(--gold);
-    color: #241C05;
-    box-shadow: 0 2px 8px rgba(201,162,39,0.4);
+    background: var(--gold);    color: #241C05;    box-shadow: 0 2px 8px rgba(201,162,39,0.4);
   }
   .segment button:focus-visible, .search-box:focus-visible, .icon-btn:focus-visible{
     outline: 2px solid var(--gold);
@@ -229,11 +175,7 @@
   }
 
   .stage-inner{
-    min-height: 100%;
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    padding: 26px;
+    min-height: 100%;    display:flex;    align-items: center;    justify-content: center;    padding: 26px;
   }
 
   /* Empty state */
@@ -287,18 +229,7 @@
     flex: 0 0 auto;
   }
   .color-guide-toggle{
-    appearance: none;
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding: 2px 3px;
-    text-decoration: underline dotted;
-    text-underline-offset: 3px;
+    appearance: none;    border: none;    background: none;    cursor: pointer;    font-family: var(--font-mono);    font-size: 10px;    letter-spacing: 0.06em;    text-transform: uppercase;    color: var(--muted);    padding: 2px 3px;    text-decoration: underline dotted;    text-underline-offset: 3px;
   }
   .color-guide-toggle:hover{ color: var(--gold-dark); }
   .color-guide-toggle:focus-visible{ outline: 2px solid var(--gold); outline-offset: 2px; }
@@ -330,25 +261,12 @@
   }
 
   .tech-card{
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--muted);
-    background: var(--paper-2);
-    border: 1px solid var(--paper-3);
-    border-radius: 8px;
-    padding: 8px 12px;
-    line-height: 1.7;
-    white-space: nowrap;
-  }
+    font-family: var(--font-mono);    font-size: 11px;    color: var(--muted);    background: var(--paper-2);    border: 1px solid var(--paper-3);    border-radius: 8px;    padding: 8px 12px;    line-height: 1.7;    white-space: nowrap;
+	}
   .tech-card b{ color: var(--ink-text); font-weight: 600; }
 
   .map-viewport{
-    position: relative;
-    background: #EFE9D8;
-    min-height: 340px;
-    display:flex; align-items:center; justify-content:center;
-    overflow: hidden;
-    cursor: crosshair;
+    position: relative;    background: #EFE9D8;    min-height: 340px;    display:flex; align-items:center; justify-content:center;    overflow: hidden;    cursor: crosshair;
   }
   .map-image{ max-width:100%; display:block; }
 
@@ -618,6 +536,106 @@
   @media (prefers-reduced-motion: reduce){
     .splash-card{ animation: none; }
   }
+
+  /* ============ LEVEL SELECTION POPUP ============ */
+  .level-gate{
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(1200px 600px at 50% 30%, rgba(201,162,39,0.10), transparent 60%),
+      rgba(9, 13, 24, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    padding: 20px;
+  }
+  .level-gate.show{
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .level-gate-card{
+    background: #F7F3E7;
+    border-radius: 16px;
+    border: 1px solid var(--paper-3);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,162,39,0.25);
+    padding: 32px 30px 26px;
+    width: min(420px, 100%);
+    text-align: center;
+    animation: splash-pop 0.4s ease;
+  }
+  .level-gate-icon{
+    width: 46px; height: 46px; margin: 0 auto 12px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 8px 18px rgba(201,162,39,0.35);
+  }
+  .level-gate-icon svg{ width:24px; height:24px; }
+  .level-gate-card h2{
+    font-family: var(--font-display);
+    color: var(--ink-text);
+    font-size: 21px;
+    margin: 0 0 6px;
+  }
+  .level-gate-card p{
+    color: var(--muted);
+    font-size: 13.5px;
+    line-height: 1.6;
+    margin: 0 0 22px;
+  }
+  .level-gate-options{
+    display:flex;
+    gap: 12px;
+  }
+  .level-gate-btn{
+    flex: 1 1 0;
+    appearance: none;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 16px 10px 14px;
+    font-family: var(--font-body);
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  }
+  .level-gate-btn .lg-title{
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 19px;
+  }
+  .level-gate-btn .lg-sub{
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  .level-gate-btn:hover{ transform: translateY(-2px); }
+  .level-gate-btn:focus-visible{ outline: 2px solid var(--gold); outline-offset: 2px; }
+  .level-gate-btn.al{
+    background: var(--ink);
+    color: var(--paper-text);
+    border: 1px solid var(--ink-3);
+    box-shadow: 0 8px 20px rgba(22,35,59,0.35);
+  }
+  .level-gate-btn.al:hover{ background: var(--ink-2); }
+  .level-gate-btn.ol{
+    background: var(--gold);
+    color: #241C05;
+    border: 1px solid var(--gold-dark);
+    box-shadow: 0 8px 20px rgba(201,162,39,0.35);
+  }
+  .level-gate-btn.ol:hover{ background: #D8B33A; }
+  @media (max-width: 420px){
+    .level-gate-card{ padding: 26px 20px 22px; }
+    .level-gate-options{ flex-direction: column; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .level-gate-card{ animation: none; }
+  }
 </style>
 </head>
 <body>
@@ -631,6 +649,30 @@
     <span class="splash-hint">tap to skip</span>
   </div>
 </div>
+
+<div id="levelGate" class="level-gate" role="dialog" aria-modal="true" aria-labelledby="levelGateTitle">
+  <div class="level-gate-card">
+    <div class="level-gate-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M4 6.5C4 5.67 4.67 5 5.5 5H11V19H5.5C4.67 19 4 18.33 4 17.5V6.5Z" fill="#241C05"/>
+        <path d="M20 6.5C20 5.67 19.33 5 18.5 5H13V19H18.5C19.33 19 20 18.33 20 17.5V6.5Z" fill="#241C05" opacity="0.65"/>
+      </svg>
+    </div>
+    <h2 id="levelGateTitle">Choose your syllabus level</h2>
+    <p>Select A/L or O/L to load the right set of maps. You can keep this selection for the rest of your session.</p>
+    <div class="level-gate-options">
+      <button type="button" class="level-gate-btn al" id="levelGateAL">
+        <span class="lg-title">A/L</span>
+        <span class="lg-sub">Advanced Level</span>
+      </button>
+      <button type="button" class="level-gate-btn ol" id="levelGateOL">
+        <span class="lg-title">O/L</span>
+        <span class="lg-sub">Ordinary Level</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <div id="app">
 
   <header class="topbar">
@@ -5477,6 +5519,9 @@ document.addEventListener("click", (e) => {
    INTRO SPLASH
    Shows the cover image for a few seconds on load, then fades into
    the map page. Auto-closes on a timer; a click/tap also skips it.
+   After the splash closes, the A/L / O/L level-selection popup opens
+   automatically (see LEVEL GATE below) — the two are chained so the
+   student always sees: splash -> level choice -> app.
    ===================================================================== */
 
 (function initSplash() {
@@ -5491,11 +5536,42 @@ document.addEventListener("click", (e) => {
     closed = true;
     splash.classList.add("hide");
     setTimeout(() => splash.remove(), 650);
+    // Splash is done — now ask the student to pick A/L or O/L.
+    openLevelGate();
   }
 
   setTimeout(closeSplash, AUTO_CLOSE_MS);
   splash.addEventListener("click", closeSplash);
 })();
+
+/* =====================================================================
+   LEVEL SELECTION POPUP (A/L or O/L)
+   Opens right after the intro splash closes. The chosen level is kept
+   in memory only (the `state` object / `levelChosen` flag) — there is
+   no localStorage/sessionStorage involved, so the selection is valid
+   for the current page session and resets automatically on refresh
+   or when the tab/page is closed and reopened, exactly like the rest
+   of the in-memory `state`.
+   ===================================================================== */
+
+let levelChosen = false;
+
+function openLevelGate() {
+  const gate = document.getElementById("levelGate");
+  if (!gate || levelChosen) return;
+  gate.classList.add("show");
+}
+
+function closeLevelGate(level) {
+  const gate = document.getElementById("levelGate");
+  levelChosen = true;
+  state.selectedLevel = level;
+  renderAll();
+  if (gate) gate.classList.remove("show");
+}
+
+document.getElementById("levelGateAL").addEventListener("click", () => closeLevelGate("AL"));
+document.getElementById("levelGateOL").addEventListener("click", () => closeLevelGate("OL"));
 
 /* =====================================================================
    INIT
