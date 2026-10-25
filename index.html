@@ -27,6 +27,7 @@ header select{max-width:260px}
 #lbb.on{background:var(--ink)}
 #mvb{font-size:17px;padding:4px 10px}
 #mvb.on{background:var(--red);box-shadow:0 0 0 2px #fff8}
+#rmb{background:#7b4bd6}
 .drop{position:absolute;left:0;right:0;top:46px;display:none;background:#fff;color:var(--ink);border:2px solid var(--grid);border-radius:8px;box-shadow:0 8px 26px #0005;max-height:min(60vh,460px);overflow:auto;z-index:40}
 .drop.open{display:block}
 .row{display:flex;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid #e3edf3;cursor:pointer}
@@ -54,6 +55,8 @@ header select{max-width:260px}
 .set{padding:10px 12px;display:flex;flex-direction:column;gap:12px;font-size:14px}
 .set label{display:flex;gap:8px;align-items:center;justify-content:space-between}
 .set input[type=range]{flex:1;max-width:190px}
+.rmh{padding:10px 12px 0;font-weight:700;font-size:14px}
+#rmp .set input[type=range]{max-width:none}
 #st{font-size:13px;opacity:.9;flex:1 1 100%}
 main{flex:1;min-height:0;padding:8px}
 #vp{position:relative;height:100%}
@@ -107,6 +110,7 @@ canvas{background:#fff;box-shadow:0 2px 14px #0003}
  </div>
  <button id="plb" data-t="places"></button>
  <button id="tyb" data-t="types"></button>
+ <button id="rmb" type="button" data-t="rmb"></button>
  <button id="hwo" type="button" data-t="howb"></button>
  <button id="mvb" type="button" title="Move: නම ඇදගෙන යන්න">✋</button>
  <button id="stb">⚙</button>
@@ -116,6 +120,14 @@ canvas{background:#fff;box-shadow:0 2px 14px #0003}
 
 <div class="pop" id="plp"><div class="ph"><span data-t="places"></span><span id="plc"></span></div><div class="pb" id="pli"></div></div>
 <div class="pop" id="typ"><div class="ph"><span data-t="types"></span></div><div class="pb"><div class="chips" id="tyc"></div></div></div>
+<div class="pop" id="rmp"><div class="ph"><span data-t="rmt"></span></div><div class="pb">
+ <div class="rmh" data-t="rm1"></div>
+ <div class="chips" style="padding-bottom:0"><button type="button" class="chip" id="rma" data-t="rma"></button><button type="button" class="chip" id="rmn" data-t="rmn"></button></div>
+ <div class="chips" id="rmc"></div>
+ <div class="rmh" data-t="rm2"></div>
+ <div class="set"><label><input id="rmN" type="range" min="3" max="100" step="1" value="20"><b id="rmNv" style="min-width:30px;text-align:right">20</b></label></div>
+ <div style="padding:0 12px 12px"><button id="rmgo" type="button" data-t="rmgo" style="width:100%;padding:10px;background:#7b4bd6"></button></div>
+</div></div>
 <div class="pop" id="stp"><div class="ph"><span data-t="settings"></span></div>
  <div class="set">
   <label><span data-t="nnum"></span><span style="display:flex;gap:8px;align-items:center;flex:1;justify-content:flex-end"><input id="nN" type="range" min="0" max="15" step="1" value="3"><b id="nNv" style="min-width:20px;text-align:right">3</b></span></label>
@@ -142,12 +154,15 @@ canvas{background:#fff;box-shadow:0 2px 14px #0003}
 /* ---------- භාෂා / Language texts ---------- */
 const T={
  si:{map:'සිතියම',letters:'අකුරු ▾',places:'📍 ස්ථාන නාමාවලිය',types:'🗂 සිතියම් වර්ග',settings:'සැකසුම්',spread:'නම් එකිනෙක මත යෑම වළක්වන්න',ripl:'තට්ටු කළ විට රතු වළලු පෙන්වන්න',howb:'❓ භාවිතය',howt:'GeoSketch භාවිතා කරන්නේ කෙසේද?',howok:'තේරුණා, වසන්න',hown:'නැවත පෙන්වන්න එපා',nnum:'ආසන්න ස්ථාන ගණන',rivs:'ආසන්න ගංගා ද පෙන්වන්න',mvon:'✋ Move සක්‍රියයි: නමක් ඇදගෙන යන්න (හිස් තැනක් අදිමින් සිතියම ගෙන යන්න)',mvrs:'Move කළ නම් යළි මුල් තැනට',veil:'මෘදු ආවරණය',vstr:'ආවරණ තීව්‍රතාව',vtone:'ආවරණ වර්ණය',fsz:'අකුරු ප්‍රමාණය',
+  rmb:'🎲 Random Map',rmt:'Create a Random Map',rm1:'1. ඇතුළත් කළ යුතු වර්ග තෝරන්න',rm2:'2. ස්ථාන ගණන තෝරන්න',rmgo:'🎲 සිතියම සාදන්න',rma:'සියල්ල තෝරන්න',rmn:'හිස් කරන්න',rmneed:'අවම වශයෙන් වර්ගයක් තෝරන්න',rmres:'Random සිතියම',rmnone:'තෝරාගත් වර්ගවලින් ස්ථාන හමු නොවීය',
   ph:'ස්ථානයක් සොයන්න...',none:'ස්ථානයක් හමු නොවීය',hint:'ස්ථානයක් සොයන්න, අකුරක් තෝරන්න, නැතිනම් නාමාවලියෙන් තෝරන්න. සිතියමේ ස්ථානයක් ක්ලික් කළ ද හැක',near:'+ ආසන්න ස්ථාන',nodata:'මෙම සිතියමට දත්ත නැත',pickLetter:'අකුරක් තෝරන්න',loading:'load වෙමින්...',
   tones:['සුදු','ළා කහ','ළා නිල්','ළා කොළ'],all:'වර්ගයේ සියල්ල'},
  ta:{map:'வரைபடம்',letters:'எழுத்துகள் ▾',places:'📍 இடப்பெயர் பட்டியல்',types:'🗂 வரைபட வகைகள்',settings:'அமைப்புகள்',spread:'பெயர்கள் ஒன்றின்மேல் ஒன்று வருவதைத் தவிர்',ripl:'தொட்டால் சிவப்பு வளையங்களைக் காட்டு',howb:'❓ பயன்பாடு',howt:'GeoSketch ஐப் பயன்படுத்துவது எப்படி?',howok:'புரிந்தது, மூடு',hown:'மீண்டும் காட்ட வேண்டாம்',nnum:'அருகிலுள்ள இடங்களின் எண்ணிக்கை',rivs:'அருகிலுள்ள ஆறுகளையும் காட்டு',mvon:'✋ Move இயக்கத்தில்: பெயரை இழுத்துச் செல்லுங்கள் (வெற்றிடத்தை இழுத்து வரைபடத்தை நகர்த்துங்கள்)',mvrs:'நகர்த்திய பெயர்களை மீட்டமை',veil:'மென்மையான திரை',vstr:'திரையின் அடர்த்தி',vtone:'திரை நிறம்',fsz:'எழுத்து அளவு',
+  rmb:'🎲 சீரற்ற வரைபடம்',rmt:'Create a Random Map',rm1:'1. சேர்க்க வேண்டிய வகைகளைத் தேர்ந்தெடுங்கள்',rm2:'2. இடங்களின் எண்ணிக்கையைத் தேர்ந்தெடுங்கள்',rmgo:'🎲 வரைபடத்தை உருவாக்கு',rma:'அனைத்தையும் தேர்ந்தெடு',rmn:'அழி',rmneed:'குறைந்தது ஒரு வகையைத் தேர்ந்தெடுங்கள்',rmres:'சீரற்ற வரைபடம்',rmnone:'தேர்ந்தெடுத்த வகைகளில் இடங்கள் இல்லை',
   ph:'இடத்தைத் தேடுங்கள்...',none:'இடம் கிடைக்கவில்லை',hint:'இடத்தைத் தேடுங்கள், எழுத்தைத் தேர்ந்தெடுங்கள் அல்லது பட்டியலில் தேர்ந்தெடுங்கள். வரைபடத்தில் ஓர் இடத்தைத் தொட்டும் பார்க்கலாம்',near:'+ அருகிலுள்ள இடங்கள்',nodata:'இந்த வரைபடத்திற்குத் தரவு இல்லை',pickLetter:'எழுத்தைத் தேர்ந்தெடுங்கள்',loading:'ஏற்றுகிறது...',
   tones:['வெள்ளை','இளமஞ்சள்','இளநீலம்','இளம்பச்சை'],all:'வகையில் அனைத்தும்'},
  en:{map:'Map',letters:'Letters ▾',places:'📍 Place list',types:'🗂 Map types',settings:'Settings',spread:'Avoid overlapping names',ripl:'Show red ripples on tap',howb:'❓ How to use',howt:'How to use GeoSketch',howok:'Got it, close',hown:'Do not show again',nnum:'Number of nearby places',rivs:'Also show nearby rivers',mvon:'✋ Move on: drag a name (drag empty space to pan the map)',mvrs:'Reset moved names',veil:'Soft overlay',vstr:'Overlay strength',vtone:'Overlay tone',fsz:'Text size',
+  rmb:'🎲 Random Map',rmt:'Create a Random Map',rm1:'1. Choose the types to include',rm2:'2. Choose the number of places',rmgo:'🎲 Create map',rma:'Select all',rmn:'Clear',rmneed:'Please choose at least one type',rmres:'Random map',rmnone:'No places found in the chosen types',
   ph:'Search a place...',none:'No place found',hint:'Search a place, pick a letter, choose from the list, or tap a place on the map',near:'+ nearby places',nodata:'No data for this map',pickLetter:'Pick a letter',loading:'Loading...',
   tones:['White','Cream','Blue','Green'],all:'All in this type'}
 };
@@ -167,6 +182,7 @@ const HOW={
   ['සිතියම ගෙනයාම සහ විශාල කිරීම','සිතියම <b>ඇඟිල්ලෙන් / mouse එකෙන් අදින්න</b>. ඉහළ දකුණේ ඇති <b>+</b> සහ <b>−</b> බොත්තමින් විශාල / කුඩා කරන්න. <b>ගැලපෙන</b> බොත්තම ඔබන විට සම්පූර්ණ සිතියම නැවත පෙනේ. පරිගණකයේ <b>Ctrl</b> ඔබාගෙන mouse wheel එක කරකවා ද විශාල කළ හැක.'],
   ['අවට ස්ථාන ගණන වෙනස් කරන්න','<b>⚙</b> බොත්තම ඔබා "ආසන්න ස්ථාන ගණන" ලිස්සුම් තීරුව (0 සිට 15 දක්වා) වෙනස් කරන්න. ආසන්න <b>ගංගා</b> ද බැලීමට "ආසන්න ගංගා ද පෙන්වන්න" ටික් කරන්න.'],
   ['වර්ගයක් අනුව බලන්න','<b>🗂 සිතියම් වර්ග</b> බොත්තම ඔබා (ගංගාව, වැව, වරාය ආදී) එක් වර්ගයක් තෝරන්න. එවිට එම වර්ගයේ සියලු ස්ථාන එකවර සිතියමේ පෙනේ.'],
+  ['Random සිතියමක් සාදන්න','<b>🎲 Random Map</b> බොත්තම ඔබන්න. පළමුව ඇතුළත් කළ යුතු <b>වර්ග</b> (ගංගා, ඓතිහාසික ස්ථාන ආදී) තෝරන්න, ඉන්පසු <b>ස්ථාන ගණන</b> තෝරා "සිතියම සාදන්න" ඔබන්න. DB එකේ වැඩිපුර ඇති වර්ගවලින් වැඩි ස්ථාන ගණනක් ද, අඩුවෙන් ඇති වර්ගවලින් අඩු ගණනක් ද ස්වයංක්‍රීයව තෝරයි. සිතියම පුරා විහිදුණු ස්ථාන තෝරන අතර, එක් කොටුවක එකම වර්ගයේ ස්ථාන දෙකක් නොපෙනේ.','නැවත ඔබන සෑම වාරයකම වෙනස් සිතියමක් සැදේ.'],
   ['නමක් වෙනත් තැනකට ගෙනයන්න','නම් එකිනෙක ළං වී පැහැදිලි නැතිනම් <b>✋</b> බොත්තම ඔබන්න (රතු පැහැ වේ). දැන් ඕනෑම නමක් <b>ඇදගෙන ගොස්</b> අවශ්‍ය තැන දමන්න. ඊතලයේ හිස ස්ථානයේම රැඳෙන අතර, ඊතලය 90° නැවී නම සමග ගමන් කරයි. අවසන් වූ පසු නැවත ✋ ඔබන්න.','මුල් තැනට ගෙන ඒමට: ⚙ → "Move කළ නම් යළි මුල් තැනට".'],
   ['ඉගෙනීම පහසු කරගන්න','<b>⚙</b> තුළ "අකුරු ප්‍රමාණය" වෙනස් කළ හැක. "මෘදු ආවරණය" මගින් සිතියමේ පසුබිම ළා පැහැයකින් මැකී, නම් වඩා පැහැදිලිව පෙනේ.']
  ],
@@ -179,6 +195,7 @@ const HOW={
   ['வரைபடத்தை நகர்த்தவும் பெரிதாக்கவும்','வரைபடத்தை <b>விரலால் / மவுசால் இழுத்து</b> நகர்த்துங்கள். மேல் வலதுபுறத்தில் உள்ள <b>+</b> மற்றும் <b>−</b> பொத்தான்களால் பெரிதாக்கவும் சிறிதாக்கவும் செய்யலாம். <b>ගැලපෙන</b> பொத்தானை அழுத்தினால் முழு வரைபடமும் மீண்டும் தெரியும். கணினியில் <b>Ctrl</b> அழுத்தியபடி மவுஸ் சக்கரத்தைச் சுழற்றியும் பெரிதாக்கலாம்.'],
   ['அருகிலுள்ள இடங்களின் எண்ணிக்கை','<b>⚙</b> பொத்தானை அழுத்தி "அருகிலுள்ள இடங்களின் எண்ணிக்கை" ஸ்லைடரை (0 முதல் 15 வரை) மாற்றுங்கள். அருகிலுள்ள <b>ஆறுகளையும்</b> காண "அருகிலுள்ள ஆறுகளையும் காட்டு" என்பதைத் தேர்வு செய்யுங்கள்.'],
   ['வகையின்படி பாருங்கள்','<b>🗂 வரைபட வகைகள்</b> பொத்தானை அழுத்தி (ஆறு, குளம், துறைமுகம் போன்ற) ஒரு வகையைத் தேர்ந்தெடுங்கள். அந்த வகையின் எல்லா இடங்களும் ஒரே நேரத்தில் வரைபடத்தில் தெரியும்.'],
+  ['சீரற்ற வரைபடத்தை உருவாக்குங்கள்','<b>🎲 சீரற்ற வரைபடம்</b> பொத்தானை அழுத்துங்கள். முதலில் சேர்க்க வேண்டிய <b>வகைகளை</b> (ஆறுகள், வரலாற்றுத் தலங்கள் போன்றவை) தேர்ந்தெடுங்கள்; பின்னர் <b>இடங்களின் எண்ணிக்கையைத்</b> தேர்ந்தெடுத்து "வரைபடத்தை உருவாக்கு" என்பதை அழுத்துங்கள். தரவுத்தளத்தில் அதிகமாக உள்ள வகைகளிலிருந்து அதிக இடங்களும், குறைவாக உள்ள வகைகளிலிருந்து குறைந்த இடங்களும் தானாகத் தேர்ந்தெடுக்கப்படும். இடங்கள் வரைபடம் முழுவதும் பரவலாக இருக்கும்; ஒரே கட்டத்தில் ஒரே வகையின் இரண்டு இடங்கள் வராது.','ஒவ்வொரு முறை அழுத்தும்போதும் வேறு வரைபடம் உருவாகும்.'],
   ['பெயரை வேறு இடத்துக்கு நகர்த்துங்கள்','பெயர்கள் நெருக்கமாக இருந்து தெளிவாகத் தெரியவில்லை என்றால் <b>✋</b> பொத்தானை அழுத்துங்கள் (சிவப்பாக மாறும்). பின்னர் எந்தப் பெயரையும் <b>இழுத்துச் சென்று</b> விரும்பிய இடத்தில் விடுங்கள். அம்புக்குறியின் முனை இடத்திலேயே இருக்கும்; அம்பு 90° வளைந்து பெயருடன் நகரும். முடிந்ததும் மீண்டும் ✋ ஐ அழுத்துங்கள்.','முதல் இடத்துக்குத் திரும்ப: ⚙ → "நகர்த்திய பெயர்களை மீட்டமை".'],
   ['கற்றலை எளிதாக்குங்கள்','<b>⚙</b> இல் "எழுத்து அளவை" மாற்றலாம். "மென்மையான திரை" வரைபடத்தின் பின்னணியை மங்கச் செய்து பெயர்களைத் தெளிவாகக் காட்டும்.']
  ],
@@ -191,6 +208,7 @@ const HOW={
   ['Move and zoom the map','<b>Drag the map</b> with your finger or mouse. Use <b>+</b> and <b>−</b> at the top right to zoom, and press the fit button (<b>ගැලපෙන</b>) to see the whole map again. On a computer you can also hold <b>Ctrl</b> and turn the mouse wheel.'],
   ['Change how many nearby places','Press <b>⚙</b> and move the "Number of nearby places" slider (0 to 15). Tick "Also show nearby rivers" to include rivers.'],
   ['Browse by type','Press <b>🗂 Map types</b> and choose a type (River, Tank, Port, etc.). All places of that type appear on the map together.'],
+  ['Create a random map','Press <b>🎲 Random Map</b>. First choose the <b>types</b> to include (rivers, historical places, etc.), then choose the <b>number of places</b> and press "Create map". Types that are more common in the database get more places, and rarer types get fewer. Places are spread across the whole map, and no cell ever holds two places of the same type.','Press the button again for a different map each time.'],
   ['Move a name somewhere else','If names are too close to read, press <b>✋</b> (it turns red). Now <b>drag any name</b> and drop it where you want. The arrow tip stays on the place, and the arrow bends at 90° and follows the name. Press ✋ again when you are done.','To put names back: ⚙ → "Reset moved names".'],
   ['Make studying easier','In <b>⚙</b> you can change the "Text size". "Soft overlay" fades the map background so names stand out more.']
  ]
@@ -534,8 +552,95 @@ function pickCat(c){
  $('st').textContent=`🗂 ${c}  (${idx.length})`;
 }
 
+/* ---------- Create a Random Map ----------
+   1) වර්ග තෝරයි  2) ස්ථාන ගණන තෝරයි.
+   ගණිතමය ක්‍රමය:
+   • එක් වර්ගයකට ලැබෙන ස්ථාන ගණන ∝ √(සමස්ත DB එකේ එම වර්ගයේ අයිතම ගණන). (වැඩි වර්ගවලට වැඩි, අඩු වර්ගවලට අඩු; නමුත් අඩු වර්ගත් අමතක නොවේ)
+   • තෝරාගත් සෑම වර්ගයකටම අවම වශයෙන් 1ක් (ස්ථාන ගණන ප්‍රමාණවත් නම්).
+   • වර්ගයකට ලබාදිය හැකි උපරිමය = මෙම සිතියමේ එම වර්ගය අඩංගු වෙනස් කොටු ගණන (එක කොටුවක එකම වර්ගයේ 2ක් නැත).
+   • පුරවන විට: ඉතිරි කෝටාව වැඩිම වර්ගය තෝරා, දැනටමත් තෝරාගත් සියලු ස්ථානවලින් වඩාත්ම දුරින් ඇති ස්ථානය (farthest-point) තෝරයි → සිතියම පුරා විහිදේ.
+   • සෑම වාරයකම අහඹු බව: ඉහළම ප්‍රතිඵල 3න් එකක් අහඹුව තෝරයි. */
+let rmSel=new Set(),rmN=20;
+function catCounts(){const m=new Map();G.forEach(e=>e.g.forEach(c=>m.set(c,(m.get(c)||0)+1)));return m;}
+function dbCounts(){/* සමස්ත DB (සියලු සිතියම්, වත්මන් භාෂාව) */
+ const m=new Map(),D=DATA[lang]||{};
+ Object.keys(D).forEach(k=>(D[k]||[]).forEach(it=>(it.g||[]).forEach(c=>m.set(c,(m.get(c)||0)+1))));
+ return m;
+}
+function buildRM(){
+ const cnt=catCounts(),c=coll();
+ $('rmc').innerHTML=cnt.size?[...cnt.entries()].sort((a,b)=>c.compare(a[0],b[0])).map(([k,n])=>`<button type="button" class="chip${rmSel.has(k)?' on':''}" data-c="${esc(k)}">${esc(k)}<i>${n}</i></button>`).join(''):`<div class="none">${T[lang].nodata}</div>`;
+ const mx=Math.max(3,Math.min(100,G.size));
+ $('rmN').max=mx;if(rmN>mx)rmN=mx;$('rmN').value=rmN;$('rmNv').textContent=rmN;
+}
+function rmAlloc(cats,N,cap){
+ const db=dbCounts(),w=new Map(cats.map(c=>[c,Math.sqrt(Math.max(1,db.get(c)||1))])),
+  q=new Map(cats.map(c=>[c,0]));
+ let left=Math.min(N,cats.reduce((s,c)=>s+cap.get(c),0));
+ const avail=cats.filter(c=>cap.get(c)>0);
+ if(left>=avail.length){avail.forEach(c=>q.set(c,1));left-=avail.length;}
+ else{/* ස්ථාන ගණන වර්ග ගණනට වඩා අඩුයි: අහඹු වර්ග කිහිපයකට 1 බැගින් */
+  avail.sort(()=>Math.random()-.5).slice(0,left).forEach(c=>q.set(c,1));left=0;}
+ while(left>0){
+  const open=cats.filter(c=>q.get(c)<cap.get(c));if(!open.length)break;
+  const sw=open.reduce((s,c)=>s+w.get(c),0);let given=0;const rem=[];
+  open.forEach(c=>{const share=left*w.get(c)/sw,add=Math.min(Math.floor(share),cap.get(c)-q.get(c));
+   q.set(c,q.get(c)+add);given+=add;rem.push([c,share-Math.floor(share)+Math.random()*1e-6]);});
+  left-=given;if(left<=0)break;
+  rem.sort((a,b)=>b[1]-a[1]);
+  for(const[c]of rem){if(left<=0)break;if(q.get(c)<cap.get(c)){q.set(c,q.get(c)+1);left--;}}
+ }
+ return q;
+}
+function rmGenerate(){
+ const have=catCounts(),cats=[...rmSel].filter(c=>have.has(c));
+ if(!cats.length){alert(T[lang].rmneed);return;}
+ const N=+$('rmN').value;
+ const cand=new Map(),cap=new Map();
+ cats.forEach(c=>{const a=[],cells=new Set();
+  G.forEach(e=>{if(e.g.has(c)){const cell=cellId(L,e.a[0],e.a[1]);a.push({e,cell});cells.add(cell);}});
+  cand.set(c,a);cap.set(c,cells.size);});
+ const quota=rmAlloc(cats,N,cap),q0=new Map(quota),used=new Map(cats.map(c=>[c,new Set()])),
+  chosen=[],names=new Set(),tally=new Map(),sel=[];
+ const minD=a=>chosen.length?Math.min(...chosen.map(p=>Math.hypot((a[0]-p[0])*L.iw,(a[1]-p[1])*L.ih))):Infinity;
+ const poolOf=c=>cand.get(c).filter(o=>!names.has(o.e.n)&&!used.get(c).has(o.cell));
+ const take=(c,o)=>{chosen.push(o.e.a);names.add(o.e.n);used.get(c).add(o.cell);sel.push(o.e);tally.set(c,(tally.get(c)||0)+1);};
+ const choose=pool=>{
+  if(!chosen.length)return pool[Math.floor(Math.random()*pool.length)];
+  const sc=pool.map(o=>({o,d:minD(o.e.a)})).sort((a,b)=>b.d-a.d),k=Math.min(sc.length,3);
+  return sc[Math.floor(Math.random()*k)].o;
+ };
+ let guard=0;
+ while(sel.length<N&&guard++<N*6+60){/* ප්‍රධාන අදියර: කෝටා අනුව */
+  const act=cats.filter(c=>quota.get(c)>0);if(!act.length)break;
+  act.sort((a,b)=>quota.get(b)/q0.get(b)-quota.get(a)/q0.get(a)+(Math.random()-.5)*.01);
+  const c=act[0],pool=poolOf(c);
+  if(!pool.length){quota.set(c,0);continue;}
+  take(c,choose(pool));quota.set(c,quota.get(c)-1);
+ }
+ guard=0;
+ while(sel.length<N&&guard++<N*6+60){/* ඉතිරි පුරවීම (වර්ග කිහිපයකට අයත් ස්ථාන නිසා අඩුවුවහොත්) */
+  const open=cats.filter(c=>poolOf(c).length);if(!open.length)break;
+  open.sort((a,b)=>(tally.get(a)||0)-(tally.get(b)||0)+(Math.random()-.5)*.01);
+  const c=open[0];take(c,choose(poolOf(c)));
+ }
+ if(!sel.length){alert(T[lang].rmnone);return;}
+ closeAll();stopRipple();activeCat=null;mainName=null;hl=null;$('q').value='';manual.clear();
+ marked=new Set(sel.flatMap(e=>e.idx));
+ Z.reset();draw();
+ $('st').textContent=`🎲 ${T[lang].rmres}: ${sel.length} — `+[...tally.entries()].map(([c,n])=>`${c} ${n}`).join(' · ');
+}
+$('rmb').onclick=e=>{e.stopPropagation();togglePop('rmp',$('rmb'),buildRM);};
+$('rmp').onclick=e=>{e.stopPropagation();
+ const b=e.target.closest('[data-c]');
+ if(b){const c=b.dataset.c;rmSel.has(c)?rmSel.delete(c):rmSel.add(c);b.classList.toggle('on',rmSel.has(c));}};
+$('rma').onclick=()=>{catCounts().forEach((_,c)=>rmSel.add(c));buildRM();};
+$('rmn').onclick=()=>{rmSel.clear();buildRM();};
+$('rmN').oninput=()=>{rmN=+$('rmN').value;$('rmNv').textContent=rmN;};
+$('rmgo').onclick=rmGenerate;
+
 /* ---------- පුවරු (panels) ---------- */
-const pops=['plp','typ','stp'];
+const pops=['plp','typ','stp','rmp'];
 function closeAll(){pops.forEach(p=>$(p).style.display='none');$('sug').classList.remove('open');$('lbp').classList.remove('open');$('lbb').classList.remove('on');}
 function togglePop(id,btn,build){
  const el=$(id),was=el.style.display=='flex';closeAll();if(was)return;
@@ -625,7 +730,7 @@ function applyUI(){
 }
 function setLang(l){
  lang=l;closeAll();stopRipple();applyUI();fillMapSelect(cur&&cur.k);
- buildGroups();marked=new Set();manual.clear();hl=null;activeCat=null;$('q').value='';
+ buildGroups();marked=new Set();manual.clear();hl=null;activeCat=null;rmSel.clear();$('q').value='';
  $('st').textContent=G.size?T[lang].hint:T[lang].nodata;draw();
 }
 document.querySelectorAll('#lang button,.hwlb').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
@@ -647,7 +752,7 @@ async function load(k){
  cur=MAPS.find(m=>m.k==k);closeAll();stopRipple();$('st').textContent=T[lang].loading;
  img=null;
  try{await fontReady();img=await loadImg(cur.url);}catch(e){img=null;$('st').textContent='රූපය load වුණේ නැත / Image failed';return;}
- L=layout(img);buildGroups();marked=new Set();manual.clear();hl=null;activeCat=null;$('q').value='';
+ L=layout(img);buildGroups();marked=new Set();manual.clear();hl=null;activeCat=null;rmSel.clear();$('q').value='';
  Z.reset();draw();
  $('st').textContent=G.size?T[lang].hint:T[lang].nodata;
 }
