@@ -261,7 +261,16 @@ function setupZoom(cv,box,getL,vp){
  box.addEventListener('wheel',e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();
   const b=box.getBoundingClientRect();set(z*(e.deltaY<0?1.12:1/1.12),e.clientX-b.left,e.clientY-b.top);},{passive:false});
  addEventListener('resize',apply);
- api={apply,reset,startPan};return api;
+ /* (x0,y0)-(x1,y1) = සිතියම මත 0..1 ඛණ්ඩාංක සහිත සෘජුකෝණාස්‍රය; එය තිරයට ගැළපෙන සේ zoom කර මැදට ගෙන එයි */
+ function focusRect(x0,y0,x1,y1){
+  const L=getL();if(!L)return;
+  const rw=Math.max(1,(x1-x0)*L.iw),rh=Math.max(1,(y1-y0)*L.ih),f0=fit();
+  z=Math.min(8,Math.max(.2,Math.min((box.clientWidth-12)/rw,(box.clientHeight-12)/rh)/f0));apply();
+  const r=cv.getBoundingClientRect(),b=box.getBoundingClientRect(),
+   tx=r.left+((L.ix+(x0+x1)/2*L.iw)/L.W)*r.width,ty=r.top+((L.iy+(y0+y1)/2*L.ih)/L.H)*r.height;
+  box.scrollLeft+=tx-(b.left+box.clientWidth/2);box.scrollTop+=ty-(b.top+box.clientHeight/2);
+ }
+ api={apply,reset,startPan,focusRect};return api;
 }
 
 
