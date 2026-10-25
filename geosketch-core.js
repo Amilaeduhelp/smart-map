@@ -1,8 +1,8 @@
 /* GeoSketch core – index.html සහ editor.html දෙකම මෙය භාවිතා කරයි (එකම folder එකේ තබන්න) */
 const B='https://raw.githubusercontent.com/urceduhelp/geo-sketch-map-make/main/';
 const MAPS=[
-{k:'ol_lanka',name:'සාමාන්‍ය පෙළ ලංකා සිතියම',url:B+'2022(2021)OL%20Lanka-01a.jpg'},
-{k:'ol_eurasia',name:'සාමාන්‍ය පෙළ යුරේසියා සිතියම',url:B+'2025 OL Map_world_2026_8 Color2a-01.jpg'},
+{k:'ol_lanka',name:'සාමාන්‍ය පෙළ ලංකා සිතියම',url:B+'2022(2021)OL%20Lanka-01.jpg'},
+{k:'ol_eurasia',name:'සාමාන්‍ය පෙළ යුරේසියා සිතියම',url:B+'2022 OL Euracia02.jpg'},
 {k:'ol_world',name:'සම්පූර්ණ ලෝක සිතියම',url:B+'2022(2021)OL%20world-02.jpg'},
 {k:'al_europe1',name:'උසස් පෙළ යුරෝපා සිතියම (කළු මුහුද දක්වා)',url:B+'AL_Europe_1.jpg'},
 {k:'al_europe2',name:'උසස් පෙළ යුරෝපා සිතියම (කැස්පියන් මුහුද දක්වා)',url:B+'AL_Europe_2.jpg'},
@@ -60,6 +60,42 @@ function drawArrow(g,fs,lx,ly,x,y,r,w){
  g.beginPath();g.moveTo(e[0],e[1]);g.lineTo(e[0]-ux*h-uy*k,e[1]-uy*h+ux*k);g.lineTo(e[0]-ux*h+uy*k,e[1]-uy*h-ux*k);g.closePath();g.fill();
 }
 
+/* ---------- ප්‍රදේශයක වර්ණය / රටාව: මායිම මෘදු ලෙස බොඳ වී යයි, සීමා රේඛාවක් (outline) නැත ----------
+   වර්ණය / රටාව වෙනම තට්ටුවක ඇඳ, බොඳ කළ ප්‍රදේශ හැඩය "mask" එකක් ලෙස යොදයි. එක් වරක් ගණනය කර (cache) නැවත භාවිතා කරයි.
+   බොඳ ප්‍රමාණය වෙනස් කිරීමට පහත  AREA_SOFT  අගය (1 = සාමාන්‍ය, 2 = තවත් බොඳ, 0.5 = අඩු බොඳ) වෙනස් කරන්න. */
+const AREA_SOFT=1;
+const AREA_CACHE=new WeakMap();
+function areaLayer(L,it){
+ const X=x=>L.ix+x*L.iw,Y=y=>L.iy+y*L.ih,col=it.c||'#ff9800',pt=it.pt||'s',
+  xs=it.pts.map(p=>X(p[0])),ys=it.pts.map(p=>Y(p[1])),
+  x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),
+  bw=x1-x0,bh=y1-y0,bl=Math.max(8,Math.min(34,Math.min(bw,bh)*.08))*AREA_SOFT,m=Math.ceil(bl*2+4);
+ const key=[col,pt,AREA_SOFT,L.W,L.ix,L.iy,L.iw,L.ih,it.pts.join(';')].join('|');
+ const hit=AREA_CACHE.get(it);if(hit&&hit.key==key)return hit;
+ const ow=Math.max(1,Math.ceil(bw+2*m)),oh=Math.max(1,Math.ceil(bh+2*m)),
+  mk=()=>{const k=document.createElement('canvas');k.width=ow;k.height=oh;return k;},
+  lay=mk(),a=lay.getContext('2d'),msk=mk(),b=msk.getContext('2d');
+ /* 1) බොඳ වූ හැඩය (mask): හැඩය තිරයෙන් පිටත ඇඳ, එහි සෙවණැල්ල (shadow) පමණක් ඇතුළට ගෙන එයි */
+ const OFF=ow+200;
+ b.shadowColor='rgba(0,0,0,1)';b.shadowBlur=bl;b.shadowOffsetX=-OFF;b.shadowOffsetY=0;b.fillStyle='#000';
+ b.beginPath();xs.forEach((x,i)=>{const px=x-x0+m+OFF,py=ys[i]-y0+m;i?b.lineTo(px,py):b.moveTo(px,py);});b.closePath();b.fill();
+ /* 2) වර්ණය / රටාව ඇඳීම */
+ a.translate(m-x0,m-y0);
+ if(pt=='s'){a.fillStyle=col;a.fillRect(x0-m,y0-m,ow,oh);}
+ else{/* pattern: h=තිරස් v=සිරස් d1=/ d2=\ g=කොටු x=ඇල කොටු o=තිත් */
+  a.strokeStyle=a.fillStyle=col;a.lineWidth=3;
+  const S=16,H=bh,W=bw,ln=(p,q,r,s)=>{a.beginPath();a.moveTo(p,q);a.lineTo(r,s);a.stroke();};
+  if(pt=='h'||pt=='g')for(let y=y0;y<=y1;y+=S)ln(x0,y,x1,y);
+  if(pt=='v'||pt=='g')for(let x=x0;x<=x1;x+=S)ln(x,y0,x,y1);
+  if(pt=='d1'||pt=='x')for(let k=-H;k<=W;k+=S)ln(x0+k,y1,x0+k+H,y0);
+  if(pt=='d2'||pt=='x')for(let k=-H;k<=W;k+=S)ln(x0+k,y0,x0+k+H,y1);
+  if(pt=='o')for(let y=y0;y<=y1;y+=S)for(let x=x0;x<=x1;x+=S){a.beginPath();a.arc(x,y,3,0,7);a.fill();}
+ }
+ /* 3) බොඳ වූ හැඩයෙන් කපා ගැනීම */
+ a.setTransform(1,0,0,1,0,0);a.globalCompositeOperation='destination-in';a.drawImage(msk,0,0);
+ const r={key,cv:lay,x:x0-m,y:y0-m};AREA_CACHE.set(it,r);return r;
+}
+
 function drawItem(g,L,it,fs,sp=.15,gp=.17,dr=.14){
  const X=x=>L.ix+x*L.iw,Y=y=>L.iy+y*L.ih;
  g.font=`${fs}px ${FONT}`;g.textBaseline='middle';g.lineJoin='round';
@@ -73,20 +109,9 @@ function drawItem(g,L,it,fs,sp=.15,gp=.17,dr=.14){
   }else halo(it.n,x+r+6,y-fs*.45,'left');
   if(!it.nd){g.fillStyle='#d6212b';g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.arc(x,y,r,0,7);g.fill();g.stroke();}
  }else if(it.t=='a'){
-  const col=it.c||'#ff9800',pt=it.pt||'s',pp=()=>{g.beginPath();it.pts.forEach((p,i)=>i?g.lineTo(X(p[0]),Y(p[1])):g.moveTo(X(p[0]),Y(p[1])));g.closePath();};
-  pp();
-  if(pt=='s'){g.globalAlpha=.45;g.fillStyle=col;g.fill();g.globalAlpha=1;}
-  else{/* pattern: h=තිරස් v=සිරස් d1=/ d2=\ g=කොටු x=ඇල කොටු o=තිත් */
-   g.save();g.clip();g.strokeStyle=g.fillStyle=col;g.lineWidth=3;
-   const xs=it.pts.map(p=>X(p[0])),ys=it.pts.map(p=>Y(p[1])),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),S=16,H=y1-y0,W=x1-x0;
-   const ln=(a,b,c,d)=>{g.beginPath();g.moveTo(a,b);g.lineTo(c,d);g.stroke();};
-   if(pt=='h'||pt=='g')for(let y=y0;y<=y1;y+=S)ln(x0,y,x1,y);
-   if(pt=='v'||pt=='g')for(let x=x0;x<=x1;x+=S)ln(x,y0,x,y1);
-   if(pt=='d1'||pt=='x')for(let k=-H;k<=W;k+=S)ln(x0+k,y1,x0+k+H,y0);
-   if(pt=='d2'||pt=='x')for(let k=-H;k<=W;k+=S)ln(x0+k,y0,x0+k+H,y1);
-   if(pt=='o')for(let y=y0;y<=y1;y+=S)for(let x=x0;x<=x1;x+=S){g.beginPath();g.arc(x,y,3,0,7);g.fill();}
-   g.restore();}
-  pp();g.strokeStyle=col;g.lineWidth=3;g.stroke();
+  if(it.pts&&it.pts.length>=3){/* වර්ණය / රටාව: මායිම බොඳ වී යයි, සීමා රේඛාවක් නැත */
+   const lay=areaLayer(L,it);
+   g.save();g.globalAlpha=(it.pt||'s')=='s'?.45:1;g.drawImage(lay.cv,lay.x,lay.y);g.restore();}
   /* නම: Move කර ඇත්නම් (lx,ly) එතැන, නැත්නම් මැද */
   const c=it.lx!=null?[it.lx,it.ly]:centroid(it.pts);halo(it.n,X(c[0]),Y(c[1]),'center');
  }else if(it.t=='d'){/* අමුණ / ඇළ: ආසන්න සමාන්තර රේඛා ද්විත්වයක් (ඉර පමණි). නම වෙනම තබයි (lx,ly) */
@@ -236,18 +261,7 @@ function setupZoom(cv,box,getL,vp){
  box.addEventListener('wheel',e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();
   const b=box.getBoundingClientRect();set(z*(e.deltaY<0?1.12:1/1.12),e.clientX-b.left,e.clientY-b.top);},{passive:false});
  addEventListener('resize',apply);
- /* x0..y1 = සිතියම මත 0..1 ඛණ්ඩාංක. එම පෙට්ටිය තිරයට ගැළපෙන සේ zoom කර මැදට ගෙන එයි */
- function focusRect(x0,y0,x1,y1){
-  const L=getL();if(!L)return;
-  const px0=L.ix+x0*L.iw,px1=L.ix+x1*L.iw,py0=L.iy+y0*L.ih,py1=L.iy+y1*L.ih,
-   w=Math.max(40,px1-px0),h=Math.max(40,py1-py0),
-   f=Math.min((box.clientWidth-6)/w,(box.clientHeight-6)/h);
-  z=Math.min(8,Math.max(1,f/fit()));apply();
-  const ff=fit()*z;
-  box.scrollLeft=(px0+px1)/2*ff-box.clientWidth/2;
-  box.scrollTop=(py0+py1)/2*ff-box.clientHeight/2;
- }
- api={apply,reset,startPan,focusRect};return api;
+ api={apply,reset,startPan};return api;
 }
 
 
@@ -298,4 +312,112 @@ function catPicker(host,o){
  nok.onclick=addNew;ni.onkeydown=e=>{e.stopPropagation();if(e.key=='Enter'){e.preventDefault();addNew();}};
  render();
  return{get:()=>sel.slice(),set:a=>{sel=[...a];render();},refresh:render};
+}
+
+
+/* ===================== RANDOM MAP =====================
+   openRandomMap(L, items, onDone) : popup එක විවෘත කරයි. onDone(set, info) → set = තෝරාගත් අයිතමවල index (Set)
+   addRandomButton(parent, getL, getItems, onDone) : "🎲 Random Map" බොත්තම සාදා parent එකට එක් කරයි
+   භාවිතය (index/editor හි):
+     let rndSet=null;   // null = සියල්ල පෙන්වන්න
+     render(...,{show:i=>(!rndSet||rndSet.has(i))&&(ඔබේ දැනට ඇති කොන්දේසිය)});
+     addRandomButton(toolbar,()=>L,()=>items,set=>{rndSet=set;redraw();});
+     සාමාන්‍ය සිතියමට ආපසු යාමට: rndSet=null; redraw(); */
+const gOf=it=>(it.g&&it.g.length)?it.g:guessCats(it);
+
+/* අයිතමයක නියෝජන ලක්ෂ්‍යය (0..1) - ලක්ෂ්‍ය: තිත, ප්‍රදේශ: කේන්ද්‍රය, රේඛා: දිගේ මැද */
+function repPoint(it){
+ if(it.t=='p')return[it.x,it.y];
+ if(it.t=='a')return centroid(it.pts);
+ const ox=it.t=='r'?(it.ox||0):0,oy=it.t=='r'?(it.oy||0):0,P=it.pts;
+ let tot=0;for(let i=1;i<P.length;i++)tot+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);
+ let h=tot/2;
+ for(let i=1;i<P.length;i++){const l=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);
+  if(h<=l||i==P.length-1){const f=l?Math.min(1,h/l):0;return[P[i-1][0]+(P[i][0]-P[i-1][0])*f+ox,P[i-1][1]+(P[i][1]-P[i-1][1])*f+oy];}
+  h-=l;}
+ return[P[0][0]+ox,P[0][1]+oy];
+}
+
+/* තේරීමේ ඇල්ගොරිතමය */
+function randomPick(items,L,cats,n){
+ if(!cats.length)return{err:'අවම වශයෙන් වර්ගයක් තෝරන්න.'};
+ if(n<cats.length)return{err:`තෝරාගත් වර්ග ගණන ${cats.length} කි. ස්ථාන ගණන (${n}) වර්ග ගණනට වඩා අඩුය. සියලු වර්ග ආවරණය කිරීමට අවම වශයෙන් ස්ථාන ${cats.length} ක් අවශ්‍යයි.`};
+ const pool={};cats.forEach(c=>pool[c]=[]);
+ const meta=items.map((it,i)=>{
+  const p=repPoint(it),g=gOf(it).filter(c=>cats.includes(c));
+  g.forEach(c=>pool[c].push(i));
+  return{p,g,cc:Math.min(L.cols-1,Math.max(0,Math.floor(p[0]*L.cols))),rr:Math.min(L.rows-1,Math.max(0,Math.floor(p[1]*L.rows)))};});
+ const empty=cats.filter(c=>!pool[c].length);
+ if(empty.length)return{err:'මෙම වර්ග වල ස්ථාන නැත: '+empty.join(', ')};
+ const total=new Set(cats.flatMap(c=>pool[c])).size;
+ let capped=false;if(n>total){n=total;capped=true;}
+ const chosen=[],has=new Set();let relaxed=0;
+ const cnt=c=>chosen.filter(i=>meta[i].g.includes(c)).length;
+ /* එකම වර්ගයේ ස්ථාන එකම කොටුවේ හෝ ආසන්න (8 දිශාවේ) කොටුවල නොවිය යුතුය */
+ const ok=i=>chosen.every(j=>!meta[i].g.some(c=>meta[j].g.includes(c))||Math.max(Math.abs(meta[i].cc-meta[j].cc),Math.abs(meta[i].rr-meta[j].rr))>=2);
+ const spread=i=>chosen.length?Math.min(...chosen.map(j=>Math.hypot((meta[i].p[0]-meta[j].p[0])*L.iw,(meta[i].p[1]-meta[j].p[1])*L.ih))):1e9;
+ /* සිතියම පුරා විසිරීම: දැනට ඇති ස්ථාන වලින් වඩාත්ම ඈත අපේක්ෂකයා (random බරක් සහිතව) */
+ function pick(cands){
+  cands=cands.filter(i=>!has.has(i));if(!cands.length)return false;
+  let g=cands.filter(ok);if(!g.length){g=cands;relaxed++;}
+  let best=-1,bs=-1;
+  g.forEach(i=>{const s=Math.min(spread(i),L.iw)*(.65+.7*Math.random());if(s>bs){bs=s;best=i;}});
+  chosen.push(best);has.add(best);return true;
+ }
+ /* 1) සියලු වර්ග ආවරණය (අඩුම ස්ථාන ඇති වර්ග මුලින්) */
+ [...cats].sort((a,b)=>pool[a].length-pool[b].length).forEach(c=>{if(!cnt(c))pick(pool[c]);});
+ /* 2) කෝටා: වැඩි ස්ථාන ඇති වර්ගයට වැඩි ගණනක් (D'Hondt ක්‍රමය) */
+ const quota={};cats.forEach(c=>quota[c]=1);
+ for(let r=n-cats.length;r>0;r--){
+  let b=null,bv=-1;cats.forEach(c=>{if(quota[c]<pool[c].length){const v=pool[c].length/(quota[c]+1);if(v>bv){bv=v;b=c;}}});
+  if(!b)break;quota[b]++;}
+ /* 3) කෝටා පිරවීම (වර්ග මාරුවෙන් මාරුවට, එවිට විසිරීම හොඳයි) */
+ while(chosen.length<n){
+  let prog=false;
+  [...cats].sort(()=>Math.random()-.5).forEach(c=>{
+   if(chosen.length<n&&cnt(c)<quota[c]&&pick(pool[c]))prog=true;});
+  if(!prog)break;}
+ while(chosen.length<n&&pick([...new Set(cats.flatMap(c=>pool[c]))]));
+ return{idx:new Set(chosen),relaxed,capped,n:chosen.length};
+}
+
+/* Popup */
+function openRandomMap(L,items,onDone){
+ const cnt={};items.forEach(it=>gOf(it).forEach(c=>cnt[c]=(cnt[c]||0)+1));
+ const cl=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]);
+ if(!cl.length){alert('දත්ත ගබඩාවේ වර්ග සහිත ස්ථාන නැත.');return;}
+ const bg=document.createElement('div');
+ bg.style.cssText='position:fixed;inset:0;background:#0007;z-index:9999;display:flex;align-items:center;justify-content:center;padding:10px';
+ const bx=document.createElement('div');
+ bx.style.cssText='background:#fff;border-radius:12px;padding:16px;max-width:460px;width:100%;max-height:90vh;overflow:auto;color:#0d2b45;font-family:'+FONT+';box-shadow:0 4px 24px #0006';
+ bx.innerHTML='<h3 style="margin:0 0 10px">🎲 Random Map</h3>'
+ +'<label>ඇතුළත් කළ යුතු ස්ථාන ගණන: <input type="number" min="1" value="20" id="rm_n" style="width:80px;padding:4px"></label>'
+ +'<div style="margin:12px 0 4px"><b>ආවරණය විය යුතු වර්ග:</b> <button type="button" id="rm_all">සියල්ල</button> <button type="button" id="rm_none">කිසිවක් නැත</button></div>'
+ +'<div id="rm_l" style="display:flex;flex-direction:column;gap:3px;max-height:40vh;overflow:auto;border:1px solid #9bb;border-radius:6px;padding:6px"></div>'
+ +'<div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end"><button type="button" id="rm_x">අවලංගු</button><button type="button" id="rm_ok">සිතියම සාදන්න</button></div>';
+ bg.appendChild(bx);document.body.appendChild(bg);
+ const lst=bx.querySelector('#rm_l');
+ cl.forEach(c=>{const l=document.createElement('label');l.innerHTML='<input type="checkbox" value="" checked> ';
+  l.firstChild.value=c;l.append(`${c} (${cnt[c]})`);lst.appendChild(l);});
+ const boxes=()=>[...lst.querySelectorAll('input')];
+ bx.querySelector('#rm_all').onclick=()=>boxes().forEach(b=>b.checked=true);
+ bx.querySelector('#rm_none').onclick=()=>boxes().forEach(b=>b.checked=false);
+ bx.querySelector('#rm_x').onclick=()=>bg.remove();
+ bx.querySelector('#rm_ok').onclick=()=>{
+  const n=parseInt(bx.querySelector('#rm_n').value,10),cats=boxes().filter(b=>b.checked).map(b=>b.value);
+  if(!(n>0)){alert('ස්ථාන ගණන නිවැරදිව ඇතුළත් කරන්න.');return;}
+  const r=randomPick(items,L,cats,n);
+  if(r.err){alert('⚠ '+r.err);return;}
+  bg.remove();
+  let msg='';
+  if(r.capped)msg+=`තෝරාගත් වර්ග වල ඇත්තේ ස්ථාන ${r.n} ක් පමණි, එබැවින් ඒ සියල්ල ගත්තෙමි. `;
+  if(r.relaxed)msg+=`සමහර ස්ථාන ආසන්න වීමට ඉඩ ඇත (${r.relaxed}) - ඉඩ මදි නිසා.`;
+  if(msg)alert(msg);
+  onDone(r.idx,r);
+ };
+}
+function addRandomButton(parent,getL,getItems,onDone){
+ const b=document.createElement('button');b.type='button';b.textContent='🎲 Random Map';
+ b.onclick=()=>{const L=getL();if(!L){alert('මුලින් සිතියමක් තෝරන්න.');return;}openRandomMap(L,getItems(),onDone);};
+ parent.appendChild(b);return b;
 }
