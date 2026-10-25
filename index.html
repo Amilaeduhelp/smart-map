@@ -59,6 +59,8 @@ main{flex:1;min-height:0;padding:8px}
 #vp{position:relative;height:100%}
 #box{height:100%;overflow:auto;display:flex;background:#dbe5ec;border:1px solid #c3d5e0;border-radius:6px}
 canvas{background:#fff;box-shadow:0 2px 14px #0003}
+/* තට්ටු කළ විට රතු වළලු (සිතියම මත පාරදෘශ්‍ය තට්ටුවක්; mouse / touch වලට බාධා නොකරයි) */
+#vp canvas#rip{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:6;background:transparent;box-shadow:none}
 /* How to use */
 #hwo{background:#f5a623}
 .hw{position:fixed;inset:0;z-index:60;display:none;background:#0d2b45cc;align-items:flex-start;justify-content:center;padding:3vh 10px;overflow:auto}
@@ -110,7 +112,7 @@ canvas{background:#fff;box-shadow:0 2px 14px #0003}
  <button id="stb">⚙</button>
  <span id="st"></span>
 </header>
-<main><div id="vp"><div id="box"><canvas id="cv"></canvas></div></div></main>
+<main><div id="vp"><div id="box"><canvas id="cv"></canvas></div><canvas id="rip"></canvas></div></main>
 
 <div class="pop" id="plp"><div class="ph"><span data-t="places"></span><span id="plc"></span></div><div class="pb" id="pli"></div></div>
 <div class="pop" id="typ"><div class="ph"><span data-t="types"></span></div><div class="pb"><div class="chips" id="tyc"></div></div></div>
@@ -118,6 +120,7 @@ canvas{background:#fff;box-shadow:0 2px 14px #0003}
  <div class="set">
   <label><span data-t="nnum"></span><span style="display:flex;gap:8px;align-items:center;flex:1;justify-content:flex-end"><input id="nN" type="range" min="0" max="15" step="1" value="3"><b id="nNv" style="min-width:20px;text-align:right">3</b></span></label>
   <label><span data-t="rivs"></span><input id="rOn" type="checkbox"></label>
+  <label><span data-t="ripl"></span><input id="ripOn" type="checkbox" checked></label>
   <label><span data-t="spread"></span><input id="sOn" type="checkbox" checked></label>
   <label><span data-t="veil"></span><input id="vOn" type="checkbox" checked></label>
   <label><span data-t="vstr"></span><input id="vA" type="range" min="0.1" max="0.8" step="0.05" value="0.3"></label>
@@ -138,13 +141,13 @@ canvas{background:#fff;box-shadow:0 2px 14px #0003}
 <script>
 /* ---------- භාෂා / Language texts ---------- */
 const T={
- si:{map:'සිතියම',letters:'අකුරු ▾',places:'📍 ස්ථාන නාමාවලිය',types:'🗂 සිතියම් වර්ග',settings:'සැකසුම්',spread:'නම් එකිනෙක මත යෑම වළක්වන්න',howb:'❓ භාවිතය',howt:'GeoSketch භාවිතා කරන්නේ කෙසේද?',howok:'තේරුණා, වසන්න',hown:'නැවත පෙන්වන්න එපා',nnum:'ආසන්න ස්ථාන ගණන',rivs:'ආසන්න ගංගා ද පෙන්වන්න',mvon:'✋ Move සක්‍රියයි: නමක් ඇදගෙන යන්න (හිස් තැනක් අදිමින් සිතියම ගෙන යන්න)',mvrs:'Move කළ නම් යළි මුල් තැනට',veil:'මෘදු ආවරණය',vstr:'ආවරණ තීව්‍රතාව',vtone:'ආවරණ වර්ණය',fsz:'අකුරු ප්‍රමාණය',
+ si:{map:'සිතියම',letters:'අකුරු ▾',places:'📍 ස්ථාන නාමාවලිය',types:'🗂 සිතියම් වර්ග',settings:'සැකසුම්',spread:'නම් එකිනෙක මත යෑම වළක්වන්න',ripl:'තට්ටු කළ විට රතු වළලු පෙන්වන්න',howb:'❓ භාවිතය',howt:'GeoSketch භාවිතා කරන්නේ කෙසේද?',howok:'තේරුණා, වසන්න',hown:'නැවත පෙන්වන්න එපා',nnum:'ආසන්න ස්ථාන ගණන',rivs:'ආසන්න ගංගා ද පෙන්වන්න',mvon:'✋ Move සක්‍රියයි: නමක් ඇදගෙන යන්න (හිස් තැනක් අදිමින් සිතියම ගෙන යන්න)',mvrs:'Move කළ නම් යළි මුල් තැනට',veil:'මෘදු ආවරණය',vstr:'ආවරණ තීව්‍රතාව',vtone:'ආවරණ වර්ණය',fsz:'අකුරු ප්‍රමාණය',
   ph:'ස්ථානයක් සොයන්න...',none:'ස්ථානයක් හමු නොවීය',hint:'ස්ථානයක් සොයන්න, අකුරක් තෝරන්න, නැතිනම් නාමාවලියෙන් තෝරන්න. සිතියමේ ස්ථානයක් ක්ලික් කළ ද හැක',near:'+ ආසන්න ස්ථාන',nodata:'මෙම සිතියමට දත්ත නැත',pickLetter:'අකුරක් තෝරන්න',loading:'load වෙමින්...',
   tones:['සුදු','ළා කහ','ළා නිල්','ළා කොළ'],all:'වර්ගයේ සියල්ල'},
- ta:{map:'வரைபடம்',letters:'எழுத்துகள் ▾',places:'📍 இடப்பெயர் பட்டியல்',types:'🗂 வரைபட வகைகள்',settings:'அமைப்புகள்',spread:'பெயர்கள் ஒன்றின்மேல் ஒன்று வருவதைத் தவிர்',howb:'❓ பயன்பாடு',howt:'GeoSketch ஐப் பயன்படுத்துவது எப்படி?',howok:'புரிந்தது, மூடு',hown:'மீண்டும் காட்ட வேண்டாம்',nnum:'அருகிலுள்ள இடங்களின் எண்ணிக்கை',rivs:'அருகிலுள்ள ஆறுகளையும் காட்டு',mvon:'✋ Move இயக்கத்தில்: பெயரை இழுத்துச் செல்லுங்கள் (வெற்றிடத்தை இழுத்து வரைபடத்தை நகர்த்துங்கள்)',mvrs:'நகர்த்திய பெயர்களை மீட்டமை',veil:'மென்மையான திரை',vstr:'திரையின் அடர்த்தி',vtone:'திரை நிறம்',fsz:'எழுத்து அளவு',
+ ta:{map:'வரைபடம்',letters:'எழுத்துகள் ▾',places:'📍 இடப்பெயர் பட்டியல்',types:'🗂 வரைபட வகைகள்',settings:'அமைப்புகள்',spread:'பெயர்கள் ஒன்றின்மேல் ஒன்று வருவதைத் தவிர்',ripl:'தொட்டால் சிவப்பு வளையங்களைக் காட்டு',howb:'❓ பயன்பாடு',howt:'GeoSketch ஐப் பயன்படுத்துவது எப்படி?',howok:'புரிந்தது, மூடு',hown:'மீண்டும் காட்ட வேண்டாம்',nnum:'அருகிலுள்ள இடங்களின் எண்ணிக்கை',rivs:'அருகிலுள்ள ஆறுகளையும் காட்டு',mvon:'✋ Move இயக்கத்தில்: பெயரை இழுத்துச் செல்லுங்கள் (வெற்றிடத்தை இழுத்து வரைபடத்தை நகர்த்துங்கள்)',mvrs:'நகர்த்திய பெயர்களை மீட்டமை',veil:'மென்மையான திரை',vstr:'திரையின் அடர்த்தி',vtone:'திரை நிறம்',fsz:'எழுத்து அளவு',
   ph:'இடத்தைத் தேடுங்கள்...',none:'இடம் கிடைக்கவில்லை',hint:'இடத்தைத் தேடுங்கள், எழுத்தைத் தேர்ந்தெடுங்கள் அல்லது பட்டியலில் தேர்ந்தெடுங்கள். வரைபடத்தில் ஓர் இடத்தைத் தொட்டும் பார்க்கலாம்',near:'+ அருகிலுள்ள இடங்கள்',nodata:'இந்த வரைபடத்திற்குத் தரவு இல்லை',pickLetter:'எழுத்தைத் தேர்ந்தெடுங்கள்',loading:'ஏற்றுகிறது...',
   tones:['வெள்ளை','இளமஞ்சள்','இளநீலம்','இளம்பச்சை'],all:'வகையில் அனைத்தும்'},
- en:{map:'Map',letters:'Letters ▾',places:'📍 Place list',types:'🗂 Map types',settings:'Settings',spread:'Avoid overlapping names',howb:'❓ How to use',howt:'How to use GeoSketch',howok:'Got it, close',hown:'Do not show again',nnum:'Number of nearby places',rivs:'Also show nearby rivers',mvon:'✋ Move on: drag a name (drag empty space to pan the map)',mvrs:'Reset moved names',veil:'Soft overlay',vstr:'Overlay strength',vtone:'Overlay tone',fsz:'Text size',
+ en:{map:'Map',letters:'Letters ▾',places:'📍 Place list',types:'🗂 Map types',settings:'Settings',spread:'Avoid overlapping names',ripl:'Show red ripples on tap',howb:'❓ How to use',howt:'How to use GeoSketch',howok:'Got it, close',hown:'Do not show again',nnum:'Number of nearby places',rivs:'Also show nearby rivers',mvon:'✋ Move on: drag a name (drag empty space to pan the map)',mvrs:'Reset moved names',veil:'Soft overlay',vstr:'Overlay strength',vtone:'Overlay tone',fsz:'Text size',
   ph:'Search a place...',none:'No place found',hint:'Search a place, pick a letter, choose from the list, or tap a place on the map',near:'+ nearby places',nodata:'No data for this map',pickLetter:'Pick a letter',loading:'Loading...',
   tones:['White','Cream','Blue','Green'],all:'All in this type'}
 };
@@ -160,6 +163,7 @@ const HOW={
   ['ස්ථානයක් සොයන්න','ඉහළ ඇති <b>සෙවුම් පෙට්ටියේ</b> ස්ථානයේ නමේ මුල් අකුරු කිහිපයක් ටයිප් කරන්න (උදා: <b>යාප</b>). පහළින් නම් ලැයිස්තුවක් පෙනේ. ඔබට අවශ්‍ය නම මත ක්ලික් කරන්න.','නම හරියට මතක නැද්ද? <b>අකුරු ▾</b> බොත්තම ඔබා මුල් අකුරක් තෝරන්න, නැතිනම් <b>📍 ස්ථාන නාමාවලිය</b> බොත්තමෙන් සම්පූර්ණ ලැයිස්තුව බලන්න.'],
   ['ප්‍රතිඵලය බලන්න','සිතියම ස්වයංක්‍රීයව විශාල වී, ඔබ තෝරාගත් ස්ථානයේ <b style="color:#d6212b">නම රතු පැහැයෙන්</b> පෙනේ. ඒ සමගම අවට ඇති ස්ථාන කිහිපයක් (මුලින් 10ක්) කළු පැහැති නම් සහ ඊතල සහිතව පෙන්වයි. මෙයින් ස්ථාන එකිනෙකට සාපේක්ෂව පිහිටා ඇති ආකාරය පහසුවෙන් ඉගෙන ගත හැක. නම් එකිනෙක මත නොයන සේ ස්වයංක්‍රීයව සකසයි.'],
   ['සිතියම මත ක්ලික් / ස්පර්ශ කරන්න','සිතියමේ ඕනෑම ස්ථානයක් (තිතක්, ප්‍රදේශයක්, ගංගාවක්) මත <b>ක්ලික් කරන්න / ඇඟිල්ලෙන් තට්ටු කරන්න</b>. එවිට එම ස්ථානය රතු පැහැයෙන් ද, ඒ අවට ඇති ආසන්නතම ස්ථාන 3 කළු පැහැයෙන් ද පෙන්වයි.','සිතියම අදිමින් ගෙන යන විට මෙය ක්‍රියා නොකරයි.'],
+  ['තට්ටු කළ තැන රතු වළලු (ගුරුවරුන්ට)','සිතියමේ ස්ථානයක් <b>එක් වරක් ක්ලික් කළ / තනි ඇඟිල්ලකින් තට්ටු කළ</b> විට, ඒ ස්ථානය වටා රතු පැහැති වළලු 5ක් ක්‍රමයෙන් විශාල වෙමින් මැකී යමින් අඛණ්ඩව ස්පන්දනය වේ (භූමිකම්පාවක කේන්ද්‍රයක් පෙන්වන ආකාරයටයි). දරුවන්ට ස්ථානය පෙන්වීමට මෙය පහසුය.','නවත්වන්න: එම ස්ථානයම නැවත තට්ටු කරන්න, නැතිනම් <b>Esc</b> ඔබන්න. සිතියම අදින විට හෝ ඇඟිලි දෙකකින් විශාල කරන විට මෙය ක්‍රියා නොකරයි. අවශ්‍ය නම් ⚙ තුළින් අක්‍රිය කළ හැක.'],
   ['සිතියම ගෙනයාම සහ විශාල කිරීම','සිතියම <b>ඇඟිල්ලෙන් / mouse එකෙන් අදින්න</b>. ඉහළ දකුණේ ඇති <b>+</b> සහ <b>−</b> බොත්තමින් විශාල / කුඩා කරන්න. <b>ගැලපෙන</b> බොත්තම ඔබන විට සම්පූර්ණ සිතියම නැවත පෙනේ. පරිගණකයේ <b>Ctrl</b> ඔබාගෙන mouse wheel එක කරකවා ද විශාල කළ හැක.'],
   ['අවට ස්ථාන ගණන වෙනස් කරන්න','<b>⚙</b> බොත්තම ඔබා "ආසන්න ස්ථාන ගණන" ලිස්සුම් තීරුව (0 සිට 15 දක්වා) වෙනස් කරන්න. ආසන්න <b>ගංගා</b> ද බැලීමට "ආසන්න ගංගා ද පෙන්වන්න" ටික් කරන්න.'],
   ['වර්ගයක් අනුව බලන්න','<b>🗂 සිතියම් වර්ග</b> බොත්තම ඔබා (ගංගාව, වැව, වරාය ආදී) එක් වර්ගයක් තෝරන්න. එවිට එම වර්ගයේ සියලු ස්ථාන එකවර සිතියමේ පෙනේ.'],
@@ -171,6 +175,7 @@ const HOW={
   ['இடத்தைத் தேடுங்கள்','மேலே உள்ள <b>தேடல் பெட்டியில்</b> இடத்தின் பெயரின் முதல் சில எழுத்துகளைத் தட்டச்சு செய்யுங்கள். கீழே தோன்றும் பட்டியலில் தேவையான பெயரைத் தேர்ந்தெடுங்கள்.','பெயர் சரியாக நினைவில் இல்லையா? <b>எழுத்துகள் ▾</b> பொத்தானை அழுத்தி முதல் எழுத்தைத் தேர்ந்தெடுங்கள், அல்லது <b>📍 இடப்பெயர் பட்டியல்</b> மூலம் முழுப் பட்டியலைப் பாருங்கள்.'],
   ['முடிவைப் பாருங்கள்','வரைபடம் தானாகப் பெரிதாகி, தேர்ந்தெடுத்த இடத்தின் <b style="color:#d6212b">பெயர் சிவப்பு நிறத்தில்</b> தெரியும். அதனுடன் அருகிலுள்ள சில இடங்களும் (முதலில் 10) கருப்புப் பெயர்களுடனும் அம்புகளுடனும் காட்டப்படும். இதனால் இடங்கள் ஒன்றுக்கொன்று எங்கே அமைந்துள்ளன என்பதை எளிதாகக் கற்கலாம். பெயர்கள் ஒன்றின்மேல் ஒன்று விழாதபடி தானாக அமைக்கப்படும்.'],
   ['வரைபடத்தில் கிளிக் / தொடுதல்','வரைபடத்தில் எந்த இடத்தையும் (புள்ளி, பகுதி, ஆறு) <b>கிளிக் செய்யுங்கள் / விரலால் தொடுங்கள்</b>. அந்த இடம் சிவப்பு நிறத்திலும், அதன் அருகிலுள்ள 3 இடங்கள் கருப்பு நிறத்திலும் காட்டப்படும்.','வரைபடத்தை இழுக்கும்போது இது செயல்படாது.'],
+  ['தொட்ட இடத்தில் சிவப்பு வளையங்கள் (ஆசிரியர்களுக்கு)','வரைபடத்தில் ஓர் இடத்தை <b>ஒருமுறை கிளிக் செய்தால் / ஒரு விரலால் தொட்டால்</b>, அந்த இடத்தைச் சுற்றி 5 சிவப்பு வளையங்கள் படிப்படியாகப் பெரிதாகி மறைந்து தொடர்ந்து துடிக்கும் (நிலநடுக்க மையத்தைக் காட்டுவது போல). மாணவர்களுக்கு இடத்தைச் சுட்டிக்காட்ட இது உதவும்.','நிறுத்த: அதே இடத்தை மீண்டும் தொடுங்கள் அல்லது <b>Esc</b> அழுத்துங்கள். வரைபடத்தை இழுக்கும்போதோ இரு விரல்களால் பெரிதாக்கும்போதோ இது தோன்றாது. தேவைப்பட்டால் ⚙ இல் அணைக்கலாம்.'],
   ['வரைபடத்தை நகர்த்தவும் பெரிதாக்கவும்','வரைபடத்தை <b>விரலால் / மவுசால் இழுத்து</b> நகர்த்துங்கள். மேல் வலதுபுறத்தில் உள்ள <b>+</b> மற்றும் <b>−</b> பொத்தான்களால் பெரிதாக்கவும் சிறிதாக்கவும் செய்யலாம். <b>ගැලපෙන</b> பொத்தானை அழுத்தினால் முழு வரைபடமும் மீண்டும் தெரியும். கணினியில் <b>Ctrl</b> அழுத்தியபடி மவுஸ் சக்கரத்தைச் சுழற்றியும் பெரிதாக்கலாம்.'],
   ['அருகிலுள்ள இடங்களின் எண்ணிக்கை','<b>⚙</b> பொத்தானை அழுத்தி "அருகிலுள்ள இடங்களின் எண்ணிக்கை" ஸ்லைடரை (0 முதல் 15 வரை) மாற்றுங்கள். அருகிலுள்ள <b>ஆறுகளையும்</b> காண "அருகிலுள்ள ஆறுகளையும் காட்டு" என்பதைத் தேர்வு செய்யுங்கள்.'],
   ['வகையின்படி பாருங்கள்','<b>🗂 வரைபட வகைகள்</b> பொத்தானை அழுத்தி (ஆறு, குளம், துறைமுகம் போன்ற) ஒரு வகையைத் தேர்ந்தெடுங்கள். அந்த வகையின் எல்லா இடங்களும் ஒரே நேரத்தில் வரைபடத்தில் தெரியும்.'],
@@ -182,6 +187,7 @@ const HOW={
   ['Search for a place','Type the first few letters of a place name in the <b>search box</b> at the top (for example <b>Jaff</b>). A list of names appears below. Click the one you want.','Do not remember the exact name? Press <b>Letters ▾</b> and pick the first letter, or open <b>📍 Place list</b> to see everything.'],
   ['Read the result','The map zooms in automatically and shows the <b style="color:#d6212b">name of your place in red</b>. A few nearby places (10 at first) are shown too, with black names and arrows. This helps you learn how places are located relative to each other. Names are arranged automatically so they do not cover each other.'],
   ['Click or tap the map','<b>Click or tap</b> any place on the map (a dot, an area or a river). That place is shown in red together with the 3 nearest places in black.','This does not trigger while you are dragging the map.'],
+  ['Red ripples where you tap (for teachers)','<b>Click once or tap with one finger</b> on the map and 5 red rings spread out from that spot, fading as they grow and pulsing continuously, like the epicentre of an earthquake on a quake map. It is a handy way to point out a place to students.','To stop: tap the same spot again, or press <b>Esc</b>. It does not appear while you drag the map or pinch to zoom. You can switch it off in ⚙.'],
   ['Move and zoom the map','<b>Drag the map</b> with your finger or mouse. Use <b>+</b> and <b>−</b> at the top right to zoom, and press the fit button (<b>ගැලපෙන</b>) to see the whole map again. On a computer you can also hold <b>Ctrl</b> and turn the mouse wheel.'],
   ['Change how many nearby places','Press <b>⚙</b> and move the "Number of nearby places" slider (0 to 15). Tick "Also show nearby rivers" to include rivers.'],
   ['Browse by type','Press <b>🗂 Map types</b> and choose a type (River, Tank, Port, etc.). All places of that type appear on the map together.'],
@@ -256,9 +262,66 @@ addEventListener('pointermove',e=>{
 });
 const endDrag=e=>{if(drag&&e.pointerId==drag.id)drag=null;};
 addEventListener('pointerup',endDrag);addEventListener('pointercancel',endDrag);
-$('mvb').onclick=e=>{e.stopPropagation();closeAll();moveMode=!moveMode;$('mvb').classList.toggle('on',moveMode);cv.style.cursor='grab';
+$('mvb').onclick=e=>{e.stopPropagation();closeAll();stopRipple();moveMode=!moveMode;$('mvb').classList.toggle('on',moveMode);cv.style.cursor='grab';
  $('st').textContent=moveMode?T[lang].mvon:(G.size?T[lang].hint:T[lang].nodata);};
 $('mrs').onclick=()=>{manual.clear();draw();};
+
+/* ---------- තට්ටු කළ ස්ථානය වටා රතු වළලු (භූමිකම්පා කේන්ද්‍රයක් පෙන්වන ආකාරයට) ----------
+   • වෙනම පාරදෘශ්‍ය canvas එකක ඇඳේ; mouse / touch වලට බාධා නොකරයි, සිතියම ගෙනයන / විශාල කරන විටත් ස්ථානයත් සමග ගමන් කරයි.
+   • ක්‍රියාත්මක වන්නේ තනි click / තනි ඇඟිල්ලේ තට්ටුවකට පමණි (ඇදීම, ඇඟිලි දෙකකින් විශාල කිරීම ඇතුළත් නොවේ). */
+const RP=$('rip'),RC=RP.getContext('2d'),RS={on:false,x:0,y:0,t0:0,raf:0,dpr:1};
+function ripSize(){const b=$('vp').getBoundingClientRect(),d=window.devicePixelRatio||1;RS.dpr=d;RP.width=Math.max(1,Math.round(b.width*d));RP.height=Math.max(1,Math.round(b.height*d));}
+new ResizeObserver(ripSize).observe($('vp'));ripSize();
+function ripFrame(now){
+ RS.raf=0;if(!RS.on||!L)return;
+ const vr=$('vp').getBoundingClientRect(),r=cv.getBoundingClientRect(),d=RS.dpr;
+ RC.setTransform(1,0,0,1,0,0);RC.clearRect(0,0,RP.width,RP.height);RC.setTransform(d,0,0,d,0,0);
+ const sx=r.left-vr.left+RS.x/L.W*r.width,sy=r.top-vr.top+RS.y/L.H*r.height;/* සිතියමේ ස්ථානය → තිරයේ ස්ථානය */
+ const R=Math.max(70,Math.min(150,Math.min(vr.width,vr.height)*.22)),N=5,P=2800,ph=(now-RS.t0)/P;
+ for(let k=0;k<N;k++){
+  const t=(ph+k/N)%1,rad=R*(.06+.94*Math.pow(t,.85)),a=Math.pow(1-t,1.5);
+  RC.beginPath();RC.arc(sx,sy,rad,0,Math.PI*2);
+  RC.fillStyle='rgba(214,33,43,'+(a*.10).toFixed(3)+')';RC.fill();
+  RC.lineWidth=1.5+3*(1-t);RC.strokeStyle='rgba(214,33,43,'+(a*.95).toFixed(3)+')';RC.stroke();
+ }
+ const pr=5+1.5*Math.sin(now/180);/* මැද ස්පන්දන තිත */
+ RC.beginPath();RC.arc(sx,sy,pr,0,Math.PI*2);RC.fillStyle='#d6212b';RC.fill();RC.lineWidth=2;RC.strokeStyle='#fff';RC.stroke();
+ RS.raf=requestAnimationFrame(ripFrame);
+}
+function startRipple(x,y){RS.x=x;RS.y=y;RS.t0=performance.now();RS.on=true;if(!RS.raf)RS.raf=requestAnimationFrame(ripFrame);}
+function stopRipple(){RS.on=false;if(RS.raf){cancelAnimationFrame(RS.raf);RS.raf=0;}RC.setTransform(1,0,0,1,0,0);RC.clearRect(0,0,RP.width,RP.height);}
+$('ripOn').onchange=()=>{if(!$('ripOn').checked)stopRipple();};
+/* තනි තට්ටුවක් හඳුනාගැනීම: ඇඟිලි / pointer එකක් පමණි, ඇදීමක් නැත (px 10ට අඩු), කෙටි කාලයක් */
+const taps=new Set();let tg=null;
+cv.addEventListener('pointerdown',e=>{
+ if(e.pointerType=='mouse'&&e.button!==0)return;
+ taps.add(e.pointerId);
+ if(taps.size==1)tg={x:e.clientX,y:e.clientY,t:performance.now(),multi:false,moved:false};
+ else if(tg)tg.multi=true;
+});
+addEventListener('pointermove',e=>{if(tg&&taps.has(e.pointerId)&&Math.hypot(e.clientX-tg.x,e.clientY-tg.y)>10)tg.moved=true;});
+function tapEnd(e,ok){
+ if(!taps.has(e.pointerId))return;taps.delete(e.pointerId);
+ if(taps.size==0&&tg){const g=tg;tg=null;
+  if(ok&&!g.multi&&!g.moved&&performance.now()-g.t<900)onTap(e);}
+}
+addEventListener('pointerup',e=>tapEnd(e,true));
+addEventListener('pointercancel',e=>tapEnd(e,false));
+function onTap(e){
+ if(!L||moveMode||!$('ripOn').checked)return;
+ const r=cv.getBoundingClientRect();
+ let x=(e.clientX-r.left)/r.width*L.W,y=(e.clientY-r.top)/r.height*L.H;
+ if(x<0||y<0||x>L.W||y>L.H)return;
+ if(G.size){/* ස්ථානයක් මත නම්, එම ස්ථානයේ හරියටම මැදට */
+  const[nx,ny]=pointer(cv,L,e),g=groupAt(nx,ny,40*L.W/r.width);
+  if(g){x=L.ix+g.a[0]*L.iw;y=L.iy+g.a[1]*L.ih;}
+ }
+ if(RS.on){/* එම තැනම නැවත තට්ටු කළ විට නවතී */
+  const d=Math.hypot((x-RS.x)/L.W*r.width,(y-RS.y)/L.H*r.height);
+  if(d<24){stopRipple();return;}
+ }
+ startRipple(x,y);
+}
 
 /* ---------- සිතියම මත click/touch: එම ස්ථානය + ආසන්න ස්ථාන 3 ---------- */
 const CLICK_N=3;/* ආසන්න ස්ථාන ගණන */
@@ -451,7 +514,7 @@ function focusOn(idxs,main){
  draw();Z.focusRect(x0,y0,x1,y1);
 }
 function pick(name){
- closeAll();activeCat=null;$('q').value=name;
+ closeAll();stopRipple();activeCat=null;$('q').value=name;
  focusOn(nearGroup(name,NN(),$('rOn').checked),name);
  $('st').textContent=`🎯 ${name}  ${T[lang].near} ${NN()}`;
 }
@@ -464,7 +527,7 @@ function refreshNear(){
 $('nN').oninput=()=>{$('nNv').textContent=$('nN').value;};
 $('nN').onchange=refreshNear;$('rOn').onchange=refreshNear;
 function pickCat(c){
- closeAll();activeCat=c;
+ closeAll();stopRipple();activeCat=c;
  const idx=[];G.forEach(e=>{if(e.g.has(c))idx.push(...e.idx);});
  if(!idx.length)return;
  $('q').value='';focusOn(idx,null);
@@ -497,7 +560,7 @@ $('stb').onclick=e=>{e.stopPropagation();togglePop('stp',$('stb'));};
 $('pli').onclick=e=>{const r=e.target.closest('[data-n]');if(r)pick(r.dataset.n);};
 $('tyc').onclick=e=>{const b=e.target.closest('[data-c]');if(b)pickCat(b.dataset.c);};
 document.addEventListener('click',e=>{if(!e.target.closest('.pop,.sw'))closeAll();});
-document.addEventListener('keydown',e=>{if(e.key=='Escape'){closeAll();if($('hw').classList.contains('open'))closeHow();}});
+document.addEventListener('keydown',e=>{if(e.key=='Escape'){closeAll();stopRipple();if($('hw').classList.contains('open'))closeHow();}});
 $('plp').onclick=$('typ').onclick=$('stp').onclick=e=>e.stopPropagation();
 ['sOn','vOn','vA','vC','fsz'].forEach(id=>$(id).oninput=$(id).onchange=draw);
 
@@ -561,7 +624,7 @@ function applyUI(){
  if($('hw').classList.contains('open'))buildHow();
 }
 function setLang(l){
- lang=l;closeAll();applyUI();fillMapSelect(cur&&cur.k);
+ lang=l;closeAll();stopRipple();applyUI();fillMapSelect(cur&&cur.k);
  buildGroups();marked=new Set();manual.clear();hl=null;activeCat=null;$('q').value='';
  $('st').textContent=G.size?T[lang].hint:T[lang].nodata;draw();
 }
@@ -581,7 +644,7 @@ $('hwx').onclick=$('hwk').onclick=closeHow;
 $('hw').onclick=e=>{if(e.target===$('hw'))closeHow();};
 
 async function load(k){
- cur=MAPS.find(m=>m.k==k);closeAll();$('st').textContent=T[lang].loading;
+ cur=MAPS.find(m=>m.k==k);closeAll();stopRipple();$('st').textContent=T[lang].loading;
  img=null;
  try{await fontReady();img=await loadImg(cur.url);}catch(e){img=null;$('st').textContent='රූපය load වුණේ නැත / Image failed';return;}
  L=layout(img);buildGroups();marked=new Set();manual.clear();hl=null;activeCat=null;$('q').value='';
